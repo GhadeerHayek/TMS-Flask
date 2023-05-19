@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-    <title>{% block title %}{% endblock %}</title>
+    <title>Dashboard</title>
     <meta content="" name="description">
     <meta content="" name="keywords">
 
@@ -42,7 +42,7 @@
         <a href="index.html" class="logo d-flex align-items-center">
             <img src="../../static/assets/img/logo.png" alt="">
             {#            TODO: get the user name from the token or whatever and add it here#}
-            <span class="d-none d-lg-block">Welcome *name*</span>
+            <span class="d-none d-lg-block">TMS</span>
         </a>
         <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
@@ -67,15 +67,13 @@
 
                 <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
                     <img src="../../static/assets/img/profile-img.jpg" alt="Profile" class="rounded-circle">
-                    {#                    TODO: here goes a username and a default profile icon#}
-                    <span class="d-none d-md-block dropdown-toggle ps-2">username</span>
+                    <span class="d-none d-md-block dropdown-toggle ps-2">{{ trainee.username }}</span>
                 </a><!-- End Profile Iamge Icon -->
 
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
-                    {#                    TODO: here goes all the small menu #}
                     <li class="dropdown-header">
-                        <h6>Kevin Anderson</h6>
-                        <span>Web Designer</span>
+                        <h6>{{ trainee.username }}</h6>
+                        <span>{{ trainee.desired_field }}</span>
                     </li>
                     <li>
                         <hr class="dropdown-divider">
@@ -142,12 +140,12 @@
       <div class="col col-lg-8 mb-8 mb-lg-0">
         <div class="card mb-3" style="border-radius: .5rem;">
           <div class="row g-0">
-            <div class="col-md-4 gradient-custom text-center text-white"
+            <div class="col-md-3 gradient-custom text-center text-white"
               style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;">
               <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
                 alt="Avatar" class="img-fluid my-5" style="width: 80px;" />
-                <h5 style="color:black">User name</h5>
-                <p style="color:black">Field or Area</p>
+                <h5 style="color:black">{{ trainee.username }}</h5>
+                <p style="color:black">{{ trainee.area }}<br> {{ trainee.desired_field }}</p>
               <i class="far fa-edit mb-5"></i>
             </div>
             <div class="col-md-8">
@@ -157,15 +155,15 @@
                 <div class="row pt-1">
                   <div class="col-6 mb-3">
                     <h6>Email</h6>
-                    <p class="text-muted">info@example.com</p>
+                    <p class="text-muted">{{ trainee.email }}</p>
                   </div>
                     <div class="col-6 mb-3">
                     <h6>Trainee ID</h6>
-                    <p class="text-muted">Some ID</p>
+                    <p class="text-muted">{{ trainee.id }}</p>
                   </div>
                   <div class="col-6 mb-3">
                     <h6>On training</h6>
-                    <p class="text-muted">Yes</p>
+                    <p class="text-muted">{{ trainee.current_training}}</p>
                   </div>
                 </div>
                 <h6>User Documents</h6>
