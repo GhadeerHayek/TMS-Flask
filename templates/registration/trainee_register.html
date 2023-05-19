@@ -48,7 +48,6 @@
             <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
-
                         <div class="d-flex justify-content-center py-4">
                             {#                  TODO: i guess index.html is supposed to take us somewhere else #}
                             <a href="index.html" class="logo d-flex align-items-center w-auto">
@@ -56,30 +55,16 @@
                                 <span class="d-none d-lg-block">Join Us</span>
                             </a>
                         </div><!-- End Logo -->
-
                         <div class="card mb-3">
-
                             <div class="card-body">
-
                                 <div class="pt-4 pb-2">
                                     <h5 class="card-title text-center pb-0 fs-4">Create an Account</h5>
                                     <p class="text-center small">Fill in this form to complete the registration
                                         process</p>
                                 </div>
-                                {#TODO: this is supposed to take us somewhere else too #}
-                                <form class="row g-3 needs-validation" method="POST" novalidate action="{{ url_for('auth.signup') }}">
-                                    <div class="col-12">
-                                        <label for="yourName" class="form-label">Your Name</label>
-                                        <input type="text" name="name" class="form-control" id="yourName" required>
-                                        <div class="invalid-feedback">Please, enter your name!</div>
-                                    </div>
-
-                                    <div class="col-12">
-                                        <label for="yourEmail" class="form-label">Your Email</label>
-                                        <input type="email" name="email" class="form-control" id="yourEmail" required>
-                                        <div class="invalid-feedback">Please enter a valid Email adddress!</div>
-                                    </div>
-
+                                <form class="row g-3 needs-validation" method="POST" novalidate
+                                      action="{{ url_for('auth.signup') }}">
+                                    <input type="hidden" name="classification" value="trainee">
                                     <div class="col-12">
                                         <label for="yourUsername" class="form-label">Username</label>
                                         <div class="input-group has-validation">
@@ -89,14 +74,50 @@
                                             <div class="invalid-feedback">Please choose a username.</div>
                                         </div>
                                     </div>
-
                                     <div class="col-12">
-                                        <label for="yourPassword" class="form-label">Password</label>
-                                        <input type="password" name="password" class="form-control" id="yourPassword"
-                                               required>
-                                        <div class="invalid-feedback">Please enter your password!</div>
+                                        <label for="yourEmail" class="form-label">Your Email</label>
+                                        <input type="email" name="email" class="form-control" id="yourEmail" required>
+                                        <div class="invalid-feedback">Please enter a valid Email adddress!</div>
                                     </div>
 
+                                    <div class="col-12">
+                                        {#                                        TODO: turn this into a drop-down#}
+                                        <label for="yourDesiredField" class="form-label">Desired Field</label>
+                                        <input type="text" name="desiredField" class="form-control"
+                                               id="yourDesiredField" required>
+                                        <div class="invalid-feedback">Please enter a valid Field!</div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        {#                                        TODO: turn this into a drop-down#}
+                                        <label for="yourArea" class="form-label">Area of Interest</label>
+                                        <input type="text" name="yourArea" class="form-control" id="yourArea" required>
+                                        <div class="invalid-feedback">Please enter a valid Area!</div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label for="yourCV" class="form-label">Upload your CV</label>
+                                        <input type="file" name="cv" class="form-control" id="yourCV" required>
+                                        <div class="invalid-feedback">Please submit a CV!</div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label for="yourMotivationLetter" class="form-label">Upload your motivation
+                                            letter</label>
+                                        <input type="file" name="motivationLetter" class="form-control"
+                                               id="yourMotivationLetter" required>
+                                        <div class="invalid-feedback">Please submit a Motivation Letter!</div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label for="otherMaterials" class="form-label">Other materials <br><sub>Videos,
+                                            Projects, Infographics, Certificates, ... </sub></label>
+                                        <input type="file" name="materials" class="form-control" id="otherMaterials"
+                                               required>
+                                        <div class="invalid-feedback">Please upload materials that support your
+                                            registration !
+                                        </div>
+                                    </div>
                                     <div class="col-12">
                                         <button class="btn btn-primary w-100" type="submit">Create Account</button>
                                     </div>
