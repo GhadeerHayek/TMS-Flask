@@ -13,8 +13,7 @@ def login_view():
 # this is the route that handles the login request
 @auth_blueprint.route('/auth/login', methods=['POST'])
 def login():
-    print(request, "is going to controller function")
-    return jsonify(auth_controller.handle_login(request))
+    return auth_controller.handle_login(request)
 
 
 # this is the route that returns the signup form view
@@ -31,17 +30,12 @@ def signup_view():
 def signup():
     result = {}
     # inputs from request are: hidden classification
-    # for trainee: username, email, desiredField, yourArea, cv, motivationLetter, materials,
-    # TODO: validate request but we are doing this using a library not hard coded
     classification = request.form['classification']
     if classification == 'trainee':
-        result = auth_controller.handle_trainee_signup(request)
-        # TODO: call for trainee signup function and return result
+        return auth_controller.handle_trainee_signup(request)
     elif classification == 'advisor':
         # TODO: call for advisor signup function and return result
-        result = auth_controller.handle_advisor_signup(request)
+        return auth_controller.handle_advisor_signup(request)
     else:
         # TODO: tampered classification, flash error message
         result = {"status": "error"}
-        # TODO: either ways, return response
-    return jsonify(result)

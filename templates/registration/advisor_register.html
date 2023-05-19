@@ -66,7 +66,7 @@
                                         process</p>
                                 </div>
 
-                                <form class="row g-3 needs-validation" novalidate action="{{ url_for('auth.signup') }}">
+                                <form class="row g-3 needs-validation" novalidate method="POST" action="{{ url_for('auth.signup') }}">
                                     <input type="hidden" name="classification" value="advisor">
                                     <div class="col-12">
                                         <label for="yourUsername" class="form-label">Username</label>
@@ -84,9 +84,9 @@
                                     </div>
                                     <div class="col-12">
                                         {#                          TODO: turn discipline into a drop down list#}
-                                        <label for="yourEmail" class="form-label">Your discipline</label>
-                                        <input type="email" name="email" class="form-control" id="yourEmail" required>
-                                        <div class="invalid-feedback">Please enter a valid Email discipline!</div>
+                                        <label for="yourDiscipline" class="form-label">Your discipline</label>
+                                        <input type="text" name="discipline" class="form-control" id="yourDiscipline" required>
+                                        <div class="invalid-feedback">Please enter a valid discipline!</div>
                                     </div>
 
                                     <div class="col-12">

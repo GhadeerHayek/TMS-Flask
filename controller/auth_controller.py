@@ -1,4 +1,9 @@
-from flask import render_template, jsonify
+from flask import render_template, jsonify, redirect, url_for
+from sqlalchemy import text
+
+from app import app
+from app import db
+import os
 
 
 def login_view():
@@ -6,17 +11,31 @@ def login_view():
 
 
 def handle_login(request):
-    # assuming that we will return a success or failure response
-    result = True
-    response = {}
-    if result:
-        response["status"] = "success"
-        response["message"] = "logged in"
-        response["token"] = "a token"
+    email = request.form['email']
+    password = request.form['password']
+    if not email or not password:
+        pass
+    query = text("SELECT * from users_login where email = :email and password = :password")
+    params = {"email": email, "password": password}
+    result = db.session().execute(query, params)
+    row = result.fetchone()
+    if not result:
+        pass
+    # generate token
+    classification = row[3]
+    print(classification)
+    print("=============================================================================================")
+    print(result)
+    print("=============================================================================================")
+    if classification == "manager":
+        return redirect(url_for('manager.dashboard_view'))
+    elif classification == "advisor":
+        return redirect(url_for('advisor.dashboard_view'))
+    elif classification == "trainee":
+        return redirect(url_for('trainee.dashboard_view'))
     else:
-        response["status"] = "failure"
-        response["message"] = "nothing"
-    return response
+        # error
+        pass
 
 
 def signup_view(classification):
@@ -29,12 +48,37 @@ def signup_view(classification):
 
 
 def handle_trainee_signup(request):
-    # inputs from request are: hidden classification
-    # for trainee: username, email, desiredField, yourArea, cv, motivationLetter, materials,
-    response = {"message": "call for handle trainee signup"}
-    return response
+    username = request.form['username']
+    email = request.form['email']
+    desiredField = request.form['desiredField']
+    area = request.form['area']
+    # cv = request.form['cv']
+    if not username or not email or not desiredField or not area:
+        # return error message
+        pass
+    query = text(
+        "INSERT INTO trainees (username, email, desired_field, area, current_status) VALUES (:username, :email, :desired_field, :area, 'pending')")
+    params = {'username': username, 'email': email, 'desired_field': desiredField, 'area': area}
+    result = db.session.execute(query, params)
+    db.session.commit()
+    if result:
+        return redirect(url_for('auth.login_view'))
+    return result
 
 
 def handle_advisor_signup(request):
-    response = {"message": "call for handle advisor signup"}
-    return response
+    username = request.form['username']
+    email = request.form['email']
+    discipline = request.form['discipline']
+    # cv = request.form['cv']
+    if not username or not email or not discipline:
+        # return error message
+        pass
+    query = text(
+        "INSERT INTO advisors (username, email, discipline, current_status) VALUES (:username, :email, :discipline, 'pending')")
+    params = {'username': username, 'email': email, 'discipline': discipline}
+    result = db.session.execute(query, params)
+    db.session.commit()
+    if result:
+        return redirect(url_for('auth.login_view'))
+    return result

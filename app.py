@@ -15,6 +15,7 @@ db_password = os.getenv('DB_PASSWORD')
 db_name = os.getenv('DB_NAME')
 
 app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://{0}:{1}@{2}/{3}".format(db_user, db_password, db_host, db_name)
+app.config['USER_UPLOADS'] = '/static/user-uploads/'
 db = SQLAlchemy(app)
 
 # Register app blueprints here
