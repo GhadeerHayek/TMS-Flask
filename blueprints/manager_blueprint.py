@@ -10,9 +10,12 @@ def dashboard_view():
 
 
 @manager_blueprint.route('/trainees/pending', methods=["GET"])
-def get_pending_trainees():
-    return manager_controller.get_pending_trainees()
+def get_pending_trainees_view():
+    token ="mock"
+    return manager_controller.get_pending_trainees(token)
 
-@manager_blueprint.route('/trainees', methods=["GET"])
-def get_trainees():
-    return render_template("manager/pending_trainees.html")
+
+@manager_blueprint.route('/trainees/deactivate', methods=["GET"])
+def get_deactivate_trainees_view():
+    token ="mock"
+    return manager_controller.get_deactivate_trainees(token)
