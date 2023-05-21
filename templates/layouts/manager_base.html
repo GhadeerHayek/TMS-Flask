@@ -163,23 +163,13 @@
             </a>
             <ul id="submenu">
                 <li class="nav-item">
-                    <a class="nav-link collapsed" href="#">
+                    <a class="nav-link collapsed" href="{{ url_for('manager.get_all_programs_view') }}">
                         <span>All programs</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link collapsed" href="#">
+                    <a class="nav-link collapsed" href="{{ url_for('manager.get_add_program_view') }}">
                         <span>Add new</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link collapsed" href="#">
-                        <span>Update </span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link collapsed" href="#">
-                        <span>Delete</span>
                     </a>
                 </li>
             </ul>

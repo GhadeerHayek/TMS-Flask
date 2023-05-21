@@ -1,12 +1,13 @@
 from flask import Blueprint, request
-from controller.manager import manager_trainee_controller, manager_advisor_controller
+from controller.manager import manager_trainee_controller, manager_controller, manager_advisor_controller, \
+    manager_programs_controller
 
 manager_blueprint = Blueprint("manager", __name__)
 
 
 @manager_blueprint.route('/manager', methods=["GET"])
 def dashboard_view():
-    return manager_trainee_controller.index(request)
+    return manager_controller.index(request)
 
 
 # Manager-Trainee Routes
@@ -51,3 +52,18 @@ def get_advisors_accounts_view():
 @manager_blueprint.route('/advisors/account/details', methods=["GET"])
 def get_advisors_accounts_details_view():
     return manager_advisor_controller.get_advisor_account_details(request)
+
+
+@manager_blueprint.route('/programs', methods=["GET"])
+def get_all_programs_view():
+    return manager_programs_controller.get_all_programs(request)
+
+
+@manager_blueprint.route('/programs/create', methods=["GET"])
+def get_add_program_view():
+    return manager_programs_controller.get_add_program(request)
+
+
+@manager_blueprint.route('/programs/edit', methods=["GET"])
+def get_edit_program_view():
+    return manager_programs_controller.get_edit_program(request)
