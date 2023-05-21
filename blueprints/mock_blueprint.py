@@ -17,7 +17,7 @@ def mock_view():
         "username": "Jupiter2000",
         "email": "jupiter@gmail.com"
     }
-    return render_template('manager/pending_trainees.html', manager=manager, trainees=[
+    return render_template('manager/trainee/pending_trainees.html', manager=manager, trainees=[
         ["1","name1","email1","df1", "area1"],
         ["2", "name2", "email2", "df1", "area1"],
         ["3", "name3", "email3", "df1", "area1"]

@@ -7,7 +7,7 @@ from app import db
 """
 
 
-def index(token):
+def index(request):
     # from token get id, from the id get the record in the database
     manager_id = "something"
     query = text("SELECT * from ")
@@ -24,7 +24,7 @@ def index(token):
 """
 
 
-def get_pending_trainees(token):
+def get_pending_trainees(request):
     # token is the manager id or the manager record
 
     manager = {
@@ -40,7 +40,7 @@ def get_pending_trainees(token):
     #     trainees.append(row._data)
     #  return render_template("manager/pending_trainees.html", manager=manager, trainees=trainees)
 
-    return render_template('manager/pending_trainees.html', manager=manager, trainees=[
+    return render_template('manager/trainee/pending_trainees.html', manager=manager, trainees=[
         ["1", "name1", "email1", "df1", "area1"],
         ["2", "name2", "email2", "df1", "area1"],
         ["3", "name3", "email3", "df1", "area1"]
@@ -84,7 +84,7 @@ def approve_trainee(request):
 """
 
 
-def get_deactivate_trainees(token):
+def get_deactivate_trainees(request):
     # token is the manager record from the database
     manager = {
         "id": "100",
@@ -101,7 +101,7 @@ def get_deactivate_trainees(token):
         ["3", "name3", "email3"],
     ]
 
-    return render_template("manager/deactivate_trainee.html", manager=manager, trainees=trainees)
+    return render_template("manager/trainee/deactivate_trainee.html", manager=manager, trainees=trainees)
 
 
 """
@@ -122,3 +122,28 @@ def approve_trainee_deactivation(request):
 
 def reject_trainee_deactivation(request):
     pass
+
+
+def get_trainee_account(request):
+    # from the token, get the manager id
+    manager = {
+        "id": "100",
+        "username": "Jupiter2000",
+        "email": "jupiter@gmail.com"
+    }
+    # get all account modification requests from the database
+
+    # here's a mock of the returned data
+    trainess = [
+        ["1","", "name1", "somehow the account details object"],
+        ["2","", "name2", "somehow the account details object"],
+        ["3","", "name3", "somehow the account details object"]
+    ]
+    return render_template("manager/trainee/trainee_account_modification.html", manager=manager, trainees=trainess)
+
+def get_trainee_account_details(request):
+    # assuming this is a get request, that has the trainee id in its get parameters
+    # we should select all the user account details
+    # before we do that, we'll render something like a profile.html page
+    # which i am going to do later
+    return render_template("manager/trainee/trainee_account.html")
