@@ -67,3 +67,12 @@ def get_add_program_view():
 @manager_blueprint.route('/programs/edit', methods=["GET"])
 def get_edit_program_view():
     return manager_programs_controller.get_edit_program(request)
+
+# Manager - Billing
+@manager_blueprint.route('/billing', methods=["GET"])
+def get_balance_sheet_view():
+    return manager_controller.get_balance_sheet(request)
+
+
+
+# Manager - System Log
