@@ -3,10 +3,12 @@ from app import db
 
 mock_blueprint = Blueprint("mock", __name__)
 
+
 @mock_blueprint.route('/', methods=['GET'])
 def mock():
     # Testing the database connection
     return jsonify({"status": "trying", "engine name": db.engine.name, "engine driver": db.engine.driver})
+
 
 @mock_blueprint.route('/view', methods=['GET'])
 def mock_view():
@@ -18,7 +20,17 @@ def mock_view():
         "email": "jupiter@gmail.com"
     }
     return render_template('manager/trainee/pending_trainees.html', manager=manager, trainees=[
-        ["1","name1","email1","df1", "area1"],
+        ["1", "name1", "email1", "df1", "area1"],
         ["2", "name2", "email2", "df1", "area1"],
         ["3", "name3", "email3", "df1", "area1"]
     ])
+
+
+@mock_blueprint.route('/profile', methods=['GET'])
+def mock2():
+    return render_template('manager/profile-details.html',
+                           manager={
+                               "id": "100",
+                               "username": "Jupiter2000",
+                               "email": "jupiter@gmail.com"
+                           })

@@ -30,7 +30,6 @@ def get_trainees_accounts_view():
 def get_trainees_accounts_details_view():
     return manager_trainee_controller.get_trainee_account_details(request)
 
-
 # Manager-Advisor Routes
 
 

@@ -2,6 +2,12 @@ from flask import request, render_template, jsonify
 from sqlalchemy import text
 from app import db
 
+manager = {
+    "id": "100",
+    "username": "Jupiter2000",
+    "email": "jupiter@gmail.com"
+}
+
 """
     This is the function that prepares data for the 'pending trainees' view, and returns the view with its data 
 """
@@ -10,11 +16,6 @@ from app import db
 def get_pending_trainees(request):
     # token is the manager id or the manager record
 
-    manager = {
-        "id": "100",
-        "username": "Jupiter2000",
-        "email": "jupiter@gmail.com"
-    }
     # query = text("SELECT * from trainees where current_status = 'pending'")
     # result_cursor = db.session.execute(query)
     # rows = result_cursor.fetchall()
@@ -120,4 +121,13 @@ def get_trainee_account_details(request):
     # we should select all the user account details
     # before we do that, we'll render something like a profile.html page
     # which i am going to do later
-    return render_template("manager/trainee/trainee_account.html")
+    trainee = [
+        "1",
+        "1",
+        "username",
+        "ghadeer",
+        "area",
+        "df2",
+        "status"
+    ]
+    return render_template("manager/trainee/trainee-profile-details.html", trainee=trainee, manager=manager)

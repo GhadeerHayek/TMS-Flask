@@ -2,6 +2,12 @@ from flask import request, render_template, jsonify
 from sqlalchemy import text
 from app import db
 
+manager = {
+    "id": "100",
+    "username": "Jupiter2000",
+    "email": "jupiter@gmail.com"
+}
+
 """
     This is the function that prepares data for the 'pending advisors' view, and returns the view with its data 
 """
@@ -59,11 +65,7 @@ def reject_advisors_registration(request):
 
 def get_deactivate_advisors(request):
     # token is the manager record from the database
-    manager = {
-        "id": "100",
-        "username": "Jupiter2000",
-        "email": "jupiter@gmail.com"
-    }
+
     # implement the query so that you get the trainees deactivation requests
     # i think we are supposed to implement something in the database for it
 
@@ -120,4 +122,5 @@ def get_advisor_account_details(request):
     # we should select all the user account details
     # before we do that, we'll render something like a profile.html page
     # which i am going to do later
-    return render_template("manager/advisor/advisor_account.html")
+    advisor = ["1", "name1", "email1", "discipline1", "number"]
+    return render_template("manager/advisor/advisor-profile-details.html", manager=manager, advisor=advisor)
