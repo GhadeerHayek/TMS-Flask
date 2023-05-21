@@ -11,8 +11,8 @@ def dashboard_view():
 
 @manager_blueprint.route('/trainees/pending', methods=["GET"])
 def get_pending_trainees():
-    return manager_controller.get_pending_users()
+    return manager_controller.get_pending_trainees()
 
 @manager_blueprint.route('/trainees', methods=["GET"])
 def get_trainees():
-    return render_template("manager/trainees.html")
+    return render_template("manager/pending_trainees.html")
