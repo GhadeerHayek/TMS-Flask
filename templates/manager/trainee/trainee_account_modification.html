@@ -4,9 +4,13 @@
 {% block content %}
     <main id="main" class="main">
         <div class="pagetitle">
-            <h1>All Trainees</h1>
+            <h1>Review Trainee Profile Modification</h1>
             <nav>
                 <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="#">Manager</a></li>
+                    <li class="breadcrumb-item"><a href="#">Trainees</a>
+                    </li>
+                    <li class="breadcrumb-item"><a href="#">Profile Modifications Requests</a></li>
                 </ol>
             </nav>
         </div><!-- End Page Title -->
@@ -32,7 +36,8 @@
                                     <tr>
                                         <th scope="row">{{ trainee[0] }}</th>
                                         <td>{{ trainee[2] }}</td>
-                                        <td><a href="{{ url_for('manager.get_trainees_accounts_details_view') }}">Modification details</a></td>
+                                        <td><a href="{{ url_for('manager.get_trainees_accounts_details_view') }}">Modification
+                                            details</a></td>
                                         <td>
                                             <form method="POST" action="">
                                                 <button class="btn btn-success" data-bs-toggle="modal"

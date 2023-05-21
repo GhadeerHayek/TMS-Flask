@@ -3,10 +3,16 @@
 {% block title %} Profile Details {% endblock %}
 {% block content %}
     <main id="main" class="main">
-        <div class="pagetitle">
-            <h1>Profile Details</h1>
+                <div class="pagetitle">
+            <h1>Review Advisor Profile Modification</h1>
             <nav>
                 <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="#">Manager</a></li>
+                    <li class="breadcrumb-item"><a href="#">Advisors</a>
+                    </li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('manager.get_advisors_accounts_view') }}">Profile
+                        Modifications Requests</a></li>
+                    <li class="breadcrumb-item"><a href="#">Profile Details</a></li>
                 </ol>
             </nav>
         </div><!-- End Page Title -->

@@ -4,9 +4,13 @@
 {% block content %}
     <main id="main" class="main">
         <div class="pagetitle">
-            <h1>Modify the fields you wish to update for this program</h1>
+            <h1>Edit Training Program</h1>
             <nav>
                 <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="#">Manager</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('manager.get_all_programs_view') }}">Training
+                        Programs</a></li>
+                    <li class="breadcrumb-item"><a href="#">Edit</a></li>
                 </ol>
             </nav>
         </div><!-- End Page Title -->

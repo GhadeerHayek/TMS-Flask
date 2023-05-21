@@ -4,9 +4,15 @@
 {% block content %}
     <main id="main" class="main">
         <div class="pagetitle">
-            <h1>Profile Details</h1>
+            <h1>Review Trainee Profile Modification</h1>
             <nav>
                 <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="#">Manager</a></li>
+                    <li class="breadcrumb-item"><a href="#">Trainees</a>
+                    </li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('manager.get_trainees_accounts_view') }}">Profile
+                        Modifications Requests</a></li>
+                    <li class="breadcrumb-item"><a href="#">Profile Details</a></li>
                 </ol>
             </nav>
         </div><!-- End Page Title -->

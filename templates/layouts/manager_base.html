@@ -59,13 +59,83 @@
                     <i class="bi bi-search"></i>
                 </a>
             </li><!-- End Search Icon-->
+            <li class="nav-item dropdown">
+
+                <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+                    <i class="bi bi-bell"></i>
+                    <span class="badge bg-primary badge-number">4</span>
+                </a><!-- End Notification Icon -->
+
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
+                    <li class="dropdown-header">
+                        You have 4 new notifications
+                        <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+
+                    <li class="notification-item">
+                        <i class="bi bi-exclamation-circle text-warning"></i>
+                        <div>
+                            <h4>Lorem Ipsum</h4>
+                            <p>Quae dolorem earum veritatis oditseno</p>
+                            <p>30 min. ago</p>
+                        </div>
+                    </li>
+
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li class="dropdown-footer">
+                        <a href="#">Show all notifications</a>
+                    </li>
+
+                </ul><!-- End Notification Dropdown Items -->
+
+            </li><!-- End Notification Nav -->
+
+            <li class="nav-item dropdown">
+
+                <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+                    <i class="bi bi-chat-left-text"></i>
+                    <span class="badge bg-success badge-number">3</span>
+                </a><!-- End Messages Icon -->
+
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
+                    <li class="dropdown-header">
+                        You have 3 new messages
+                        <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+
+                    <li class="message-item">
+                        <a href="#">
+                            <img src="assets/img/messages-1.jpg" alt="" class="rounded-circle">
+                            <div>
+                                <h4>Maria Hudson</h4>
+                                <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
+                                <p>4 hrs. ago</p>
+                            </div>
+                        </a>
+                    </li>
+
+
+                    <li class="dropdown-footer">
+                        <a href="#">Show all messages</a>
+                    </li>
+
+                </ul><!-- End Messages Dropdown Items -->
+
+            </li><!-- End Messages Nav -->
 
             <li class="nav-item dropdown pe-3">
-
                 <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
                     <img src="../../static/assets/img/profile-img.jpg" alt="Profile" class="rounded-circle">
                     <span class="d-none d-md-block dropdown-toggle ps-2">{{ manager.username }}</span>
-                </a><!-- End Profile Iamge Icon -->
+                </a><!-- End Profile Image Icon -->
 
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
                     <li class="dropdown-header">
@@ -109,71 +179,77 @@
                 <i class="bi bi-grid"></i>
                 <span>Dashboard</span>
             </a>
-        </li>
+        </li><!-- End Dashboard Nav -->
+
         <li class="nav-item">
-            <a class="nav-link collapsed" href="#">
-                <i class="bi bi-people"></i>
-                <span>Trainee</span>
+            <a class="nav-link collapsed" data-bs-target="#trainees-nav" data-bs-toggle="collapse" href="#">
+                <i class="bi bi-menu-button-wide"></i><span>Trainees</span><i class="bi bi-chevron-down ms-auto"></i>
             </a>
-            <ul id="submenu">
-                <li class="nav-item">
-                    <a class="nav-link collapsed" href="{{ url_for('manager.get_pending_trainees_view') }}">
-                        <span>Approve Registration</span>
+            <ul id="trainees-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                <li>
+                    <a href="{{ url_for('manager.get_pending_trainees_view') }}">
+                        <i class="bi bi-circle"></i><span>Approve Registration</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link collapsed" href="{{ url_for('manager.get_trainees_accounts_view') }}">
-                        <span>Approve Account Modification</span>
+
+                <li>
+                    <a href="{{ url_for('manager.get_trainees_accounts_view') }}">
+                        <i class="bi bi-circle"></i><span>Approve Account Modification</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link collapsed" href="{{ url_for('manager.get_deactivate_trainees_view') }}">
-                        <span>Deactivate Account</span>
+
+                <li>
+                    <a href="{{ url_for('manager.get_deactivate_trainees_view') }}">
+                        <i class="bi bi-circle"></i> <span>Deactivate Account</span>
                     </a>
                 </li>
             </ul>
-        </li>
+        </li><!-- End Trainees Nav -->
+
+
         <li class="nav-item">
-            <a class="nav-link collapsed" href="#">
-                <i class="bi bi-people"></i>
-                <span>Advisor</span>
+            <a class="nav-link collapsed" data-bs-target="#advisors-nav" data-bs-toggle="collapse" href="#">
+                <i class="bi bi-menu-button-wide"></i><span>Advisors</span><i class="bi bi-chevron-down ms-auto"></i>
             </a>
-            <ul id="submenu">
-                <li class="nav-item">
-                    <a class="nav-link collapsed" href="{{ url_for('manager.get_pending_advisors_view') }}">
-                        <span>Approve Registration</span>
+            <ul id="advisors-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                <li>
+                    <a href="{{ url_for('manager.get_pending_advisors_view') }}">
+                        <i class="bi bi-circle"></i><span>Approve Registration</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link collapsed" href="{{ url_for('manager.get_advisors_accounts_view') }}">
-                        <span>Approve Account Modification</span>
+
+                <li>
+                    <a href="{{ url_for('manager.get_advisors_accounts_view') }}">
+                        <i class="bi bi-circle"></i><span>Approve Account Modification</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link collapsed" href="{{ url_for('manager.get_deactivate_advisors_view') }}">
-                        <span>Deactivate Account</span>
+
+                <li>
+                     <a href="{{ url_for('manager.get_deactivate_advisors_view') }}">
+                         <i class="bi bi-circle"></i><span>Deactivate Account</span>
                     </a>
                 </li>
             </ul>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#">
-                <i class="bi bi-book"></i>
-                <span>Training Programs </span>
+        </li><!-- End Advisors Nav -->
+
+         <li class="nav-item">
+            <a class="nav-link collapsed" data-bs-target="#programs-nav" data-bs-toggle="collapse" href="#">
+                <i class="bi bi-menu-button-wide"></i><span>Training Programs</span><i class="bi bi-chevron-down ms-auto"></i>
             </a>
-            <ul id="submenu">
+            <ul id="programs-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                 <li class="nav-item">
-                    <a class="nav-link collapsed" href="{{ url_for('manager.get_all_programs_view') }}">
-                        <span>All programs</span>
+                    <a  href="{{ url_for('manager.get_all_programs_view') }}">
+                         <i class="bi bi-circle"></i><span>All programs</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link collapsed" href="{{ url_for('manager.get_add_program_view') }}">
-                        <span>Add new</span>
+                    <a href="{{ url_for('manager.get_add_program_view') }}">
+                         <i class="bi bi-circle"></i><span>Add new</span>
                     </a>
                 </li>
             </ul>
-        </li>
+        </li><!-- End Programs Nav -->
+
         <li class="nav-item">
             <a class="nav-link collapsed" href="{{ url_for('manager.get_balance_sheet_view') }}">
                 <i class="bi bi-bank"></i>
