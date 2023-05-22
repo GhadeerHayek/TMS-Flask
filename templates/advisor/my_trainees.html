@@ -1,0 +1,70 @@
+{% extends "layouts/advisor_base.html" %}
+
+{% block title %} My Trainees{% endblock %}
+{% block content %}
+    <main id="main" class="main">
+        <div class="pagetitle">
+            <h1>My Trainees</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('advisor.active_trainees') }}">My Trainees</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('advisor.pending_trainees') }}">Manage My Trainees</a></li>
+                </ol>
+            </nav>
+        </div><!-- End Page Title -->
+
+        <section class="section">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <!-- Table with stripped rows -->
+                            <table class="table datatable">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Id</th>
+                                    <th scope="col">Username</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Desired field</th>
+                                    <th scope="col">Area of Interest</th>
+                                    <th scope="col">Contact</th>
+                                    <th scope="col">Attendance Form</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for trainee in trainees %}
+                                    <tr>
+                                        <th scope="row">{{ trainee[0] }}</th>
+                                        <td>{{ trainee[1] }}</td>
+                                        <td>{{ trainee[2] }}</td>
+                                        <td>{{ trainee[3] }}</td>
+                                        <td>{{ trainee[4] }}</td>                                
+                                       
+                                        <td>                                            
+                                            <form method="get" action=" ">
+                                               <button type="submit" class="badge bg-primary" style="border: none;">Send an Email to {{trainee[1]}}</button>
+                                            </form>
+                                        </td>
+                                        <td>                                            
+                                            <form method="get" action=" {{ url_for("advisor.attendance_form") }} ">
+                                                <!-- to send trainee's id -->
+                                                <input type="hidden">
+                                                <button type="submit" class="badge bg-warning" style="border: none;">Check {{trainee[1]}}'s Attendance Form </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endfor %}                                
+                                </tbody>
+                            </table>                        
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </main><!-- End #main -->
+{% endblock %}
+
+
