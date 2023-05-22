@@ -48,3 +48,23 @@ def get_programs_for_trainee(request):
 
 def handle_program_application(request):
     pass
+
+
+"""
+    This is the form-view function that renders the current training of a trainee details, which include the program data itself,
+     the registration details of the program itself, link to the attendance form, link to schedule meetings
+     So i'd guess it's the view that contains three components in one 
+"""
+
+
+def get_training_program(request):
+    # first of all, check the current status of the trainee and check if the current status of the trainee is: on_training
+    # then, perform a select query to get the program_registiration
+    # this data will include: training program id, advisor id, attendance form id, status of the registiration itself
+    # later, 1- we'll get the training program data and display it
+    # 2- provide a link to the attendance form, were all the data is displayed and the option to add new record is available
+
+    registered_program = [
+        "training program id", "trainee id", "attendance form id", "advisor id", "status "
+    ]
+    return render_template('trainee/my_training.html', trainee=trainee, program=programs[0])
