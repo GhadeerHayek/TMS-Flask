@@ -1,10 +1,79 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "layouts/trainee_base.html" %}
 
-</body>
-</html>
+{% block title %} My Training Program {% endblock %}
+{% block content %}
+    <main id="main" class="main">
+        <div class="pagetitle">
+            <h1>My Training Program</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="#">Trainee</a></li>
+                    <li class="breadcrumb-item"><a href="#">My Training
+                        Program</a></li>
+                </ol>
+            </nav>
+        </div><!-- End Page Title -->
+
+        <section class="section">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <!-- Table with stripped rows -->
+                            <table class="table datatable">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Registration ID</th>
+                                    <th scope="col">Program ID</th>
+                                    <th scope="col">Trainee ID</th>
+                                    <th scope="col">Advisor ID</th>
+                                    <th scope="col">Training Status</th>
+                                    <th scope="col">Attendance Form</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">{{ registered_program[0] }}</th>
+                                        <td><a href ="#">{{ registered_program[1] }}</a></td>
+                                        <td>{{ registered_program[2] }}</td>
+                                        <td>{{ registered_program[4] }}</td>
+                                        <td>{{ registered_program[5] }}</td>
+                                        <td><a href="#">{{ registered_program[3] }}</a></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="modal fade" id="verticalycentered" tabindex="-1">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Vertically Centered</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Non omnis incidunt qui sed occaecati magni asperiores est mollitia. Soluta
+                                            at et reprehenderit. Placeat autem numquam et fuga numquam. Tempora in
+                                            facere consequatur sit dolor ipsum. Consequatur nemo amet incidunt est
+                                            facilis. Dolorem neque recusandae quo sit molestias sint dignissimos.
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                Close
+                                            </button>
+                                            <button type="button" class="btn btn-primary">Save changes</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div><!-- End Vertically centered Modal-->
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </main><!-- End #main -->
+{% endblock %}
+
+

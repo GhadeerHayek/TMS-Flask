@@ -65,6 +65,10 @@ def get_training_program(request):
     # 2- provide a link to the attendance form, were all the data is displayed and the option to add new record is available
 
     registered_program = [
-        "training program id", "trainee id", "attendance form id", "advisor id", "status "
+        "registration id", "program id", "trainee id", "attendance form id", "advisor id", "status "
+
     ]
-    return render_template('trainee/my_training.html', trainee=trainee, program=programs[0])
+    return render_template('trainee/my_training.html', trainee=trainee, registered_program=registered_program)
+
+def trainee_training_form(request):
+    return render_template('trainee/attendance-form.html');
