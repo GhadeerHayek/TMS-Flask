@@ -1,15 +1,15 @@
 {% extends "layouts/trainee_base.html" %}
 
-{% block title %} My Training Program {% endblock %}
+{% block title %} Training Programs {% endblock %}
 {% block content %}
     <main id="main" class="main">
         <div class="pagetitle">
-            <h1>My Training Program</h1>
+            <h1>Training Programs</h1>
             <nav>
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="#">Trainee</a></li>
-                    <li class="breadcrumb-item"><a href="#">My Training
-                        Program</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('trainee.dashboard_view') }}">Trainee</a></li>
+                    <li class="breadcrumb-item"><a href="#">Training
+                        Programs</a></li>
                 </ol>
             </nav>
         </div><!-- End Page Title -->
@@ -23,23 +23,33 @@
                             <table class="table datatable">
                                 <thead>
                                 <tr>
-                                    <th scope="col">Registration ID</th>
-                                    <th scope="col">Program ID</th>
-                                    <th scope="col">Trainee ID</th>
-                                    <th scope="col">Advisor ID</th>
-                                    <th scope="col">Training Status</th>
-                                    <th scope="col">Attendance Form</th>
+                                    <th scope="col">Id</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Description</th>
+                                    <th scope="col">Area</th>
+                                    <th scope="col">Fees</th>
+                                    <th scope="col">Start Date</th>
+                                    <th scope="col">End Date</th>
+                                    <th scope="col">-</th>
                                 </tr>
                                 </thead>
                                 <tbody>
+                                {% for program in programs %}
                                     <tr>
-                                        <th scope="row">{{ registered_program[0] }}</th>
-                                        <td><a href ="#">{{ registered_program[1] }}</a></td>
-                                        <td>{{ registered_program[2] }}</td>
-                                        <td>{{ registered_program[4] }}</td>
-                                        <td>{{ registered_program[5] }}</td>
-                                        <td><a href="#">{{ registered_program[3] }}</a></td>
+                                        <th scope="row">{{ program[0] }}</th>
+                                        <td>{{ program[1] }}</td>
+                                        <td>{{ program[2] }}</td>
+                                        <td>{{ program[3] }}</td>
+                                        <td>{{ program[4] }}</td>
+                                        <td>{{ program[5] }}</td>
+                                        <td>{{ program[6] }}</td>
+                                        <td>
+                                            <form method="" action="#">
+                                                <button type="submit" class="btn btn-primary">Apply</button>
+                                            </form>
+                                        </td>
                                     </tr>
+                                {% endfor %}
                                 </tbody>
                             </table>
                             <div class="modal fade" id="verticalycentered" tabindex="-1">

@@ -5,7 +5,7 @@ programs = [
     ["2", "program2", "program2 description", "area1", "money", "somedate", "somedate"],
     ["3", "program3", "program3 description", "area1", "money", "somedate", "somedate"],
 ]
-
+program = ["1", "program1", "program1 description", "area1", "money", "somedate", "somedate"],
 trainee = {
     "id": "12",
     "username": "mars2001",
@@ -15,17 +15,33 @@ trainee = {
     "current_training": 0
 }
 
+meetings = [
+    ["meetingid1", "meeting for followup", "approved", "https://linktoyou",
+     "2001-09-09", "15:15", "14:14", "trainee id", "advisor id"],
+    ["meetingid2", "meeting for followup", "approved", "https://linktoyou",
+     "2001-09-09", "15:15", "14:14", "trainee id", "advisor id"],
+    ["meetingid3", "meeting for followup", "approved", "https://linktoyou",
+     "2001-09-09", "15:15", "14:14", "trainee id", "advisor id"]
+]
+
+registered_program = [
+    "registration id", "program id", "trainee id", "attendance form id", "advisor id", "status "
+]
+
+attendance_records = [
+    ["0", "1", "2001-09-09", "15:15", "15:15"],
+    ["0", "1", "2001-09-09", "15:15", "15:15"],
+    ["0", "1", "2001-09-09", "15:15", "15:15"]
+]
+
 """
     function that retrieves the trainee-index form view, it also prepares the data to display in the form view
 """
 
 
-def index(token):
-    # after verifying the token, we'll extract the trainee id or the trainee object
-    trainee_id = ""
-    # we'll execute a select query that fetches all the trainn record from the database
-    #
-
+def index(request):
+    # token has the hashed user_id (trainee_id)
+    # using the token, we'll fetch all results related to this user in his dashbaord
     # we'll send this data along with the template
     return render_template('trainee/index.html', trainee=trainee)
 
@@ -35,9 +51,12 @@ def index(token):
 """
 
 
-def get_programs_for_trainee(request):
-    # select all the training programs whose area matches this trainee area of interest and display their information in a tabular format
-    return render_template('trainee/all_programs.html', trainee=trainee, programs=programs)
+def get_programs(request):
+    # from the request, we'll fetch the hashed user_id (trainee)
+    # from the trainee, we'll fetch the interested area
+    # from this field, we'll select all training programs using the area field
+    # finally, return the view alongside with this data
+    return render_template('trainee/programs.html', trainee=trainee, programs=programs)
 
 
 """
@@ -57,18 +76,67 @@ def handle_program_application(request):
 """
 
 
-def get_training_program(request):
-    # first of all, check the current status of the trainee and check if the current status of the trainee is: on_training
-    # then, perform a select query to get the program_registiration
-    # this data will include: training program id, advisor id, attendance form id, status of the registiration itself
-    # later, 1- we'll get the training program data and display it
-    # 2- provide a link to the attendance form, were all the data is displayed and the option to add new record is available
+def get_training(request):
+    # from the request, we'll get the token. From the token, we'll get the hashed user_id (trainee)
+    # from this trainee, we'll get its status (on_training)
+    # if the current status is not on_training then we'll display an empty page, or a flashed message .. whatever error is
+    # if the current_status is on_training, then we'll select the application_registiration record using the trainee_id
+    # this record contains IDs
+    # data: registiration id, training program id, advisor id, attendance form id, status of the registiration itself
+    # the attendance form id is a link to a page that displays all the attendance records related to the whole thing
+    # the training program is also a link to a page that displays the training program details in a card format
+    # I haven't decided what to do with the advisor ID
 
-    registered_program = [
-        "registration id", "program id", "trainee id", "attendance form id", "advisor id", "status "
+    return render_template('trainee/training.html', trainee=trainee, registered_program=registered_program)
 
-    ]
-    return render_template('trainee/my_training.html', trainee=trainee, registered_program=registered_program)
 
-def trainee_training_form(request):
-    return render_template('trainee/attendance-form.html');
+"""
+    This function prepares the data for the form view that gets the records associated to an Attendance form
+"""
+
+
+def get_attendance_form(request):
+    # this request shall contain the token, the form id
+    # we'll select all records from the database where there's a match in the form ID then render the view
+    return render_template('trainee/attendance-form.html', trainee=trainee, records=attendance_records)
+
+
+"""
+    This function renders the add record to the attendance form record, it's just an add form. 
+"""
+
+
+def get_record_add(request):
+    return render_template('/trainee/add-record.html', trainee=trainee)
+
+
+"""
+    This function renders the view that displays the information regarding a selected training program 
+"""
+
+
+def get_program(request):
+    return render_template('trainee/one-program.html', trainee=trainee, program=programs[0])
+
+
+"""
+    This function gets all the meetings of a specific user, then prepares this data so that it is rendered with the view 
+"""
+
+
+def get_meetings(request):
+    # get the user id from the token in the request
+    # select * from meetings where the trainee id = the fetched user id
+    return render_template('trainee/meetings.html', trainee=trainee, meetings=meetings)
+
+
+"""
+    This function renders the add new meeting form
+"""
+
+
+def get_add_meeting(request):
+    # supposed to get the trainee id and the advisor id associated to the training program and sends that to this form view
+    # it also MUST call the function that handles meetings conflict
+    return render_template('trainee/new-meeting.html', trainee=trainee)
+    z

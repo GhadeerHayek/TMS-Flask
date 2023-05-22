@@ -3,6 +3,8 @@ from app import db
 
 mock_blueprint = Blueprint("mock", __name__)
 
+trainee = ["1", "name1", "email1", "df1", "area1"]
+
 
 @mock_blueprint.route('/', methods=['GET'])
 def mock():
@@ -34,3 +36,19 @@ def mock2():
                                "username": "Jupiter2000",
                                "email": "jupiter@gmail.com"
                            })
+
+
+@mock_blueprint.route('/test', methods=['GET'])
+def mock3():
+    meetings = [
+        ["meetingid1", "meeting for followup", "approved", "https://linktoyou",
+         "2001-09-09", "15:15", "14:14", "trainee id", "advisor id"],
+        ["meetingid2", "meeting for followup", "approved", "https://linktoyou",
+         "2001-09-09", "15:15", "14:14", "trainee id", "advisor id"],
+        ["meetingid3", "meeting for followup", "approved", "https://linktoyou",
+         "2001-09-09", "15:15", "14:14", "trainee id", "advisor id"]
+    ]
+    return render_template('trainee/meetings.html', trainee=trainee, meetings=meetings)
+@mock_blueprint.route('/mock4', methods=["GET"])
+def mock4():
+    return render_template('trainee/new-meeting.html', trainee=trainee)
