@@ -181,27 +181,27 @@
             </a>
             <ul id="trainees-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                 <li>
-                    <a href="{{ url_for("advisor.pending_trainees") }}">
-                        <i class="bi bi-circle"></i><span>Pending Trainees</span>
+                    <a href="{{ url_for("advisor.active_trainees") }}">
+                        <i class="bi bi-circle"></i><span>All Trainees</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ url_for("advisor.active_trainees") }}">
-                        <i class="bi bi-circle"></i><span>Manage My Trainees</span>
+                    <a href="{{ url_for("advisor.contact_trainees") }}">
+                        <i class="bi bi-circle"></i><span>Contact Trainees</span>
                     </a>
-                </li>
+                </li>               
                                               
             </ul>
         </li><!-- End Trainees Nav -->
 
         <li class="nav-item">
             <a class="nav-link collapsed" data-bs-target="#programs-nav" data-bs-toggle="collapse" href="#">
-                <i class="bi bi-book"></i><span>My Training Program</span><i class="bi bi-chevron-down ms-auto"></i>
+                <i class="bi bi-book"></i><span>Training Programs</span><i class="bi bi-chevron-down ms-auto"></i>
             </a>
             <ul id="programs-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                 <li class="nav-item">
-                    <a  href="">
-                         <i class="bi bi-circle"></i><span>Training Materials</span>
+                    <a  href="{{ url_for("advisor.training_program") }}">
+                         <i class="bi bi-circle"></i><span>Trainings Details</span>
                     </a>
                 </li>                
             </ul>

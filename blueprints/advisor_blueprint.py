@@ -7,14 +7,14 @@ def dashboard_view():
     return advisor_controller.index("token")
 
 
-@advisor_blueprint.route('/advisor/trainees/pending', methods=["GET"])
-def pending_trainees():
-    return advisor_controller.get_pending_trainees(request)
+@advisor_blueprint.route('/advisor/trainees/contact', methods=["GET"])
+def contact_trainees():
+    return advisor_controller.get_trainees_contact(request)
 
 
-@advisor_blueprint.route('/advisor/traineesatte/active', methods=["GET"])
+@advisor_blueprint.route('/advisor/trainess', methods=["GET"])
 def active_trainees():
-    return advisor_controller.get_active_trainees(request)
+    return advisor_controller.get_my_trainees(request)
 
 
 @advisor_blueprint.route('/program', methods=["GET"])
@@ -29,7 +29,7 @@ def meetings():
 
 @advisor_blueprint.route('/advisor/reschedule', methods=["GET"])
 def reschedule():
-    return advisor_controller.get_meeting_form(request)
+    return advisor_controller.get_reschedule_form(request)
 
 
 @advisor_blueprint.route('/advisor/meeting/create', methods=["GET"])
@@ -40,3 +40,9 @@ def create_meeting():
 @advisor_blueprint.route('/advisor/trainee/attendance', methods=["GET"])
 def attendance_form():
     return advisor_controller.get_attendance_form(request)
+
+@advisor_blueprint.route('/advisor/trainingprogram', methods=["GET"])
+def training_program():
+    return advisor_controller.get_training_material(request)
+
+

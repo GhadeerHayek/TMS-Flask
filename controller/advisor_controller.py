@@ -12,16 +12,17 @@ advisor = {
     "img":"../../static/assets/img/profile-img.jpg"
 }
 
+# the status should be calculated based on enrollment
 programs = [
-    ["1", "program1", "program1 description", "area1", "money", "somedate", "somedate"],
-    ["2", "program2", "program2 description", "area1", "money", "somedate", "somedate"],
-    ["3", "program3", "program3 description", "area1", "money", "somedate", "somedate"],
+    ["1", "private", "program1", "program1 description", "area1", "money", "sometime", "somedate"],
+    ["2",  "uni collaborator", "program2", "program2 description", "area1", "money", "sometime", "somedate"],
+    ["3", "private", "program3", "program3 description", "area1", "money", "sometime", "somedate"],
 ]
 
 trainees = [
-    ["1", "name1", "email1", "df1", "area1"],
-    ["2", "name2", "email2", "df1", "area1"],
-    ["3", "name3", "email3", "df1", "area1"]
+    ["1",  "new", "name1", "email1", "df1", "area1"],
+    ["2", "on training", "name2", "email2", "df1", "area1"],
+    ["3",  "new", "name3", "email3", "df1", "area1"]
 ]
 
 meetings = [
@@ -41,12 +42,12 @@ def index(token):
     return render_template('advisor/index.html', advisor = advisor)
 
 
-def get_pending_trainees(request):
-    return render_template('advisor/pending_trainees.html', trainees = trainees, advisor = advisor)
-
-
-def get_active_trainees(request):
+def get_my_trainees(request):
     return render_template('advisor/my_trainees.html', trainees = trainees, advisor = advisor)
+
+
+def get_trainees_contact(request):
+    return render_template('advisor/contact_trainees.html', trainees = trainees, advisor = advisor)
 
 
 def get_program_materials(request):
@@ -57,10 +58,6 @@ def get_meeting_requests(request):
     return render_template('advisor/meetings.html', meetings = meetings, advisor = advisor)
 
 
-def get_reschedule_request(request):
-    return render_template('advisor/reschedule.html', meeting = meetings[0], advisor = advisor)
-
-
 def get_meeting_form(request):
     return render_template('advisor/create_meeting.html', advisor = advisor)
 
@@ -69,3 +66,9 @@ def get_attendance_form(request):
     return render_template('advisor/attendance_form.html', advisor = advisor, trainee = trainees[0])
 
 
+def get_reschedule_form(request):
+    return render_template('advisor/reschedule.html', advisor = advisor, trainee = trainees[0])
+
+
+def get_training_material(request):
+    return render_template('advisor/training_program.html', advisor = advisor, programs=programs)

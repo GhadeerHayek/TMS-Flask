@@ -1,14 +1,14 @@
 {% extends "layouts/advisor_base.html" %}
 
-{% block title %} Pending Trainee Requests{% endblock %}
+{% block title %} Contact Trainees{% endblock %}
 {% block content %}
     <main id="main" class="main">
         <div class="pagetitle">
-            <h1>Pending Trainee Requests</h1>
+            <h1>Contact My Trainee</h1>
             <nav>
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ url_for('advisor.active_trainees') }}">My Trainees</a></li>
-                    <li class="breadcrumb-item"><a href="{{ url_for('advisor.pending_trainees') }}">Pending Trainee Requests</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('advisor.contact_trainees') }}">Contact My Trainee Requests</a></li>
                 </ol>
             </nav>
         </div><!-- End Page Title -->
@@ -35,21 +35,22 @@
                                 {% for trainee in trainees %}
                                     <tr>
                                         <th scope="row">{{ trainee[0] }}</th>
-                                        <td>{{ trainee[1] }}</td>
                                         <td>{{ trainee[2] }}</td>
                                         <td>{{ trainee[3] }}</td>
                                         <td>{{ trainee[4] }}</td>
-                                        <td>
-                                            
-                                            <form method="POST" action="#">
-                                                <a href=""><span class="badge bg-success">Approve</span></a>
+                                        <td>{{ trainee[5] }}</td>
+                                        <td>                                            
+                                            <form method="get" action=" ">
+                                               <button type="submit" class="badge bg-primary" style="border: none;">Send an Email to {{trainee[2]}}</button>
                                             </form>
                                         </td>
-                                        <td>
-                                            <form method="POST" action="#">
-                                                <a href=""><span class="badge bg-danger">Reject</span></a>
+                                        <td>                                            
+                                            <form method="get" action=" {{ url_for("advisor.attendance_form") }} ">
+                                                <!-- to send trainee's id -->
+                                                <input type="hidden">
+                                                <button type="submit" class="badge bg-warning" style="border: none;">Check {{trainee[2]}}'s Attendance Form </button>
                                             </form>
-                                        </td>
+                                        </td>                                        
                                     </tr>
                                 {% endfor %}                                
                                 </tbody>
