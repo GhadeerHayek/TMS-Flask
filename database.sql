@@ -4,70 +4,94 @@ CREATE TABLE users(
 	userID int NOT NULL,
 	username varchar(250) NOT NULL,
 	fullName varchar(250) NOT NULL,
-	email varchar(250) CHECK(managerEmail LIKE '%_@_%_.__%') NOT NULL,
+	email varchar(250) CHECK (email REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$') NOT NULL,
     password varchar(250) NOT NULL,
-    classification ENUM('advisor', 'trainee', 'manager')
+    classification ENUM('advisor', 'trainee', 'manager'),
 	status ENUM('authorized', 'pending'),
-	PRIMARY KEY(userId)
+	PRIMARY KEY(userID)
 );
 
 
-CREATE TABLE manager(
+
+CREATE TABLE managers(
 	managerID int NOT NULL,
-    FOREIGN KEY(managerID) REFERENCES user(userId)
+    FOREIGN KEY(managerID) REFERENCES users(userID)
 );
+
 
 
 CREATE TABLE trainees(
+	login_id int NOT NULL, 
 	traineeID int NOT NULL,
 	training_materials varchar(250),
-	desired_field varchar(250),
+	desired_field int not null,
 	area_of_training varchar(250) NOT NULL,
 	balance varchar(250),
-    FOREIGN KEY(traineeID) REFERENCES user(userId)
-    FOREIGN KEY(desired_field) REFERENCES id(desired_field)
+	FOREIGN KEY(login_id) REFERENCES users(userID),
+    FOREIGN KEY(desired_field) REFERENCES desired_fields(ID)
 );
+
 
 
 CREATE TABLE advisors(
 	advisorID int NOT NULL,
-	descipline varchar(250),
-	advisorType varchar(50) NOT NULL,
-    FOREIGN KEY(advisorID) REFERENCES user(userId)
+	discipline varchar(250),
+    FOREIGN KEY(advisorID) REFERENCES users(userID)
 );
+
 
 
 CREATE TABLE desired_fields(
 	ID int NOT NULL,
 	name varchar(250) NOT NULL,
-	area_of_interest varchar(250) NOT NULL,
-    discipline varchar(250) NOT NULL,
+	area_of_interest ENUM('Software Development',
+							'Healthcare',
+							'Machine Learning',
+							'Network Security', 
+							'Data Warehousing',
+							'Digital Marketing',
+							'Renewable Energy',
+							'Graphic Design', 
+							'Pastry and Baking'
+							) NOT NULL,
+    discipline ENUM('Web Development',
+							'Clinical Research',
+							'Data Science',
+							'Cybersecurity', 
+							'Database Administration',
+							'Marketing',
+							'Environmental Science',
+							'Graphic Design', 
+							'Culinary Arts'
+							) NOT NULL,
 	PRIMARY KEY(id)
 );
 
 
+
 CREATE TABLE emails(
 	emailID varchar(250) NOT NULL,
-	from varchar(250) NOT NULL,
-	to varchar(250) NOT NULL,
+	sender int NOT NULL,
+	recipient int NOT NULL,
 	email_subject varchar(250) NOT NULL,
 	email_attachment varchar(250) NOT NULL,
 	email_body text NOT NULL,
 	PRIMARY KEY(emailID),
-	FOREIGN KEY(from) REFERENCES user(userId),
-	FOREIGN KEY(to) REFERENCES user(userId)
-
+	FOREIGN KEY(sender) REFERENCES users(userID),
+	FOREIGN KEY(recipient) REFERENCES users(userID)
 );
+
+
 
 CREATE TABLE balance_sheet (
     transactionID int PRIMARY KEY,
 	userID int not NULL,
-    type NOT NULL ENUM('Credit', 'Debit'),
+    type ENUM('Credit', 'Debit') NOT NULL,
     amount double NOT NULL,
-	transaction_time datetime NOT NULL,
-	FOREIGN KEY(userID) REFERENCES user(userId)
-    FOREIGN KEY(courseID) REFERENCES training_course(courseID)
+	transaction_time datetime NOT NULL
 );
+
+
 
 CREATE TABLE meeting(
     meetingID int NOT NULL,
@@ -78,11 +102,12 @@ CREATE TABLE meeting(
 	date datetime NOT NULL,
 	start_time datetime NOT NULL,
 	end_time datetime NOT NULL,
-	status NOT NULL ENUM('approved', 'cancelled'),
-	PRIMARY KEY(traineeID, courseName, feedbackID),
-    FOREIGN KEY(traineeID) REFERENCES trainee(traineeID),
-    FOREIGN KEY(advisorID) REFERENCES advisor(advisorID)
+	status ENUM('approved', 'cancelled') NOT NULL,
+	PRIMARY KEY(meetingID),
+    FOREIGN KEY(traineeID) REFERENCES trainees(login_id),
+    FOREIGN KEY(advisorID) REFERENCES advisors(advisorID)
 );
+
 
 
 CREATE TABLE training_program(
@@ -90,24 +115,26 @@ CREATE TABLE training_program(
 	name varchar(250) NOT NULL,
 	description varchar(250) NOT NULL,
     area_of_training varchar(5000) NOT NULL,
-	-- fees double 
+	fees double not null,
 	start_date datetime NOT NULL,
 	end_date datetime NOT NULL,
 	PRIMARY KEY(programID)
 );
 
 
-CREATE TABLE training_registeration(
+
+CREATE TABLE training_registration(
 	ID int NOT NULL,
 	training_program_id int NOT NULL,
 	traineeID int NOT NULL,
     advisorID int NOT NULL,
-	training_request_status NOT NULL enum('approved', 'rejected', 'pending'),
+	training_request_status enum('approved', 'rejected', 'pending') NOT NULL,
 	PRIMARY KEY(ID),
     FOREIGN KEY(training_program_id) REFERENCES training_program(programID),
     FOREIGN KEY(advisorID) REFERENCES advisors(advisorID),
-    FOREIGN KEY(traineeID) REFERENCES trainee(traineeID)
+    FOREIGN KEY(traineeID) REFERENCES trainees(login_id)
 );
+
 
 
 CREATE TABLE attendance_records(
@@ -117,6 +144,19 @@ CREATE TABLE attendance_records(
 	check_in datetime NOT NULL,
 	check_out datetime NOT NULL,
 	PRIMARY KEY(ID),
-    FOREIGN KEY(traineeID) REFERENCES trainee(traineeID),
-    FOREIGN KEY(training_programID) REFERENCES training_registeration(ID)
+    FOREIGN KEY(training_programID) REFERENCES training_registration(ID)
+);
+
+
+
+CREATE TABLE notifications (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  sender_id INT,
+  recipient_id INT,
+  name VARCHAR(250) NOT NULL,
+  details VARCHAR(250) DEFAULT '',
+  notification_time DATETIME,
+  status VARCHAR(20) CHECK (status IN ('read', 'unread')),
+  FOREIGN KEY (sender_id) REFERENCES trainees(login_id),
+  FOREIGN KEY (recipient_id) REFERENCES trainees(login_id)
 );
