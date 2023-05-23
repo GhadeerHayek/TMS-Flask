@@ -40,13 +40,13 @@
                                     <tr>
                                         <th scope="row">{{ meeting[0] }}</th>
                                         <td>{{ meeting[1] }}, participants are: {{ meeting[7] }},{{ meeting[8] }}</td>
-                                        <td><span class="badge {{ "bg-success" if (meeting[2]=="Approved") else "bg-danger" }}">{{meeting[2]}}</span></td>
+                                        <td><span class="badge {{ "bg-success" if (meeting[2]=="Approved") else "bg-warning" }}">{{meeting[2]}}</span></td>
                                         <td>{{ meeting[3] }}</td>
                                         <td>{{ meeting[4] }}</td>
                                         <td>{{ meeting[5] }}</td>
                                         <td>{{ meeting[6] }}</td>
                                         <td> {% if meeting[2] == "Approved" %}<span class="badge bg-primary"> </span>
-                                            {% else %} <a href=" {{ url_for("advisor.reschedule")}} "><span class="badge bg-danger">Reschulde </span> </a>
+                                            {% else %} <a href=" {{ url_for("advisor.reschedule")}} "><span class="badge bg-primary">Approve Meeting </span> </a>
                                             {% endif %}
                                         </td>
                                     </tr>

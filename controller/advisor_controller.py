@@ -28,7 +28,7 @@ trainees = [
 meetings = [
     ["meetingid1", "meeting for followup", "Approved", "https://linktoyou",
      "2001-09-09", "15:15", "14:14", "trainee id", "advisor id"],
-    ["meetingid2", "meeting for followup", "Conflict", "https://linktoyou",
+    ["meetingid2", "meeting for followup", "Pending", "https://linktoyou",
      "2001-09-09", "15:15", "14:14", "trainee id", "advisor id"],
     ["meetingid3", "meeting for followup", "Approved", "https://linktoyou",
      "2001-09-09", "15:15", "14:14", "trainee id", "advisor id"]
