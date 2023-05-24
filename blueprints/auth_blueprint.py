@@ -1,4 +1,4 @@
-from flask import Flask, Blueprint, render_template, url_for, redirect, request, jsonify
+from flask import Flask, Blueprint, render_template, url_for, redirect, request, flash
 from controller import auth_controller
 
 auth_blueprint = Blueprint("auth", __name__)
@@ -19,23 +19,17 @@ def login():
 # this is the route that returns the signup form view
 @auth_blueprint.route('/signup', methods=['GET'])
 def signup_view():
-    # query string from request
-    classification = request.args.get('classification')
-    print(classification)
-    return auth_controller.signup_view(classification)
+    return auth_controller.signup_view(request)
 
 
 # this is the route that handles the signup request
 @auth_blueprint.route('/auth/signup', methods=['POST'])
 def signup():
-    result = {}
-    # inputs from request are: hidden classification
     classification = request.form['classification']
     if classification == 'trainee':
         return auth_controller.handle_trainee_signup(request)
     elif classification == 'advisor':
-        # TODO: call for advisor signup function and return result
         return auth_controller.handle_advisor_signup(request)
     else:
-        # TODO: tampered classification, flash error message
-        result = {"status": "error"}
+        flash('Something is not right', 'error')
+        return redirect(url_for('auth.signup_view', classification=classification))

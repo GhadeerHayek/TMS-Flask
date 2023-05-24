@@ -46,49 +46,65 @@ def handle_login(request):
 
 
 def signup_view(request):
-    # TODO: this is should be a get parameter not from form body
-    classification = request.form['classification']
+    classification = request.args.get('classification')
     if classification == "advisor":
         return render_template('registration/advisor_register.html')
     elif classification == "trainee":
         return render_template('registration/trainee_register.html')
     else:
-        return flash('Something went wrong', 'error')
+        # If the classification field is somehow tampered, this shows the red flag
+        flash('Something went wrong', 'error')
+        return redirect(url_for('auth.login_view'))
 
 
 def handle_trainee_signup(request):
     username = request.form['username']
+    fullname = request.form['fullname']
     email = request.form['email']
     desiredField = request.form['desiredField']
     area = request.form['area']
-    # TODO: required materials for signup
-    # cv = request.form['cv']
+    # TODO: upload required materials to the user-uploads directory
     if not username or not email or not desiredField or not area:
-        return flash('signup information is missing', 'error')
+        # TODO: test this
+        flash('signup information is missing', 'error')
+        return redirect(url_for('auth.signup_view?classification=trainee'))
+
     query = text(
-             """
-             INSERT INTO `trainees` (username, email, desired_field, area, current_status) VALUES (:username, :email, :desired_field, :area, 'pending')""")
-    params = {'username': username, 'email': email, 'desired_field': desiredField, 'area': area}
+        """
+        INSERT INTO `trainees` (username, fullname, email, desired_field, area_of_training) VALUES (:username,:fullname, :email, :desired_field, :area)""")
+    params = {'username': username, 'fullname': fullname, 'email': email, 'desired_field': desiredField, 'area': area}
     result = db.session.execute(query, params)
-    db.session.commit()
-    if result:
+    if not result:
+        flash('failed to add data', 'error')
+        return redirect(url_for('auth.signup_view?classification=trainee'))
+    # in case of the first query success, this shall be a pending trainee request waiting for the manager approval
+    else:
+        flash('Successfully added your information, wait for our email')
+        db.session.commit()
         return redirect(url_for('auth.login_view'))
-    return result
 
 
 def handle_advisor_signup(request):
     username = request.form['username']
+    fullname = request.form['fullname']
     email = request.form['email']
     discipline = request.form['discipline']
-    # cv = request.form['cv']
-    if not username or not email or not discipline:
-        # return error message
-        pass
+    # TODO: upload required materials to the user-uploads directory
+    if not username or not email or not fullname or not discipline:
+        # TODO: test this
+        flash('signup information is missing', 'error')
+        return redirect(url_for('auth.signup_view?classification=trainee'))
+
     query = text(
-        "INSERT INTO advisors (username, email, discipline, current_status) VALUES (:username, :email, :discipline, 'pending')")
-    params = {'username': username, 'email': email, 'discipline': discipline}
+        """
+        INSERT INTO advisors (username, fullname, email, discipline) VALUES (:username,:fullname, :email, :discipline)""")
+    params = {'username': username, 'fullname': fullname, 'email': email, 'discipline': discipline}
     result = db.session.execute(query, params)
-    db.session.commit()
-    if result:
+    if not result:
+        flash('failed to add data', 'error')
+        return redirect(url_for('auth.signup_view?classification=advisor'))
+    # in case of the first query success, this shall be a pending trainee request waiting for the manager approval
+    else:
+        flash('Successfully added your information, wait for our email')
+        db.session.commit()
         return redirect(url_for('auth.login_view'))
-    return result
