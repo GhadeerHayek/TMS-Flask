@@ -1,9 +1,11 @@
 from flask import render_template, jsonify, redirect, url_for, flash
 from sqlalchemy import text
-
+import helpers.token as tokenHelper
 from app import app
 from app import db
 import os
+
+SECRET_KEY = "My secert key "
 
 
 def login_view():
@@ -11,6 +13,7 @@ def login_view():
 
 
 def handle_login(request):
+    # get information from request
     email = request.form['email']
     password = request.form['password']
     if not email or not password:
@@ -23,30 +26,29 @@ def handle_login(request):
     if not row:
         return flash('Email or password are incorrect, please try again', 'error')
     # generate token
-
+    token = tokenHelper.generate_token(row, SECRET_KEY)
     classification = row[3]
-    print(classification)
-    print("=============================================================================================")
-    print(result)
-    print("=============================================================================================")
     if classification == "manager":
-        return redirect(url_for('manager.dashboard_view'))
+        response = redirect(url_for('manager.dashboard_view'))
     elif classification == "advisor":
-        return redirect(url_for('advisor.dashboard_view'))
+        response = redirect(url_for('advisor.dashboard_view'))
     elif classification == "trainee":
-        return redirect(url_for('trainee.dashboard_view'))
+        response = redirect(url_for('trainee.dashboard_view'))
     else:
-        # error
-        pass
+        return flash('Something went wrong', 'error')
+    response.set_cookie('token', token)
+    return response
 
 
-def signup_view(classification):
+def signup_view(request):
+    # TODO: this is should be a get parameter not from form body
+    classification = request.form['classification']
     if classification == "advisor":
         return render_template('registration/advisor_register.html')
     elif classification == "trainee":
         return render_template('registration/trainee_register.html')
     else:
-        pass
+        return flash('Something went wrong', 'error')
 
 
 def handle_trainee_signup(request):
@@ -54,12 +56,13 @@ def handle_trainee_signup(request):
     email = request.form['email']
     desiredField = request.form['desiredField']
     area = request.form['area']
+    # TODO: required materials for signup
     # cv = request.form['cv']
     if not username or not email or not desiredField or not area:
-        # return error message
-        pass
+        return flash('signup information is missing', 'error')
     query = text(
-        "INSERT INTO trainees (username, email, desired_field, area, current_status) VALUES (:username, :email, :desired_field, :area, 'pending')")
+             """
+             INSERT INTO `trainees` (username, email, desired_field, area, current_status) VALUES (:username, :email, :desired_field, :area, 'pending')""")
     params = {'username': username, 'email': email, 'desired_field': desiredField, 'area': area}
     result = db.session.execute(query, params)
     db.session.commit()
