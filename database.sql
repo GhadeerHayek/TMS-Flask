@@ -45,12 +45,12 @@ CREATE TABLE trainees
         'on_training', -- the trainee has a registered a training program
         'rejected',    -- rejected by the admin
         'inactive'     -- the trainee has requested the account deactivation, after the approval from the manager, the status is inactive
-        ),
-    balance            double,
+        ) default 'pending',
+    balance            double default 0,
     -- this is the path to the directory where the user files are stored
-    training_materials varchar(250),
+    training_materials varchar(250) default '',
     -- this id references the users table for authentication purpose only
-    userID             int          NOT NULL,
+    userID             int          default NULL,
     FOREIGN KEY (userID) REFERENCES users (userID)
 );
 
@@ -81,9 +81,9 @@ CREATE TABLE advisors
         'training', -- the advisor has a some trainees assigned to him via the registered training programs
         'rejected', -- rejected by the admin
         'inactive'  -- the advisor has requested the account deactivation, after the approval from the manager, the status is inactive
-        ),
+        ) default 'pending',
     -- advisor authentication
-    userID     int          NOT NULL,
+    userID     int          default NULL,
     FOREIGN KEY (userID) REFERENCES users (userID)
 );
 
@@ -96,7 +96,7 @@ CREATE TABLE managers
     fullName VARCHAR(250) NOT NULL,
     email VARCHAR(250) NOT NULL UNIQUE CHECK (email REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
     -- manager authentication
-    userID    int NOT NULL,
+    userID    int default NULL,
     FOREIGN KEY (userID) REFERENCES users (userID)
 );
 
