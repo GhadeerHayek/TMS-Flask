@@ -180,7 +180,16 @@ CREATE TABLE notifications
  Ghadeer Edit:
  i've edited this one since it shows an sql syntax error
  i've also added a constraint on the email that it has to be unique
- --- CREATE TABLE users ( userID INT NOT NULL, username VARCHAR(250) NOT NULL, fullName VARCHAR(250) NOT NULL, email VARCHAR(250) NOT NULL UNIQUE CHECK (email REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'), password VARCHAR(250) NOT NULL, classification ENUM('advisor', 'trainee', 'manager'), status ENUM('authorized', 'pending'), PRIMARY KEY (userID) );
+ --- CREATE TABLE users (
+     userID INT NOT NULL,
+        username VARCHAR(250) NOT NULL,
+        fullName VARCHAR(250) NOT NULL,
+        email VARCHAR(250) NOT NULL UNIQUE CHECK (email REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
+        password VARCHAR(250) NOT NULL,
+        classification ENUM('advisor', 'trainee', 'manager'),
+        status ENUM('authorized', 'pending'),
+        PRIMARY KEY (userID) );
+
  --- CREATE TABLE managers(
 	managerID int NOT NULL PRIMARY KEY,
     userID int,
@@ -201,7 +210,7 @@ CREATE TABLE notifications
         'Graphic Design',
         'Pastry and Baking'
         ) NOT NULL,
-	balance varchar(250),
+	balance double,
 	FOREIGN KEY(userID) REFERENCES users(userID)
 );
 );
@@ -254,7 +263,7 @@ CREATE TABLE notifications
     programID        int           NOT NULL,
     name             varchar(250)  NOT NULL,
     description      varchar(250)  NOT NULL,
-    area_of_training varchar(5000) NOT NULL,
+    area_of_training varchar(250) NOT NULL,
     fees             double        not null,
     start_date       datetime      NOT NULL,
     end_date         datetime      NOT NULL,
@@ -279,8 +288,8 @@ CREATE TABLE notifications
     ID                 int      NOT NULL,
     training_programID int      NOT NULL,
     date               date NOT NULL,
-    check_in           datetime NOT NULL,
-    check_out          datetime NOT NULL,
+    check_in           Time NOT NULL,
+    check_out          Time NOT NULL,
     PRIMARY KEY (ID),
     FOREIGN KEY (training_programID) REFERENCES training_registration (ID)
 );

@@ -1,4 +1,4 @@
-from flask import render_template, jsonify, redirect, url_for
+from flask import render_template, jsonify, redirect, url_for, flash
 from sqlalchemy import text
 
 from app import app
@@ -14,14 +14,16 @@ def handle_login(request):
     email = request.form['email']
     password = request.form['password']
     if not email or not password:
-        pass
-    query = text("SELECT * from users_login where email = :email and password = :password")
+        return flash('Missing email or password', 'error')
+    # let's look whether we can find those credentials
+    query = text("SELECT * from users where email = :email and password = :password")
     params = {"email": email, "password": password}
     result = db.session().execute(query, params)
     row = result.fetchone()
-    if not result:
-        pass
+    if not row:
+        return flash('Email or password are incorrect, please try again', 'error')
     # generate token
+
     classification = row[3]
     print(classification)
     print("=============================================================================================")
