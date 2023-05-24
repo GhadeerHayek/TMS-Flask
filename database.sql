@@ -92,6 +92,9 @@ CREATE TABLE advisors
 CREATE TABLE managers
 (
     managerID int PRIMARY KEY,
+    username VARCHAR(250) NOT NULL,
+    fullName VARCHAR(250) NOT NULL,
+    email VARCHAR(250) NOT NULL UNIQUE CHECK (email REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
     -- manager authentication
     userID    int NOT NULL,
     FOREIGN KEY (userID) REFERENCES users (userID)
