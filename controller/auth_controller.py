@@ -5,8 +5,6 @@ from app import app
 from app import db
 import os
 
-SECRET_KEY = "My secert key "
-
 
 def login_view():
     return render_template('login.html')
@@ -23,14 +21,14 @@ def handle_login(request):
     params = {"email": email, "password": password}
     result = db.session().execute(query, params)
     row = result.fetchone()
-    print(row)
+    # print(row)
     if row is None:
         print("invalid pass")
         flash('Email or password are incorrect, please try again', 'error')
         return redirect(url_for('auth.login_view'))
     # generate token
-    token = tokenHelper.generate_token(row, SECRET_KEY)
-    classification = row[5]    
+    token = tokenHelper.generate_token(row)
+    classification = row[2]
     print(classification)
     if classification == "manager":
         print("inside manager")
