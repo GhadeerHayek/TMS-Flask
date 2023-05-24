@@ -8,6 +8,7 @@ load_dotenv('.env')
 
 # Setup flask app instance
 app = Flask(__name__)
+app.secret_key = 'your_secret_key_here'
 
 db_host = os.getenv('DB_HOST')
 db_user = os.getenv('DB_USER')

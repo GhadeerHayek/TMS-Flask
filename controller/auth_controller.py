@@ -23,16 +23,23 @@ def handle_login(request):
     params = {"email": email, "password": password}
     result = db.session().execute(query, params)
     row = result.fetchone()
-    if not row:
-        return flash('Email or password are incorrect, please try again', 'error')
+    print(row)
+    if row is None:
+        print("invalid pass")
+        flash('Email or password are incorrect, please try again', 'error')
+        return redirect(url_for('auth.login_view'))
     # generate token
     token = tokenHelper.generate_token(row, SECRET_KEY)
-    classification = row[3]
+    classification = row[5]    
+    print(classification)
     if classification == "manager":
+        print("inside manager")
         response = redirect(url_for('manager.dashboard_view'))
     elif classification == "advisor":
+        print("inside advisor")
         response = redirect(url_for('advisor.dashboard_view'))
     elif classification == "trainee":
+        print("inside trainee")
         response = redirect(url_for('trainee.dashboard_view'))
     else:
         return flash('Something went wrong', 'error')
