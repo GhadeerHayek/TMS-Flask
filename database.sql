@@ -1,12 +1,9 @@
-CREATE
-    DATABASE training_management;
-
 -- Ghadeer's edit , 24th May
 
 -- insertion to this table occurs when a manager approves a trainee or an advisor
 CREATE TABLE users
 (
-    userID         INT PRIMARY KEY,
+    userID         INT PRIMARY KEY AUTO_INCREMENT,
     password       VARCHAR(250) NOT NULL,
     classification ENUM ('advisor', 'trainee', 'manager')
 
@@ -22,7 +19,7 @@ CREATE TABLE users
 CREATE TABLE trainees
 (
     -- trainee basic information
-    traineeID          int PRIMARY KEY,
+    traineeID          int PRIMARY KEY AUTO_INCREMENT,
     username           VARCHAR(250) NOT NULL,
     fullName           VARCHAR(250) NOT NULL,
     email              VARCHAR(250) NOT NULL UNIQUE CHECK (email REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
@@ -45,13 +42,13 @@ CREATE TABLE trainees
         'on_training', -- the trainee has a registered a training program
         'rejected',    -- rejected by the admin
         'inactive'     -- the trainee has requested the account deactivation, after the approval from the manager, the status is inactive
-        ) default 'pending',
-    balance            double default 0,
+        )                           default 'pending',
+    balance            double       default 0,
     -- this is the path to the directory where the user files are stored
     training_materials varchar(250) default '',
     -- this id references the users table for authentication purpose only
     userID             int          default NULL,
-    FOREIGN KEY (userID) REFERENCES users (userID)
+    FOREIGN KEY (userID) REFERENCES users (userID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Advisor Component
@@ -59,7 +56,7 @@ CREATE TABLE trainees
 CREATE TABLE advisors
 (
     -- advisor basic info
-    advisorID  int          PRIMARY KEY,
+    advisorID  int PRIMARY KEY AUTO_INCREMENT,
     username   VARCHAR(250) NOT NULL,
     fullName   VARCHAR(250) NOT NULL,
     email      VARCHAR(250) NOT NULL UNIQUE CHECK (email REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
@@ -81,54 +78,54 @@ CREATE TABLE advisors
         'training', -- the advisor has a some trainees assigned to him via the registered training programs
         'rejected', -- rejected by the admin
         'inactive'  -- the advisor has requested the account deactivation, after the approval from the manager, the status is inactive
-        ) default 'pending',
+        )          default 'pending',
     -- advisor authentication
-    userID     int          default NULL,
-    FOREIGN KEY (userID) REFERENCES users (userID)
+    userID     int default NULL,
+    FOREIGN KEY (userID) REFERENCES users (userID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Manager Component
 -- the data for this table is actually built-in
 CREATE TABLE managers
 (
-    managerID int PRIMARY KEY,
-    username VARCHAR(250) NOT NULL,
-    fullName VARCHAR(250) NOT NULL,
-    email VARCHAR(250) NOT NULL UNIQUE CHECK (email REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
+    managerID int PRIMARY KEY AUTO_INCREMENT,
+    username  VARCHAR(250) NOT NULL,
+    fullName  VARCHAR(250) NOT NULL,
+    email     VARCHAR(250) NOT NULL UNIQUE CHECK (email REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
     -- manager authentication
     userID    int default NULL,
-    FOREIGN KEY (userID) REFERENCES users (userID)
+    FOREIGN KEY (userID) REFERENCES users (userID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- All emails manipulation in the system
 CREATE TABLE emails
 (
-    emailID          varchar(250) PRIMARY KEY,
+    emailID          int PRIMARY KEY AUTO_INCREMENT,
     sender           int          NOT NULL,
     recipient        int          NOT NULL,
     email_subject    varchar(250) NOT NULL,
     email_attachment varchar(250) NOT NULL,
     email_body       text         NOT NULL,
-    FOREIGN KEY (sender) REFERENCES users (userID),
-    FOREIGN KEY (recipient) REFERENCES users (userID)
+    FOREIGN KEY (sender) REFERENCES users (userID) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (recipient) REFERENCES users (userID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Balance Sheet is where the system keeps its billing records
 CREATE TABLE balance_sheet
 (
-    transactionID    int PRIMARY KEY,
+    transactionID    int PRIMARY KEY AUTO_INCREMENT,
     userID           int                      not NULL,
     type             ENUM ('Credit', 'Debit') NOT NULL,
     amount           double                   NOT NULL,
     transaction_time datetime                 NOT NULL,
-    FOREIGN KEY (userID) REFERENCES users (userID)
+    FOREIGN KEY (userID) REFERENCES users (userID) ON DELETE CASCADE ON UPDATE CASCADE
 
 );
 
 
 CREATE TABLE meeting
 (
-    meetingID       int PRIMARY KEY,
+    meetingID       int PRIMARY KEY AUTO_INCREMENT,
     traineeID       int          NOT NULL,
     advisorID       int          NOT NULL,
     meeting_details varchar(250) NOT NULL,
@@ -142,15 +139,15 @@ CREATE TABLE meeting
         'cancelled' -- cancelled by the advisor
         -- what about rescheduled? this question until the meeting feature is implemented
         )                        NOT NULL,
-    FOREIGN KEY (traineeID) REFERENCES trainees (traineeID),
-    FOREIGN KEY (advisorID) REFERENCES advisors (advisorID)
+    FOREIGN KEY (traineeID) REFERENCES trainees (traineeID) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (advisorID) REFERENCES advisors (advisorID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 
 -- Training Program Component, it is equal to our summer training programs
 CREATE TABLE training_programs
 (
-    programID        int PRIMARY KEY,
+    programID        int PRIMARY KEY AUTO_INCREMENT,
     name             varchar(250) NOT NULL,
     description      varchar(250) NOT NULL,
     area_of_training ENUM ('Software Development',
@@ -172,7 +169,7 @@ CREATE TABLE training_programs
 -- Training Registration process
 CREATE TABLE training_registration
 (
-    ID                      int PRIMARY KEY,
+    ID                      int PRIMARY KEY AUTO_INCREMENT,
     training_program_id     int NOT NULL,
     traineeID               int NOT NULL,
     advisorID               int NOT NULL,
@@ -181,21 +178,21 @@ CREATE TABLE training_registration
         'rejected', -- rejected by the manager
         'pending'   -- waiting for approval by the manager
         )                       NOT NULL,
-    FOREIGN KEY (training_program_id) REFERENCES training_programs (programID),
-    FOREIGN KEY (advisorID) REFERENCES advisors (advisorID),
-    FOREIGN KEY (traineeID) REFERENCES trainees (traineeID)
+    FOREIGN KEY (training_program_id) REFERENCES training_programs (programID) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (advisorID) REFERENCES advisors (advisorID) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (traineeID) REFERENCES trainees (traineeID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Attendance Records related to the training registration process
 
 CREATE TABLE attendance_records
 (
-    ID                 int PRIMARY KEY,
+    ID                 int PRIMARY KEY AUTO_INCREMENT,
     training_programID int  NOT NULL,
     date               date NOT NULL,
     check_in           time NOT NULL,
     check_out          time NOT NULL,
-    FOREIGN KEY (training_programID) REFERENCES training_registration (ID)
+    FOREIGN KEY (training_programID) REFERENCES training_registration (ID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 
@@ -211,6 +208,44 @@ CREATE TABLE notifications
     status            VARCHAR(20) CHECK (status IN ('read', 'unread')),
     -- Why the reference is userID, i guess because the notifications are general and available to all components on the system
     -- i am unsure about this, i hope to make sure when i implement it
-    FOREIGN KEY (sender_id) REFERENCES trainees (userID),
-    FOREIGN KEY (recipient_id) REFERENCES trainees (userID)
+    FOREIGN KEY (sender_id) REFERENCES trainees (userID) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (recipient_id) REFERENCES trainees (userID) ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+-- Those are some insert statements that should demonstrate the signup process
+
+
+insert into managers (managerID, username, fullName, email)
+VALUES (1, 'mars2001', 'ghadeerhayek', 'ghadeerhayek2001@gmail.com');
+
+insert into users (userID, password, classification)
+VALUES (1, 'ghadeer123', 'manager');
+
+update managers
+set userID = 1
+where managerID = 1;
+-- trying to insert a trainee
+
+-- this query is executed when we try to signup user
+insert into trainees (traineeID, username, fullName, email, desired_field, area_of_training)
+values (1, 'venus2020', 'traineeghadeer', 'ghadeerhayek2001@gmail.com', 'some desired field', 'Software Development');
+
+-- if admin approves the trainee
+insert into users
+VALUES (2, 'ghadeer123', 'trainee');
+update trainees
+SET userID = 2
+where traineeID = 1;
+
+
+-- trying to insert an advisor
+
+insert into advisors (advisorID, username, fullName, email, discipline)
+VALUES (1, 'jupiter1010', 'advisorghadeer', 'ghadeerhayek2001@gmail.com', 'Web Development');
+
+-- if admin approves the advisor
+insert into users
+VALUES (3, 'ghadeer123', 'advisor');
+update advisors
+set userID = 3
+where advisorID = 1;
