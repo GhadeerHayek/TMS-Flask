@@ -162,18 +162,60 @@ def get_trainee_account(request):
 
 
 def get_trainee_account_details(request):
+    token = request.cookies['token']
+    manager = mghelper.verify_manager(token)    
+    userID = request.args.get('id')
     # assuming this is a get request, that has the trainee id in its get parameters
     # we should select all the user account details
     # before we do that, we'll render something like a profile.html page
     # which i am going to do later
-    
-    trainee = [
-        "1",
-        "1",
-        "username",
-        "ghadeer",
-        "area",
-        "df2",
-        "status"
-    ]
+    query = text("SELECT * from trainees where userID = :userID")
+    result_cursor = db.session.execute(query, {'userID':userID})
+    rows = result_cursor.fetchall()
+    trainee = []
+    for row in rows:
+        trainee.append(row._data)
+    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    print(trainee)
     return render_template("manager/trainee/trainee-profile-details.html", trainee=trainee, manager=manager)
+
+
+def accept_modifications(request):
+    token = request.cookies['token']
+    # make sure manager is authorized
+    # manager = mghelper.verify_manager(token)
+    # get hidden form data
+    traineeID = request.form['traineeID']   
+    # update trainee table with userID
+    trainee_query= text("UPDATE trainees SET status = 'active' where traineeID = :traineeID")
+    print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+    print(traineeID[0])
+    trainee_cursor = db.session.execute(trainee_query, {'traineeID': traineeID})
+    # commit changes to db
+    db.session.commit()
+    if not trainee_cursor:   
+        flash('Failed to approve trainee modification request', 'error')
+        return redirect(url_for('manager.get_trainees_accounts_view'))
+    flash('Trainee modifications approved successfully', 'success')
+    return redirect(url_for('manager.get_trainees_accounts_view'))
+
+
+
+def reject_modifications(request):
+    token = request.cookies['token']
+    # make sure manager is authorized
+    # manager = mghelper.verify_manager(token)
+    # get hidden form data
+    traineeID = request.form['traineeID']   
+    # update trainee table with userID
+    trainee_query= text("UPDATE trainees SET status = 'rejectedChanges' where traineeID = :traineeID")
+    print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+    print(traineeID[0])
+    trainee_cursor = db.session.execute(trainee_query, {'traineeID': traineeID})
+    # commit changes to db
+    result = db.session.commit()
+    if not result:   
+        flash('Failed to approve trainee modification request', 'error')
+        return redirect(url_for('manager.get_trainees_accounts_view'))
+    flash('Trainee modifications rejected successfully', 'success')
+    return redirect(url_for('manager.get_trainees_accounts_view'))

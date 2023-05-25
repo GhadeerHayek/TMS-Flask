@@ -39,6 +39,17 @@ def get_trainees_accounts_view():
 def get_trainees_accounts_details_view():
     return manager_trainee_controller.get_trainee_account_details(request)
 
+
+@manager_blueprint.route('/trainees/approve/modifications', methods=["POST"])
+def accept_trainee_modification():
+    return manager_trainee_controller.accept_modifications(request)
+
+
+@manager_blueprint.route('/trainees/reject/modifications', methods=["POST"])
+def reject_trainee_modification():
+    return manager_trainee_controller.reject_modifications(request)
+
+
 # Manager-Advisor Routes
 
 
