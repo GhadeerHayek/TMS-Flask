@@ -1,6 +1,7 @@
 import jwt
 from datetime import datetime, timedelta
 from flask import flash
+import os
 
 """ 
     Generates a token for authentication. 
@@ -8,26 +9,21 @@ from flask import flash
     It take a parameter, that is the user row in the database, encrypts it, and returns its hash.
 """
 
-SECRET_KEY = "My secert key "
 
-
-def generate_token(user_record, secret_key):
+def generate_token(user_record):
     # set token expiry date
     exp_time = datetime.utcnow() + timedelta(hours=1)
     # prepare payload
     token_payload = {
         "userID": user_record[0],
-        "username": user_record[1],
-        "fullName": user_record[2],
+        "password": user_record[1],
+        "classification": user_record[2],
         "email": user_record[3],
-        "password": user_record[4],
-        "classification": user_record[5],
-        "status": user_record[6],
         "expire": exp_time.strftime('%Y-%m-%d %H:%M:%S')
     }
     # generate token
     token = jwt.encode(
-        token_payload, secret_key, algorithm='HS256')
+        token_payload, os.getenv('SECRET_KEY'), algorithm='HS256')
     return token
 
 
@@ -37,9 +33,9 @@ def generate_token(user_record, secret_key):
 """
 
 
-def verify_token(token, secret_key):
+def verify_token(token):
     try:
-        payload = jwt.decode(token, secret_key, algorithms=['HS256'])
+        payload = jwt.decode(token, os.getenv('SECRET_KEY'), algorithms=['HS256'])
         # if it reaches this line, this means that it's decoded correctly
         # check expiration time
         if 'expire' in payload:
@@ -49,12 +45,9 @@ def verify_token(token, secret_key):
             # token not expired and return data
             payload = {
                 "userID": payload["userID"],
-                "username": payload["username"],
-                "fullName": payload["fullName"],
-                "email": payload["email"],
                 "password": payload["password"],
                 "classification": payload["classification"],
-                "status": payload["status"],
+                "email": payload["email"],
             }
             return payload
         else:
@@ -74,7 +67,7 @@ def authorize_user(token):
     if not token:
         return flash('Unauthorized user, no token', 'error')
     # verify and decode the token
-    payload = verify_token(token, secret_key=SECRET_KEY)
+    payload = verify_token(token, secret_key=os.getenv('SECRET_KEY'))
     if isinstance(payload, dict):
         return payload
     else:

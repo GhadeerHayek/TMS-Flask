@@ -1,4 +1,7 @@
-from flask import render_template
+from flask import render_template, flash, redirect, url_for
+from sqlalchemy import text
+import helpers.token as token_helper
+from app import db
 
 programs = [
     ["1", "program1", "program1 description", "area1", "money", "somedate", "somedate"],
@@ -41,8 +44,26 @@ attendance_records = [
 
 def index(request):
     # token has the hashed user_id (trainee_id)
-    # using the token, we'll fetch all results related to this user in his dashbaord
-    # we'll send this data along with the template
+    token = request.cookies['token']
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    payload = token_helper.verify_token(token)
+    if not payload:
+        flash('Invalid token, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    # payload has a userID, this is what we're going to use to fetch the trainee record
+    query =text("""
+            SELECT * from trainees where userID = :userID and status IN ('active', 'on_training')
+    """)
+    result_set = db.session.execute(query, {'userID':payload['userID']})
+    trainee = result_set.fetchone()
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not trainee:
+        flash('Trainee is not admitted to the system yet', 'error')
+        return redirect(url_for('auth.login'))
+    # If, however, the query returned the row -> render the dashboard
+
     return render_template('trainee/index.html', trainee=trainee)
 
 

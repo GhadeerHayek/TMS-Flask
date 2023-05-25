@@ -5,6 +5,8 @@ CREATE TABLE users
 (
     userID         INT PRIMARY KEY AUTO_INCREMENT,
     password       VARCHAR(250) NOT NULL,
+    -- TODO: test purpose only
+    email          VARCHAR(250),
     classification ENUM ('advisor', 'trainee', 'manager')
 
 --        username VARCHAR(250) NOT NULL,
@@ -218,8 +220,9 @@ CREATE TABLE notifications
 insert into managers (managerID, username, fullName, email)
 VALUES (1, 'mars2001', 'ghadeerhayek', 'ghadeerhayek2001@gmail.com');
 
-insert into users (userID, password, classification)
-VALUES (1, 'ghadeer123', 'manager');
+
+insert into users
+VALUES (1, 'ghadeer123', 'manager', 'ghadeerhayek2001@gmail.com');
 
 update managers
 set userID = 1
@@ -232,7 +235,7 @@ values (1, 'venus2020', 'traineeghadeer', 'ghadeerhayek2001@gmail.com', 'some de
 
 -- if admin approves the trainee
 insert into users
-VALUES (2, 'ghadeer123', 'trainee');
+VALUES (2, 'ghadeer123', 'trainee', 'ghadeerhayek2001@gmail.com');
 update trainees
 SET userID = 2
 where traineeID = 1;
@@ -245,7 +248,7 @@ VALUES (1, 'jupiter1010', 'advisorghadeer', 'ghadeerhayek2001@gmail.com', 'Web D
 
 -- if admin approves the advisor
 insert into users
-VALUES (3, 'ghadeer123', 'advisor');
+VALUES (3, 'ghadeer123', 'advisor', 'ghadeerhayek2001@gmail.com');
 update advisors
 set userID = 3
 where advisorID = 1;

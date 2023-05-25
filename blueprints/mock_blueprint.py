@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, render_template, flash
+from flask import Blueprint, jsonify, render_template, flash, request
 from app import db
 
 mock_blueprint = Blueprint("mock", __name__)
@@ -52,3 +52,7 @@ def mock3():
 @mock_blueprint.route('/mock4', methods=["GET"])
 def mock4():
     return render_template('trainee/new-meeting.html', trainee=trainee)
+
+@mock_blueprint.route('/mock5', methods=["GET"])
+def mock5():
+    return jsonify(request.cookies)
