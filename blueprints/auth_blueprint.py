@@ -32,4 +32,4 @@ def signup():
         return auth_controller.handle_advisor_signup(request)
     else:
         flash('Something is not right', 'error')
-        return redirect(url_for('auth.signup_view', classification=classification))
+        return redirect(url_for('auth.login_view'))

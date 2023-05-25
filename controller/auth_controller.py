@@ -52,10 +52,8 @@ def signup_view(request):
         return render_template('registration/advisor_register.html')
     elif classification == "trainee":
         return render_template('registration/trainee_register.html')
-    else:
-        # If the classification field is somehow tampered, this shows the red flag
-        flash('Something went wrong', 'error')
-        return redirect(url_for('auth.login_view'))
+    # If the classification field is somehow tampered, this shows the red flag
+    # this case is handled in the auth.signup endpoint, no need to handle it here
 
 
 def handle_trainee_signup(request):
