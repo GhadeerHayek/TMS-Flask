@@ -110,20 +110,17 @@ def reject_trainee_registration(request):
 
 def get_deactivate_trainees(request):
     # token is the manager record from the database
-    manager = {
-        "id": "100",
-        "username": "Jupiter2000",
-        "email": "jupiter@gmail.com"
-    }
+    token = request.cookies['token']
+    # manager = mghelper.verify_manager(token)
+    # token is the manager id or the manager record
+    query = text("SELECT * from trainees where status = 'active'")
+    result_cursor = db.session.execute(query)
+    rows = result_cursor.fetchall()
+    trainees = []
+    for row in rows:
+        trainees.append(row._data)
     # implement the query so that you get the trainees deactivation requests
     # i think we are supposed to implement something in the database for it
-
-    # let's just assume this is the result from executing the query
-    trainees = [
-        ["1", "name1", "email1"],
-        ["2", "name2", "email2"],
-        ["3", "name3", "email3"],
-    ]
 
     return render_template("manager/trainee/deactivate_trainee.html", manager=manager, trainees=trainees)
 
@@ -135,8 +132,23 @@ def get_deactivate_trainees(request):
 
 
 def approve_trainee_deactivation(request):
-    pass
-
+    token = request.cookies['token']
+    # make sure manager is authorized
+    # manager = mghelper.verify_manager(token)
+    # get hidden form data
+    traineeID = request.form['traineeID']   
+    # update trainee table with userID
+    trainee_query= text("UPDATE trainees SET status = 'inactive' where traineeID = :traineeID")
+    print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+    print(traineeID[0])
+    trainee_cursor = db.session.execute(trainee_query, {'traineeID': traineeID})
+    # commit changes to db
+    db.session.commit()
+    if not trainee_cursor:   
+        flash('Failed to deactivate trainee', 'error')
+        return redirect(url_for('manager.get_deactivate_trainees_view'))
+    flash('Trainee deactivated successfully', 'success')
+    return redirect(url_for('manager.get_deactivate_trainees_view'))
 
 """
     This is the controller function that handles the reject button in the deactivate trainees view
@@ -145,12 +157,28 @@ def approve_trainee_deactivation(request):
 
 
 def reject_trainee_deactivation(request):
-    pass
+    token = request.cookies['token']
+    # make sure manager is authorized
+    # manager = mghelper.verify_manager(token)
+    # get hidden form data
+    traineeID = request.form['traineeID']   
+    # update trainee table with userID
+    trainee_query= text("UPDATE trainees SET status = 'rejected' where traineeID = :traineeID")
+    print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+    print(traineeID[0])
+    trainee_cursor = db.session.execute(trainee_query, {'traineeID': traineeID})
+    # commit changes to db
+    db.session.commit()
+    if not trainee_cursor:   
+        flash('Failed to reject trainee', 'error')
+        return redirect(url_for('manager.get_deactivate_trainees_view'))
+    flash('Trainee rejected successfully', 'success')
+    return redirect(url_for('manager.get_deactivate_trainees_view'))
 
 
 def get_trainee_account(request):
     token = request.cookies['token']
-    manager = mghelper.verify_manager(token)
+    # manager = mghelper.verify_manager(token)
     # token is the manager id or the manager record
     query = text("SELECT * from trainees where status = 'inreview'")
     result_cursor = db.session.execute(query)
@@ -163,7 +191,7 @@ def get_trainee_account(request):
 
 def get_trainee_account_details(request):
     token = request.cookies['token']
-    manager = mghelper.verify_manager(token)    
+    # manager = mghelper.verify_manager(token)    
     userID = request.args.get('id')
     # assuming this is a get request, that has the trainee id in its get parameters
     # we should select all the user account details
@@ -180,7 +208,7 @@ def get_trainee_account_details(request):
     return render_template("manager/trainee/trainee-profile-details.html", trainee=trainee, manager=manager)
 
 
-def accept_modifications(request):
+def accept_trainee_modifications(request):
     token = request.cookies['token']
     # make sure manager is authorized
     # manager = mghelper.verify_manager(token)
@@ -201,7 +229,7 @@ def accept_modifications(request):
 
 
 
-def reject_modifications(request):
+def reject_trainee_modifications(request):
     token = request.cookies['token']
     # make sure manager is authorized
     # manager = mghelper.verify_manager(token)

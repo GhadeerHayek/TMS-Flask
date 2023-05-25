@@ -25,9 +25,19 @@ def reject_trainee():
     return manager_trainee_controller.reject_trainee_registration(request)
 
 
-@manager_blueprint.route('/trainees/deactivate', methods=["GET"])
+@manager_blueprint.route('/trainees/deactivate/all', methods=["GET"])
 def get_deactivate_trainees_view():
     return manager_trainee_controller.get_deactivate_trainees(request)
+
+
+@manager_blueprint.route('/trainees/deactivate', methods=["POST"])
+def deactivate_trainee():
+    return manager_trainee_controller.approve_trainee_deactivation(request)
+
+
+@manager_blueprint.route('/trainees/reject/deactivate', methods=["POST"])
+def reject_deactivate_trainee():
+    return manager_trainee_controller.reject_trainee_deactivation(request)
 
 
 @manager_blueprint.route('/trainees/account', methods=["GET"])
@@ -42,12 +52,12 @@ def get_trainees_accounts_details_view():
 
 @manager_blueprint.route('/trainees/approve/modifications', methods=["POST"])
 def accept_trainee_modification():
-    return manager_trainee_controller.accept_modifications(request)
+    return manager_trainee_controller.accept_trainee_modifications(request)
 
 
 @manager_blueprint.route('/trainees/reject/modifications', methods=["POST"])
 def reject_trainee_modification():
-    return manager_trainee_controller.reject_modifications(request)
+    return manager_trainee_controller.reject_trainee_modifications(request)
 
 
 # Manager-Advisor Routes
