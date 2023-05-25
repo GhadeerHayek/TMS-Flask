@@ -49,13 +49,13 @@ def index(request):
     if not token:
         flash('Token not found, invalid request', 'error')
         return redirect(url_for('auth.login_view'))
-    trainee1 = trainee_helper.get_trainee_from_token(token)
+    payload = token_helper.verify_token(token)
     # if the query returned nothing -> it actually means we can't render the dashboard
-    if not trainee1:
-        flash('Trainee is not admitted to the system yet, trainee info: {0}'.format(trainee1), 'error')
+    if not payload:
+        flash('Invalid token', 'error')
         return redirect(url_for('auth.login_view'))
     # If, however, the query returned the row -> render the dashboard
-    return render_template('trainee/index.html', trainee=trainee1)
+    return render_template('trainee/index.html', trainee=payload)
 
 
 """
@@ -152,3 +152,66 @@ def get_add_meeting(request):
     # it also MUST call the function that handles meetings conflict
     return render_template('trainee/new-meeting.html', trainee=trainee)
     z
+
+
+def get_profile_view(request):
+    token = request.cookies['token']
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    trainee1 = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not trainee1:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
+    return render_template('trainee/trainees-profile.html', trainee=trainee1)
+
+
+def handle_profile_update(request):
+    # the profile update request contains all the trainee information
+    username = request.form['username']
+    fullname = request.form['fullName']
+    area_of_training = request.form['area']
+    desired_field = request.form['desiredField']
+    email = request.form['email']
+    # those value can not be null, there's a default value
+    # TODO: maybe i should check for their format
+    token = request.cookies['token']
+    trainee1 = token_helper.verify_token(token)
+    if not trainee1:
+        flash("Invalid token", 'error')
+        return redirect(url_for('auth.login_view'))
+    # proceed with the update
+    query = text("""
+            UPDATE trainees 
+            SET username=:username,
+            fullname=:fullname,
+            area_of_training=:area,
+            desired_field = :desired_field,
+            email=:email,
+            status = 'in_review'
+            WHERE traineeID = :traineeID;
+        """)
+    params = {
+        "username": username,
+        "fullname": fullname,
+        "area": area_of_training,
+        "desired_field": desired_field,
+        "email": email,
+        "traineeID": trainee1["traineeID"]
+    }
+    result_set = db.session.execute(query, params).rowcount
+    # the user information is updated, but the thing is, this information must be reviewed, so the status must be pending
+    if result_set > 0:
+        # success
+        db.session.commit()
+        flash('Account modification is in manager review, your account is onhold until. Check your email')
+        return redirect(url_for('auth.login_view'))
+    else:
+        flash('Failed to submit account modification, try again', 'error')
+        return redirect(url_for('trainee.profile_view'))
+
+
+
+def handle_profile_deactivation(request):
+    pass

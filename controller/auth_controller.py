@@ -25,21 +25,80 @@ def handle_login(request):
     if not row:
         flash('Email or password are incorrect, please try again', 'error')
         return redirect(url_for('auth.login_view'))
-    # generate token
-    token = tokenHelper.generate_token(row)
+    # NOTE: We need to check the statuses of the trainee and the advisor before authorizing them to the system
+    # Which means we'll fetch the trainee and advisor records
+    # which also means deleting the trainee, advisor helpers :))))))
     classification = row[2]
     # print(classification)
     if classification == "manager":
+        # get the row from the database
+        manager_record = db.session.execute(text(
+            "SELECT * from managers where userID = :userID"),
+            {"userID": row[0]}
+        ).fetchone()
+        manager = {
+            "managerID": manager_record[0],
+            "username": manager_record[1],
+            "fullname": manager_record[2],
+            "email": manager_record[3],
+            "userID": manager_record[4],
+        }
+        # generate token
+        token = tokenHelper.generate_token(manager)
         # print("inside manager")
         response = redirect(url_for('manager.dashboard_view'))
         response.set_cookie('token', token)
         return response
     elif classification == "advisor":
-        # print("inside advisor")
+        # get the row from the database
+        advisor_record = db.session.execute(
+            text("SELECT * from advisors where userID = :userID and status in ('active','training')"),
+            {"userID": row[0]}
+        ).fetchone()
+        if not advisor_record:
+            # it means the satuts match failed, so the user can not be authorized
+            flash("you are not authorized to the system yet, wait for admin approval")
+            return redirect(url_for('auth.login_view'))
+        advisor = {
+                "advisorID": advisor_record[0],
+                "username": advisor_record[1],
+                "fullname": advisor_record[2],
+                "email": advisor_record[3],
+                "discipline": advisor_record[4],
+                "status": advisor_record[5],
+                "userID": advisor_record[6],
+            }
+        # generate token
+        token = tokenHelper.generate_token(advisor)
+        # print("inside manager")
         response = redirect(url_for('advisor.dashboard_view'))
         response.set_cookie('token', token)
         return response
     elif classification == "trainee":
+        # get the row from the database
+        trainee_record = db.session.execute(
+            text("SELECT * from trainees where userID = :userID and status in ('active','on_training')"),
+            {"userID": row[0]}
+        ).fetchone()
+        if not trainee_record:
+            # it means the satuts match failed, so the user can not be authorized
+            flash("you are not authorized to the system yet, wait for admin approval")
+            return redirect(url_for('auth.login_view'))
+
+        trainee = {
+            "traineeID": trainee_record[0],
+            "username": trainee_record[1],
+            "fullname": trainee_record[2],
+            "email": trainee_record[3],
+            "desired_field": trainee_record[4],
+            "area_of_training": trainee_record[5],
+            "status": trainee_record[6],
+            "balance": trainee_record[7],
+            "training_materials": trainee_record[8],
+            "userID": trainee_record[9],
+        }
+        # generate token
+        token = tokenHelper.generate_token(trainee)
         # print("inside trainee")
         response = redirect(url_for('trainee.dashboard_view'))
         response.set_cookie('token', token)

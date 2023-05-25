@@ -39,7 +39,8 @@ CREATE TABLE trainees
         ),
     -- trainee statuses
     status             ENUM (
-        'pending',     -- waiting for admin approval
+        'pending',     -- waiting for admin approval on registration
+        'in_review',   -- waiting for admin approval on account update
         'active',      -- approved by the admin and is on the system + has no training
         'on_training', -- the trainee has a registered a training program
         'rejected',    -- rejected by the admin
@@ -75,11 +76,12 @@ CREATE TABLE advisors
         ),
     -- advisor statuses
     status     ENUM (
-        'pending',  -- waiting for admin approval
-        'active',   -- approved by the admin and is on the system + is not training anyone
-        'training', -- the advisor has a some trainees assigned to him via the registered training programs
-        'rejected', -- rejected by the admin
-        'inactive'  -- the advisor has requested the account deactivation, after the approval from the manager, the status is inactive
+        'pending',   -- waiting for admin approval
+        'active',    -- approved by the admin and is on the system + is not training anyone
+        'in_review', -- waiting for admin approval on account update
+        'training',  -- the advisor has a some trainees assigned to him via the registered training programs
+        'rejected',  -- rejected by the admin
+        'inactive'   -- the advisor has requested the account deactivation, after the approval from the manager, the status is inactive
         )          default 'pending',
     -- advisor authentication
     userID     int default NULL,
