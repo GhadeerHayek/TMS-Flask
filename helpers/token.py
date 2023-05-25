@@ -72,3 +72,4 @@ def authorize_user(token):
         return payload
     else:
         return flash('User is not authorized.', 'error')
+

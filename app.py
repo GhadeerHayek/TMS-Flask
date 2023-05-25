@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, render_template
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
 
@@ -8,7 +8,7 @@ load_dotenv('.env')
 
 # Setup flask app instance
 app = Flask(__name__)
-app.secret_key = 'your_secret_key_here'
+app.secret_key = os.getenv('SECRET_KEY')
 
 db_host = os.getenv('DB_HOST')
 db_user = os.getenv('DB_USER')
@@ -30,3 +30,8 @@ from blueprints.manager_blueprint import manager_blueprint
 app.register_blueprint(manager_blueprint)
 from blueprints.advisor_blueprint import advisor_blueprint
 app.register_blueprint(advisor_blueprint)
+
+@app.errorhandler(404)
+def page_not_found(e):
+    # Render the 404.html template
+    return render_template('404.html'), 404

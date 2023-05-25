@@ -1,6 +1,8 @@
-from flask import request, render_template, jsonify
+from flask import request, render_template, jsonify, flash, redirect, url_for
 from sqlalchemy import text
 from app import db
+import helpers.manager_helper as mghelper
+
 
 manager = {
     "id": "100",
@@ -15,9 +17,8 @@ manager = {
 
 def index(request):
     # from token get id, from the id get the record in the database
-    manager_id = "something"
-    query = text("SELECT * from ")
-
+    token = request.cookies['token']
+    manager = mghelper.verify_manager(token)
     return render_template('manager/index.html', manager=manager)
 
 

@@ -81,6 +81,26 @@
                                     <div class="col-lg-3 col-md-4 label">Current Status</div>
                                     <div class="col-lg-9 col-md-8">{{ trainee[6] }}</div>
                                 </div>
+                                
+                                <div class="pt-4 d-flex flex-column align-items-center">
+                                    <div class="row mb-3">
+                                        <div>
+                                            <form method="POST" action="">
+                                                <button class="btn btn-success" data-bs-toggle="modal"
+                                                        data-bs-target="#verticalycentered" type="submit">Approve
+                                                </button>
+                                            </form>                                
+                                        </div>
+                                        <div >
+                                            <form method="POST" action="#">
+                                                <button class="btn btn-danger" data-bs-toggle="modal"
+                                                        data-bs-target="#verticalycentered" type="submit">Reject
+                                                </button>                                        
+                                            </form>
+                                        </div>
+                                    </div>                                    
+                                </div>
+                                
                             </div>
                         </div>
                     </div>

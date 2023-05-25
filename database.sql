@@ -217,12 +217,12 @@ CREATE TABLE notifications
 -- Those are some insert statements that should demonstrate the signup process
 
 
-insert into managers (managerID, username, fullName, email)
-VALUES (1, 'mars2001', 'ghadeerhayek', 'ghadeerhayek2001@gmail.com');
+insert into managers (managerID, username, fullName, email, userID)
+VALUES (1, 'mars2001', 'ghadeerhayek', 'ghadeerhayek2001@gmail.com', 1);
 
 
 insert into users
-VALUES (1, 'ghadeer123', 'manager', 'ghadeerhayek2001@gmail.com');
+VALUES (1, 'ghadeer123', 'ghadeerhayek2001@gmail.com', 'manager');
 
 update managers
 set userID = 1
@@ -235,7 +235,7 @@ values (1, 'venus2020', 'traineeghadeer', 'ghadeerhayek2001@gmail.com', 'some de
 
 -- if admin approves the trainee
 insert into users
-VALUES (2, 'ghadeer123', 'trainee', 'ghadeerhayek2001@gmail.com');
+VALUES (2, 'ghadeer123', 'trainee123', 'ghadeerhayek2001@gmail.com');
 update trainees
 SET userID = 2
 where traineeID = 1;
@@ -252,3 +252,8 @@ VALUES (3, 'ghadeer123', 'advisor', 'ghadeerhayek2001@gmail.com');
 update advisors
 set userID = 3
 where advisorID = 1;
+
+
+--Ayah Edit 25/5
+ALTER TABLE `managers` ADD `department` VARCHAR(250) NOT NULL AFTER `username`;
+ALTER TABLE `managers` ADD `phone` int NOT NULL AFTER `username`;

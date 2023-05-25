@@ -1,6 +1,8 @@
-from flask import request, render_template, jsonify
+from flask import redirect, url_for, request, render_template, jsonify, flash
 from sqlalchemy import text
 from app import db
+import helpers.manager_helper as mghelper
+import secrets
 
 manager = {
     "id": "100",
@@ -14,21 +16,17 @@ manager = {
 
 
 def get_pending_trainees(request):
+    token = request.cookies['token']
+    manager = mghelper.verify_manager(token)
     # token is the manager id or the manager record
+    query = text("SELECT * from trainees where status = 'pending'")
+    result_cursor = db.session.execute(query)
+    rows = result_cursor.fetchall()
+    trainees = []
+    for row in rows:
+        trainees.append(row._data)
+    return render_template("manager/trainee/pending_trainees.html", manager=manager, trainees=trainees)
 
-    # query = text("SELECT * from trainees where current_status = 'pending'")
-    # result_cursor = db.session.execute(query)
-    # rows = result_cursor.fetchall()
-    # trainees = []
-    # for row in rows:
-    #     trainees.append(row._data)
-    #  return render_template("manager/pending_trainees.html", manager=manager, trainees=trainees)
-
-    return render_template('manager/trainee/pending_trainees.html', manager=manager, trainees=[
-        ["1", "name1", "email1", "df1", "area1"],
-        ["2", "name2", "email2", "df1", "area1"],
-        ["3", "name3", "email3", "df1", "area1"]
-    ])
 
 
 """
@@ -38,7 +36,41 @@ def get_pending_trainees(request):
 
 
 def approve_trainee_registration(request):
-    pass
+    token = request.cookies['token']
+    # make sure manager is authorized
+    manager = mghelper.verify_manager(token)
+    # get hidden form data
+    traineeID = request.form['traineeID']
+    traineeEmail= request.form['traineeEmail']   
+    pass_length = 7
+    # secret is python module that generates passwords according to ur prefered length
+    password = secrets.token_urlsafe(pass_length)
+    # insert trainee to user table first to link it to trainee table using userID(PK->FK relationship)
+    user_query = text("INSERT INTO users (password, email, classification) VALUES (:password, :email, 'trainee')")
+    user_cursor = db.session.execute(user_query, {'password':password, 'email':traineeEmail})
+    # user_rows = user_cursor.fetchall()
+    # print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1')
+    # print(user_cursor)
+    db.session.commit()
+    if not user_cursor:
+        flash('Failed to approve trainee', 'error')
+        return redirect(url_for('manager.get_pending_trainees_view'))
+    # get userID from previous query
+    userID = user_cursor.lastrowid
+    # update trainee table with userID
+    trainee_query= text("UPDATE trainees SET status = 'active', userID = :userID  WHERE traineeID = :traineeID")
+    trainee_cursor = db.session.execute(trainee_query, {'userID': userID, 'traineeID': traineeID})
+    trainee_rows = trainee_cursor.rowcount
+    # print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1')
+    # print(trainee_rows)
+    # commit changes to db
+    db.session.commit()
+    if not trainee_rows:   
+        flash('Failed to approve trainee', 'error')
+        return redirect(url_for('manager.get_pending_trainees_view'))
+    flash('Trainee approved successfully', 'success')
+    return redirect(url_for('manager.get_pending_trainees_view'))
+
 
 
 """
@@ -48,7 +80,25 @@ def approve_trainee_registration(request):
 
 
 def reject_trainee_registration(request):
-    pass
+    token = request.cookies['token']
+    # make sure manager is authorized
+    manager = mghelper.verify_manager(token)
+    # get hidden form data
+    traineeID = request.form['traineeID']   
+    # update trainee table with userID
+    trainee_query= text("UPDATE trainees SET status = 'rejected' WHERE traineeID = :traineeID")
+    trainee_cursor = db.session.execute(trainee_query, {'traineeID': traineeID})
+    trainee_rows = trainee_cursor.rowcount
+    # print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1')
+    # print(trainee_rows)
+    # commit changes to db
+    db.session.commit()
+    if not trainee_rows:   
+        flash('Failed to approve trainee', 'error')
+        return redirect(url_for('manager.get_pending_trainees_view'))
+    flash('Trainee rejected successfully', 'success')
+    return redirect(url_for('manager.get_pending_trainees_view'))
+
 
 
 """
@@ -99,21 +149,16 @@ def reject_trainee_deactivation(request):
 
 
 def get_trainee_account(request):
-    # from the token, get the manager id
-    manager = {
-        "id": "100",
-        "username": "Jupiter2000",
-        "email": "jupiter@gmail.com"
-    }
-    # get all account modification requests from the database
-
-    # here's a mock of the returned data
-    trainess = [
-        ["1", "", "name1", "somehow the account details object"],
-        ["2", "", "name2", "somehow the account details object"],
-        ["3", "", "name3", "somehow the account details object"]
-    ]
-    return render_template("manager/trainee/trainee_account_modification.html", manager=manager, trainees=trainess)
+    token = request.cookies['token']
+    manager = mghelper.verify_manager(token)
+    # token is the manager id or the manager record
+    query = text("SELECT * from trainees where status = 'inreview'")
+    result_cursor = db.session.execute(query)
+    rows = result_cursor.fetchall()
+    trainees = []
+    for row in rows:
+        trainees.append(row._data)
+    return render_template("manager/trainee/trainee_account_modification.html", manager=manager, trainees=trainees)
 
 
 def get_trainee_account_details(request):
@@ -121,6 +166,7 @@ def get_trainee_account_details(request):
     # we should select all the user account details
     # before we do that, we'll render something like a profile.html page
     # which i am going to do later
+    
     trainee = [
         "1",
         "1",

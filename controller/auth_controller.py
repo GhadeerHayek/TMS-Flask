@@ -28,11 +28,11 @@ def handle_login(request):
         return redirect(url_for('auth.login_view'))
     # generate token
     token = tokenHelper.generate_token(row)
-    classification = row[2]
+    classification = row[3]
     # print(classification)
     if classification == "manager":
-        # print("inside manager")
-        response = redirect(url_for('manager.dashboard_view'))
+        # print("inside manager")            
+        response = redirect(url_for('manager.dashboard_view'))        
     elif classification == "advisor":
         # print("inside advisor")
         response = redirect(url_for('advisor.dashboard_view'))
@@ -40,7 +40,7 @@ def handle_login(request):
         # print("inside trainee")
         response = redirect(url_for('trainee.dashboard_view'))
     else:
-        flash('Something went wrong', 'error')
+        flash('Email or password is wrong', 'error')
         return redirect(url_for('auth.login_view'))
     response.set_cookie('token', token)
     return response
@@ -104,3 +104,13 @@ def handle_advisor_signup(request):
         flash('Successfully added your information, wait for our email')
         db.session.commit()
         return redirect(url_for('auth.login_view'))
+
+
+def signout(request):
+    pass
+    # response.set_cookie('token', token)
+    # print(request.cookies.get('token'))
+    # return redirect(url_for('auth.login_view'))
+
+
+

@@ -1,6 +1,5 @@
 from flask import Blueprint, request
-from controller.manager import manager_trainee_controller, manager_controller, manager_advisor_controller, \
-    manager_programs_controller
+from controller.manager import manager_trainee_controller, manager_controller, manager_advisor_controller, manager_programs_controller
 
 manager_blueprint = Blueprint("manager", __name__)
 
@@ -14,6 +13,16 @@ def dashboard_view():
 @manager_blueprint.route('/trainees/pending', methods=["GET"])
 def get_pending_trainees_view():
     return manager_trainee_controller.get_pending_trainees(request)
+
+
+@manager_blueprint.route('/approve/trainee/', methods=["POST"])
+def approve_trainee():
+    return manager_trainee_controller.approve_trainee_registration(request)
+
+
+@manager_blueprint.route('/reject/trainee/', methods=["POST"])
+def reject_trainee():
+    return manager_trainee_controller.reject_trainee_registration(request)
 
 
 @manager_blueprint.route('/trainees/deactivate', methods=["GET"])
