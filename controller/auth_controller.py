@@ -3,7 +3,6 @@ from sqlalchemy import text
 import helpers.token as tokenHelper
 from app import app
 from app import db
-import os
 
 
 def login_view():
@@ -15,7 +14,8 @@ def handle_login(request):
     email = request.form['email']
     password = request.form['password']
     if not email or not password:
-        return flash('Missing email or password', 'error')
+        flash('Missing email or password', 'error')
+        return redirect(url_for('auth.login_view'))
     # let's look whether we can find those credentials
     query = text("SELECT * from users where email = :email and password = :password")
     params = {"email": email, "password": password}
@@ -29,18 +29,19 @@ def handle_login(request):
     # generate token
     token = tokenHelper.generate_token(row)
     classification = row[2]
-    print(classification)
+    # print(classification)
     if classification == "manager":
-        print("inside manager")
+        # print("inside manager")
         response = redirect(url_for('manager.dashboard_view'))
     elif classification == "advisor":
-        print("inside advisor")
+        # print("inside advisor")
         response = redirect(url_for('advisor.dashboard_view'))
     elif classification == "trainee":
-        print("inside trainee")
+        # print("inside trainee")
         response = redirect(url_for('trainee.dashboard_view'))
     else:
-        return flash('Something went wrong', 'error')
+        flash('Something went wrong', 'error')
+        return redirect(url_for('auth.login_view'))
     response.set_cookie('token', token)
     return response
 
@@ -65,10 +66,8 @@ def handle_trainee_signup(request):
     area = request.form['area']
     # TODO: upload required materials to the user-uploads directory
     if not username or not email or not desiredField or not area:
-        # TODO: test this
         flash('signup information is missing', 'error')
         return redirect(url_for('auth.signup_view?classification=trainee'))
-
     query = text(
         """
         INSERT INTO `trainees` (username, fullname, email, desired_field, area_of_training) VALUES (:username,:fullname, :email, :desired_field, :area)""")
@@ -91,7 +90,6 @@ def handle_advisor_signup(request):
     discipline = request.form['discipline']
     # TODO: upload required materials to the user-uploads directory
     if not username or not email or not fullname or not discipline:
-        # TODO: test this
         flash('signup information is missing', 'error')
         return redirect(url_for('auth.signup_view?classification=trainee'))
 
