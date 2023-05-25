@@ -22,8 +22,7 @@ def handle_login(request):
     result = db.session().execute(query, params)
     row = result.fetchone()
     # print(row)
-    if row is None:
-        print("invalid pass")
+    if not row:
         flash('Email or password are incorrect, please try again', 'error')
         return redirect(url_for('auth.login_view'))
     # generate token
@@ -33,17 +32,21 @@ def handle_login(request):
     if classification == "manager":
         # print("inside manager")
         response = redirect(url_for('manager.dashboard_view'))
+        response.set_cookie('token', token)
+        return response
     elif classification == "advisor":
         # print("inside advisor")
         response = redirect(url_for('advisor.dashboard_view'))
+        response.set_cookie('token', token)
+        return response
     elif classification == "trainee":
         # print("inside trainee")
         response = redirect(url_for('trainee.dashboard_view'))
+        response.set_cookie('token', token)
+        return response
     else:
         flash('Something went wrong', 'error')
         return redirect(url_for('auth.login_view'))
-    response.set_cookie('token', token)
-    return response
 
 
 def signup_view(request):

@@ -6,7 +6,7 @@ trainee_blueprint = Blueprint("trainee", __name__)
 
 @trainee_blueprint.route('/trainee', methods=["GET"])
 def dashboard_view():
-    return trainee_controller.index("token")
+    return trainee_controller.index(request)
 
 
 @trainee_blueprint.route('/trainee/programs', methods=["GET"])
