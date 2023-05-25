@@ -57,7 +57,7 @@ def handle_login(request):
         ).fetchone()
         if not advisor_record:
             # it means the satuts match failed, so the user can not be authorized
-            flash("you are not authorized to the system yet, wait for admin approval")
+            flash("you are not authorized to the system.")
             return redirect(url_for('auth.login_view'))
         advisor = {
                 "advisorID": advisor_record[0],

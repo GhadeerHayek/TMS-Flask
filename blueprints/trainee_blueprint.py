@@ -51,13 +51,9 @@ def profile_view():
 
 @trainee_blueprint.route('/profile/edit', methods=['POST'])
 def profile_edit():
-    # call for controller function that handles the request
-    # return jsonify("I haven't implemented the update profile request yet")
     return trainee_controller.handle_profile_update(request)
 
 
-@trainee_blueprint.route('/profile/edit', methods=['POST'])
+@trainee_blueprint.route('/profile/delete', methods=['POST'])
 def profile_deactivate():
-    # call for controller function that handles the request
-    # return jsonify("haven't implemented the deactivate profile request yet")
     return trainee_controller.handle_profile_deactivation(request)

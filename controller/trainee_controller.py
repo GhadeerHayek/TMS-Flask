@@ -212,6 +212,28 @@ def handle_profile_update(request):
         return redirect(url_for('trainee.profile_view'))
 
 
-
 def handle_profile_deactivation(request):
-    pass
+    token = request.cookies['token']
+    trainee1 = token_helper.verify_token(token)
+    if not trainee1:
+        flash("Invalid token", 'error')
+        return redirect(url_for('auth.login_view'))
+    # proceed with the update
+    query = text("""
+                UPDATE trainees 
+                SET status = 'inactive'
+                WHERE traineeID = :traineeID;
+            """)
+    params = {
+        "traineeID": trainee1["traineeID"]
+    }
+    result_set = db.session.execute(query, params).rowcount
+    # the user information is updated, but the thing is, this information must be reviewed, so the status must be pending
+    if result_set > 0:
+        # success
+        db.session.commit()
+        flash('Account deactivation is in manager review. Check your email')
+        return redirect(url_for('auth.login_view'))
+    else:
+        flash('Failed to submit account deactivation, try again', 'error')
+        return redirect(url_for('trainee.profile_view'))
