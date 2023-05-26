@@ -46,6 +46,22 @@
                                 </tr>
                                 </tbody>
                             </table>
+                            {% with messages = get_flashed_messages() %}
+                                {% if messages %}
+                                    <ul class="flash-messages">
+                                        {% for message in messages %}
+                                            <div class="alert alert-danger bg-danger text-light border-0 alert-dismissible fade show"
+                                                 role="alert">
+                                                {{ message }}
+                                                <button type="button" class="btn-close btn-close-white"
+                                                        data-bs-dismiss="alert"
+                                                        aria-label="Close"></button>
+                                            </div>
+                                        {% endfor %}
+                                    </ul>
+
+                                {% endif %}
+                            {% endwith %}
                             <div class="modal fade" id="verticalycentered" tabindex="-1">
                                 <div class="modal-dialog modal-dialog-centered">
                                     <div class="modal-content">

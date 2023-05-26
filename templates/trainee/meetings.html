@@ -25,35 +25,49 @@
                             <table class="table datatable">
                                 <thead>
                                 <tr>
-                                    <th scope="col">#</th>
+                                    <th scope="col">Meeting ID</th>
                                     <th scope="col">Details</th>
                                     <th scope="col">Status</th>
                                     <th scope="col">Link</th>
-                                    <th scope="col">Date</th>
-                                    <th scope="col">Start Time</th>
-                                    <th scope="col">End Time</th>
+                                    <th scope="col">Start Datetime</th>
+                                    <th scope="col">End Datetime</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 {% for meeting in meetings %}
                                     <tr>
-                                        <th scope="row">{{ meeting[0] }}</th>
-                                        <td>{{ meeting[1] }}, participants are: {{ meeting[7] }},{{ meeting[8] }}</td>
-                                        <td>{{ meeting[2] }}</td>
-                                        <td>{{ meeting[3] }}</td>
-                                        <td>{{ meeting[4] }}</td>
-                                        <td>{{ meeting[5] }}</td>
-                                        <td>{{ meeting[6] }}</td>
+                                        <th scope="row">{{ meeting.meetingID }}</th>
+                                        <td>{{ meeting.details }}</td>
+                                        <td>{{ meeting.status }}</td>
+                                        <td>{{ meeting.link }}</td>
+                                        <td>{{ meeting.start_datetime }}</td>
+                                        <td>{{ meeting.end_datetime }}</td>
                                     </tr>
                                 {% endfor %}
 
                                 </tbody>
                             </table>
+                            {% with messages = get_flashed_messages() %}
+                                {% if messages %}
+                                    <ul class="flash-messages">
+                                        {% for message in messages %}
+                                            <div class="alert alert-danger bg-danger text-light border-0 alert-dismissible fade show"
+                                                 role="alert">
+                                                {{ message }}
+                                                <button type="button" class="btn-close btn-close-white"
+                                                        data-bs-dismiss="alert"
+                                                        aria-label="Close"></button>
+                                            </div>
+                                        {% endfor %}
+                                    </ul>
+
+                                {% endif %}
+                            {% endwith %}
                             <!-- End Table with stripped rows -->
 
                             <!-- Vertically centered Modal -->
                             <a class="btn btn-primary"
-                               href="{{ url_for('trainee.get_add_meeting_view') }}">
+                               href="{{ url_for('trainee.get_add_meeting_view', registration_id=registration_id) }}">
                                 Arrange New Meeting
                             </a>
                             <div class="modal fade" id="verticalycentered" tabindex="-1">

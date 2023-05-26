@@ -1,43 +1,10 @@
 from flask import render_template, flash, redirect, url_for, jsonify
 from sqlalchemy import text
 import helpers.token as token_helper
+import helpers.helper as helper
 import helpers.trainee_helper as trainee_helper
 from app import db
 import time
-
-programs = [
-    ["1", "program1", "program1 description", "area1", "money", "somedate", "somedate"],
-    ["2", "program2", "program2 description", "area1", "money", "somedate", "somedate"],
-    ["3", "program3", "program3 description", "area1", "money", "somedate", "somedate"],
-]
-program = ["1", "program1", "program1 description", "area1", "money", "somedate", "somedate"],
-trainee = {
-    "id": "12",
-    "username": "mars2001",
-    "email": "ghadeerhayek2001@gmail.com",
-    "desired_field": "Web Development",
-    "area": "Technology",
-    "current_training": 0
-}
-
-meetings = [
-    ["meetingid1", "meeting for followup", "approved", "https://linktoyou",
-     "2001-09-09", "15:15", "14:14", "trainee id", "advisor id"],
-    ["meetingid2", "meeting for followup", "approved", "https://linktoyou",
-     "2001-09-09", "15:15", "14:14", "trainee id", "advisor id"],
-    ["meetingid3", "meeting for followup", "approved", "https://linktoyou",
-     "2001-09-09", "15:15", "14:14", "trainee id", "advisor id"]
-]
-
-registered_program = [
-    "registration id", "program id", "trainee id", "attendance form id", "advisor id", "status "
-]
-
-attendance_records = [
-    ["0", "1", "2001-09-09", "15:15", "15:15"],
-    ["0", "1", "2001-09-09", "15:15", "15:15"],
-    ["0", "1", "2001-09-09", "15:15", "15:15"]
-]
 
 """
     function that retrieves the trainee-index form view, it also prepares the data to display in the form view
@@ -159,7 +126,7 @@ def get_training(request):
         }
     ).fetchone()[0]
     # if the current status is not on_training then we'll display an empty page,
-    # or a flashed message .. whatever error is
+    # or a flashed message ... whatever error is
     if current_status != 'on_training':
         flash("No current training to display")
         return redirect(request.referrer)
@@ -173,7 +140,7 @@ def get_training(request):
         # data: registiration id, training program id, advisor id, attendance form id, status of the registiration itself
         # the attendance form id is a link to a page that displays all the attendance records related to the whole thing
         # the training program is also a link to a page that displays the training program details in a card format
-        # I haven't decided what to do with the advisor ID, i could display an advisor card
+        # I haven't decided what to do with the advisor ID, I could display an advisor card
         if not registered_program1:
             flash("Failed to get training", 'error')
         return render_template('trainee/training.html', trainee=trainee1, registered_program=registered_program1)
@@ -192,7 +159,7 @@ def get_attendance_form(request, registration_id):
         flash("Invalid token", 'error')
         return redirect(url_for('auth.login_view'))
     # from the attendance_records, we'll select all records that belong to a specific registration_id
-    # i think this is a list of records objects
+    # I think this is a list of records objects
     attendance_records1 = db.session.execute(
         text("""
             SELECT * 
@@ -214,7 +181,8 @@ def get_attendance_form(request, registration_id):
 
 
 def get_record_add(request, registration_id):
-    return render_template('/trainee/add-record.html', registration_id=registration_id, trainee=trainee)
+    pass
+    # return render_template('/trainee/add-record.html', registration_id=registration_id, trainee=trainee)
 
 
 """
@@ -287,8 +255,57 @@ def get_program(request, program_id):
 
 def get_meetings(request):
     # get the user id from the token in the request
-    # select * from meetings where the trainee id = the fetched user id
-    return render_template('trainee/meetings.html', trainee=trainee, meetings=meetings)
+    # ensure token existence
+    # from the request, we'll fetch the hashed user_id (trainee)
+    token = request.cookies['token']
+    trainee1 = token_helper.verify_token(token)
+    if not trainee1:
+        flash("Invalid token", 'error')
+        return redirect(url_for('auth.login_view'))
+    # fetch trainee status and check whether it is on_training or not
+    current_status = db.session.execute(
+        text(
+            """
+            SELECT status from trainees where traineeID = :traineeID
+            """
+        ), {
+            "traineeID": trainee1['traineeID']
+        }
+    ).fetchone()[0]
+    # if the status is not on_training -> flash
+    if current_status != 'on_training':
+        flash("No meetings for you since you are not on training")
+        return redirect(request.referrer)
+    # if the status is on_training -> get the registration_id -> get all meetings
+    else:
+        registration_record = db.session.execute(
+            text(
+                """
+                SELECT * from training_registration where traineeID = :traineeID and status='approved'
+                """
+            ), {
+                "traineeID": trainee1["traineeID"]
+            }
+        ).fetchone()
+        if not registration_record:
+            flash("Inconsistency btw")
+            return redirect(request.referrer)
+        else:
+            # select * from meetings using registration id
+            meetings = db.session.execute(
+                text("""
+                    SELECT * from meetings where registration_id = :registration_id
+                """),
+                {
+                    "registration_id": registration_record[0]
+                }).fetchall()
+            if not meetings:
+                flash("No meetings yet")
+                return render_template('trainee/meetings.html', trainee=trainee1, meetings=[],
+                                       registration_id=registration_record[0])
+            else:
+                return render_template('trainee/meetings.html', trainee=trainee1, meetings=meetings,
+                                       registration_id=registration_record[0])
 
 
 """
@@ -296,11 +313,80 @@ def get_meetings(request):
 """
 
 
-def get_add_meeting(request):
+def get_add_meeting(request, registration_id):
     # supposed to get the trainee id and the advisor id associated to the training program and sends that to this form view
     # it also MUST call the function that handles meetings conflict
-    return render_template('trainee/new-meeting.html', trainee=trainee)
-    z
+    token = request.cookies['token']
+    trainee1 = token_helper.verify_token(token)
+    if not trainee1:
+        flash("Invalid token", 'error')
+        return redirect(url_for('auth.login_view'))
+    registration_record = db.session.execute(text("""
+    SELECT * from training_registration where ID = :registration_id 
+    """), {"registration_id": registration_id}).fetchone()
+    if not registration_record:
+        return jsonify("passed condition")
+    else:
+        return render_template('trainee/new-meeting.html', trainee=trainee1, registration_record=registration_record)
+
+
+"""
+    This is the function that handles the meeting addition request
+"""
+
+
+def handle_meeting_add(request, registration_id):
+    # get the trainee from token
+    token = request.cookies['token']
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    trainee1 = token_helper.verify_token(token)
+    # get meeting data from request
+    meeting_details = request.form['details']
+    advisorID = request.form['advisor']
+    traineeID = request.form['trainee']
+    start_datetime = request.form['start']
+    end_datetime = request.form['end']
+    params = {
+        "registration_id": registration_id,
+        "meeting_details": meeting_details,
+        "advisorID": advisorID,
+        "traineeID": traineeID,
+        "start_datetime": start_datetime,
+        "end_datetime": end_datetime
+    }
+    if not meeting_details or not advisorID or not traineeID or not start_datetime or not end_datetime:
+        flash("Missing date", 'error')
+        return redirect(request.referrer)
+    # check for conflict
+    conflict = helper.resolve_conflict(new_meeting=params)
+    # if no conflict then add the meeting pending for approval from advisor
+    if conflict:
+        flash("meetings conflict", 'error')
+        return jsonify("huh?")
+    else:
+        # insert meeting to the database
+
+        params = {
+            "registration_id": registration_id,
+            "meeting_details": meeting_details,
+            "advisorID": advisorID,
+            "traineeID": traineeID,
+            "start_datetime": start_datetime,
+            "end_datetime": end_datetime
+        }
+        result = db.session.execute(
+            text(""" 
+            
+                INSERT INTO `meetings` (registration_id, meeting_details, start_datetime, end_datetime, status) 
+                VALUES (:registration_id,:meeting_details, :start_datetime, :end_datetime, 'pending')
+            """),
+            params
+        ).rowcount
+        db.session.commit()
+        flash("{0} ....... Waiting for advisor approval".format(result))
+        return redirect(url_for('trainee.get_meetings_view'))
 
 
 """
@@ -361,7 +447,8 @@ def handle_profile_update(request):
         "traineeID": trainee1["traineeID"]
     }
     result_set = db.session.execute(query, params).rowcount
-    # the user information is updated, but the thing is, this information must be reviewed, so the status must be pending
+    # the user information is updated, but the thing is, this information must be reviewed, so the status must be
+    # pending
     if result_set > 0:
         # success
         db.session.commit()

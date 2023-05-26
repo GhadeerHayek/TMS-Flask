@@ -20,7 +20,8 @@
                         <div class="card-body">
                             <h5 class="card-title">Meeting Details</h5>
                             <!-- Horizontal Form -->
-                            <form>
+                            <form method="POST"
+                                  action="{{ url_for('trainee.handle_meeting_add',  registration_id=registration_record[0]) }}">
                                 <div class="row mb-3">
                                     <label for="details" class="col-sm-2 col-form-label">Meeting Details</label>
                                     <div class="col-sm-10">
@@ -31,38 +32,31 @@
                                 <div class="row mb-3">
                                     <label for="advisor" class="col-sm-2 col-form-label">Advisor</label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="advisor" name="advisor"
-                                               value="predefined" disabled>
+                                        <input type="number" class="form-control" id="advisor" name="advisor"
+                                               value="{{ registration_record.advisorID }}">
                                     </div>
                                 </div>
 
                                 <div class="row mb-3">
                                     <label for="trainee" class="col-sm-2 col-form-label">Trainee</label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="trainee" name="trainee"
-                                               value="predefined" disabled>
+                                        <input type="number" class="form-control" id="trainee" name="trainee"
+                                               value="{{ registration_record.traineeID }}">
                                     </div>
                                 </div>
 
 
                                 <div class="row mb-3">
-                                    <label for="mdate" class="col-sm-2 col-form-label">Meeting Date</label>
+                                    <label for="start" class="col-sm-2 col-form-label">Start Datetime</label>
                                     <div class="col-sm-10">
-                                        <input type="date" class="form-control" id="mdate" name="mdate">
+                                        <input type="datetime-local" class="form-control" id="start" name="start">
                                     </div>
                                 </div>
 
                                 <div class="row mb-3">
-                                    <label for="start" class="col-sm-2 col-form-label">Start Time</label>
+                                    <label for="end" class="col-sm-2 col-form-label">End Datetime</label>
                                     <div class="col-sm-10">
-                                        <input type="time" class="form-control" id="start" name="start">
-                                    </div>
-                                </div>
-
-                                <div class="row mb-3">
-                                    <label for="end" class="col-sm-2 col-form-label">End Time</label>
-                                    <div class="col-sm-10">
-                                        <input type="time" class="form-control" id="end" name="end">
+                                        <input type="datetime-local" class="form-control" id="end" name="end">
                                     </div>
                                 </div>
 

@@ -31,7 +31,8 @@ def attendance_form_view(registration_id):
 
 @trainee_blueprint.route('/training/<registration_id>/add', methods=['GET'])
 def add_attendance_record_view(registration_id):
-    return trainee_controller.get_record_add(request,registration_id)
+    return trainee_controller.get_record_add(request, registration_id)
+
 
 @trainee_blueprint.route('/training/<registration_id>/add', methods=['POST'])
 def handle_attendance_record(registration_id):
@@ -48,9 +49,15 @@ def get_meetings_view():
     return trainee_controller.get_meetings(request)
 
 
-@trainee_blueprint.route('/meetings/add', methods=["GET"])
-def get_add_meeting_view():
-    return trainee_controller.get_add_meeting(request)
+@trainee_blueprint.route('/meetings/<registration_id>/add', methods=["GET"])
+def get_add_meeting_view(registration_id):
+    # the meeting has to be specific to a training
+    return trainee_controller.get_add_meeting(request, registration_id)
+
+
+@trainee_blueprint.route('/meeting/add/<registration_id>', methods=["POST"])
+def handle_meeting_add(registration_id):
+    return trainee_controller.handle_meeting_add(request, registration_id)
 
 
 @trainee_blueprint.route('/profile', methods=["GET"])

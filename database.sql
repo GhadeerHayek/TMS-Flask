@@ -127,24 +127,28 @@ CREATE TABLE balance_sheet
 );
 
 
-CREATE TABLE meeting
+CREATE TABLE meetings
 (
     meetingID       int PRIMARY KEY AUTO_INCREMENT,
-    traineeID       int          NOT NULL,
-    advisorID       int          NOT NULL,
+    -- traineeID       int          NOT NULL,
+    -- advisorID       int          NOT NULL,
+    -- the meeting has to be specific for a training
+    registration_id int,
     meeting_details varchar(250) NOT NULL,
-    meeting_link    varchar(50),
-    date            datetime     NOT NULL,
-    start_time      datetime     NOT NULL,
-    end_time        datetime     NOT NULL,
+    meeting_link    varchar(50) default NULL,
+    start_datetime  datetime     NOT NULL,
+    end_datetime    datetime     NOT NULL,
     -- for meeting management purposes, there's a status field
     status          ENUM (
-        'approved', -- approved by the advisor
-        'cancelled' -- cancelled by the advisor
+        'approved',  -- approved by the advisor
+        'cancelled', -- cancelled by the advisor
+        'pending'    -- waiting for advisor approve
         -- what about rescheduled? this question until the meeting feature is implemented
         )                        NOT NULL,
-    FOREIGN KEY (traineeID) REFERENCES trainees (traineeID) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (advisorID) REFERENCES advisors (advisorID) ON DELETE CASCADE ON UPDATE CASCADE
+    -- FOREIGN KEY (traineeID) REFERENCES trainees (traineeID) ON DELETE CASCADE ON UPDATE CASCADE,
+    -- FOREIGN KEY (advisorID) REFERENCES advisors (advisorID) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (registration_id) REFERENCES training_registration (ID) ON DELETE CASCADE ON UPDATE CASCADE
+
 );
 
 
@@ -287,3 +291,7 @@ WHERE ID = 1;
 -- attendance records must have notes field, training_program_registrationID
 INSERT INTO attendance_records (training_programID, date, check_in, check_out)
 VALUES (1, '2023-05-26', '6:06', '5:05');
+
+-- insertion to meetings table, whenever a meeting is not conflicting with anyone
+INSERT INTO `meetings`(`registration_id`, `meeting_details`, `date`, `start_time`, `end_time`, `status`)
+VALUES (1, 'Follow up meeting', '2023-05-26', '15:15', '16:16', 'approved');
