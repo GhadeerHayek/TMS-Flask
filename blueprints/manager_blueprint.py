@@ -68,6 +68,16 @@ def get_pending_advisors_view():
     return manager_advisor_controller.get_pending_advisors(request)
 
 
+@manager_blueprint.route('/approve/advisor', methods=["POST"])
+def approve_advisor():
+    return manager_advisor_controller.approve_advisors_registration(request)
+
+
+@manager_blueprint.route('/reject/advisor', methods=["POST"])
+def reject_advisor():
+    return manager_advisor_controller.reject_advisors_registration(request)
+
+
 @manager_blueprint.route('/advisors/deactivate', methods=["GET"])
 def get_deactivate_advisors_view():
     return manager_advisor_controller.get_deactivate_advisors(request)
@@ -81,6 +91,18 @@ def get_advisors_accounts_view():
 @manager_blueprint.route('/advisors/account/details', methods=["GET"])
 def get_advisors_accounts_details_view():
     return manager_advisor_controller.get_advisor_account_details(request)
+
+
+
+@manager_blueprint.route('/advisors/approve/modifications', methods=["POST"])
+def accept_advisor_modification():
+    return manager_advisor_controller.accept_advisor_modifications(request)
+
+
+
+@manager_blueprint.route('/advisors/account/details', methods=["POST"])
+def reject_advisor_modification():
+    return manager_advisor_controller.reject_advisor_modifications(request)
 
 
 @manager_blueprint.route('/programs', methods=["GET"])
