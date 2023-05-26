@@ -95,26 +95,37 @@ def handle_program_application(request, training_program_id):
         flash("Invalid token", 'error')
         return redirect(url_for('auth.login_view'))
     # the trainee can only have one training program at a time, so check that first
-    if trainee1['status'] == 'on_training':
+    current_status = db.session.execute(
+        text(
+            """
+            SELECT status from trainees where traineeID = :traineeID
+            """
+        ), {
+            "traineeID": trainee1['traineeID']
+        }
+    ).fetchone()[0]
+    if current_status == 'on_training':
         flash('You are already on training', 'error')
         # TODO: is sufficient to flash messages?
-    # if not, then add the training program to the registered training programs
-    # the default registration status is pending, waiting for approval by the manager
-    query = text(""" INSERT INTO training_registration  (training_program_id, traineeID, training_request_status)
-    VALUES (:training_program_id, :traineeID, 'pending');
-    """)
-    params = {'training_program_id': training_program_id, 'traineeID': trainee1["traineeID"]}
-    result = db.session.execute(query, params)
-    if not result:
-        flash('failed to apply, please try again')
         return redirect(request.referrer)
-    db.session.commit()
-    flash("Your training application is in review, wait for reply", 'error')
-    # NOTE: the trainee can submit any number of application as long as his status is active
-    # the manager should see all of these applications.
-    # once an application is approved, the trainee status has to be "on_training", assigns advisor, assigns form_id
-    # but what happens for all other applications? revoked?
-    return redirect(url_for('trainee.programs_view'))
+    else:
+        # if not, then add the training program to the registered training programs
+        # the default registration status is pending, waiting for approval by the manager
+        query = text(""" INSERT INTO training_registration  (training_program_id, traineeID, status)
+        VALUES (:training_program_id, :traineeID, 'pending');
+        """)
+        params = {'training_program_id': training_program_id, 'traineeID': trainee1["traineeID"]}
+        result = db.session.execute(query, params)
+        if not result:
+            flash('failed to apply, please try again')
+            return redirect(request.referrer)
+        db.session.commit()
+        flash("Your training application is in review, wait for reply", 'error')
+        # NOTE: the trainee can submit any number of application as long as his status is active
+        # the manager should see all of these applications.
+        # once an application is approved, the trainee status has to be "on_training", assigns advisor, assigns form_id
+        # but what happens for all other applications? revoked?
+        return redirect(url_for('trainee.programs_view'))
 
 
 """
@@ -138,23 +149,34 @@ def get_training(request):
         flash("Invalid token", 'error')
         return redirect(url_for('auth.login_view'))
     # from this trainee, we'll get its status (on_training)
+    current_status = db.session.execute(
+        text(
+            """
+            SELECT status from trainees where traineeID = :traineeID
+            """
+        ), {
+            "traineeID": trainee1['traineeID']
+        }
+    ).fetchone()[0]
     # if the current status is not on_training then we'll display an empty page,
     # or a flashed message .. whatever error is
-    if trainee1['status'] != 'on_training':
+    if current_status != 'on_training':
         flash("No current training to display")
-    # if the current_status is on_training, then we'll select the application_registiration record using the trainee_id
-    query = text("""
-        SELECT * from training_registration where traineeID = :traineeID and status = 'approved'
-    """)
-    registered_program1 = db.session.execute(query, {"traineeID": trainee1['traineeID']}).fetchone()
-    # this record contains IDs
-    # data: registiration id, training program id, advisor id, attendance form id, status of the registiration itself
-    # the attendance form id is a link to a page that displays all the attendance records related to the whole thing
-    # the training program is also a link to a page that displays the training program details in a card format
-    # I haven't decided what to do with the advisor ID, i could display an advisor card
-    if not registered_program1:
-        flash("Failed to get training", 'error')
-    return render_template('trainee/training.html', trainee=trainee1, registered_program=registered_program1)
+        return redirect(request.referrer)
+    else:
+        # if the current_status is on_training, then we'll select the application_registiration record using the trainee_id
+        query = text("""
+                        SELECT * from training_registration where traineeID = :traineeID and status = 'approved'
+                    """)
+        registered_program1 = db.session.execute(query, {"traineeID": trainee1['traineeID']}).fetchone()
+        # this record contains IDs
+        # data: registiration id, training program id, advisor id, attendance form id, status of the registiration itself
+        # the attendance form id is a link to a page that displays all the attendance records related to the whole thing
+        # the training program is also a link to a page that displays the training program details in a card format
+        # I haven't decided what to do with the advisor ID, i could display an advisor card
+        if not registered_program1:
+            flash("Failed to get training", 'error')
+        return render_template('trainee/training.html', trainee=trainee1, registered_program=registered_program1)
 
 
 """
