@@ -36,7 +36,7 @@ HAVING training_registration.advisorID = :advisorID;
             if meeting[1] < datetime.strptime(new_meeting["end_datetime"], "%Y-%m-%dT%H:%M") and datetime.strptime(
                     new_meeting["start_datetime"], "%Y-%m-%dT%H:%M") < meeting[2]:
                 conflicts.append(meeting)
-        if conflicts:
+        if len(conflicts) == 0:
             # TODO: Handle conflicts (e.g., reschedule conflicting meetings or notify the parties)
             return True
         return False

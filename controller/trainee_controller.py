@@ -364,7 +364,7 @@ def handle_meeting_add(request, registration_id):
     # if no conflict then add the meeting pending for approval from advisor
     if conflict:
         flash("meetings conflict", 'error')
-        return jsonify("huh?")
+        return redirect(request.referrer)
     else:
         # insert meeting to the database
 

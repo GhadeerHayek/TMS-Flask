@@ -56,6 +56,22 @@
                                     <button type="submit" class="btn btn-primary">Add</button>
                                     <button type="reset" class="btn btn-secondary">Reset</button>
                                 </div>
+                                {% with messages = get_flashed_messages() %}
+                                    {% if messages %}
+                                        <ul class="flash-messages">
+                                            {% for message in messages %}
+                                                <div class="alert alert-danger bg-danger text-light border-0 alert-dismissible fade show"
+                                                     role="alert">
+                                                    {{ message }}
+                                                    <button type="button" class="btn-close btn-close-white"
+                                                            data-bs-dismiss="alert"
+                                                            aria-label="Close"></button>
+                                                </div>
+                                            {% endfor %}
+                                        </ul>
+
+                                    {% endif %}
+                                {% endwith %}
                             </form><!-- End Horizontal Form -->
                         </div>
                     </div>
