@@ -1,5 +1,4 @@
 {% extends "layouts/trainee_base.html" %}
-
 {% block title %} Add Attendance Records {% endblock %}
 {% block content %}
     <main id="main" class="main">
@@ -8,17 +7,13 @@
             <nav>
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ url_for('trainee.dashboard_view') }}">Trainee</a></li>
-                    <li class="breadcrumb-item"><a href="{{ url_for('trainee.training_view') }}">My Training
-                        Program</a></li>
-                    <li class="breadcrumb-item"><a
-                            href="{{ url_for('trainee.attendance_form_view', registration_id=registration_id) }}">Attendance
-                        Form</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('trainee.training_view') }}">My Training Program</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('trainee.attendance_form_view', registration_id=registration_id) }}">Attendance Form</a></li>
                     <li class="breadcrumb-item"><a href="#">Records</a></li>
                     <li class="breadcrumb-item"><a href="#">Add</a></li>
                 </ol>
             </nav>
         </div><!-- End Page Title -->
-
         <section class="section">
             <div class="row">
                 <div class="col-lg-12">
@@ -42,7 +37,6 @@
                                                name="startTime">
                                     </div>
                                 </div>
-
                                 <div class="row mb-3">
                                     <label for="endTime" class="col-sm-2 col-form-label">End Time
                                     </label>
@@ -69,7 +63,6 @@
                                                 </div>
                                             {% endfor %}
                                         </ul>
-
                                     {% endif %}
                                 {% endwith %}
                             </form><!-- End Horizontal Form -->

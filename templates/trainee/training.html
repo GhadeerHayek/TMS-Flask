@@ -1,5 +1,4 @@
 {% extends "layouts/trainee_base.html" %}
-
 {% block title %} My Training Program {% endblock %}
 {% block content %}
     <main id="main" class="main">
@@ -8,12 +7,10 @@
             <nav>
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ url_for('trainee.dashboard_view') }}">Trainee</a></li>
-                    <li class="breadcrumb-item"><a href="#">My Training
-                        Program</a></li>
+                    <li class="breadcrumb-item"><a href="#">My Training Program</a></li>
                 </ol>
             </nav>
         </div><!-- End Page Title -->
-
         <section class="section">
             <div class="row">
                 <div class="col-lg-12">
@@ -41,7 +38,11 @@
                                     <td>{{ registered_program.advisorID }}</td>
                                     <td>{{ registered_program.status }}</td>
                                     <td>
-                                        <a href="{{ url_for('trainee.attendance_form_view', registration_id = registered_program.ID) }}">Details</a>
+                                        {% if  not registered_program.ID%}
+                                        -
+                                        {% else %}
+                                            <a href="{{ url_for('trainee.attendance_form_view', registration_id = registered_program.ID) }}">Details</a>
+                                        {% endif %}
                                     </td>
                                 </tr>
                                 </tbody>
@@ -55,37 +56,13 @@
                                                 {{ message }}
                                                 <button type="button" class="btn-close btn-close-white"
                                                         data-bs-dismiss="alert"
-                                                        aria-label="Close"></button>
+                                                        aria-label="Close">
+                                                </button>
                                             </div>
                                         {% endfor %}
                                     </ul>
-
                                 {% endif %}
                             {% endwith %}
-                            <div class="modal fade" id="verticalycentered" tabindex="-1">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title">Vertically Centered</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            Non omnis incidunt qui sed occaecati magni asperiores est mollitia. Soluta
-                                            at et reprehenderit. Placeat autem numquam et fuga numquam. Tempora in
-                                            facere consequatur sit dolor ipsum. Consequatur nemo amet incidunt est
-                                            facilis. Dolorem neque recusandae quo sit molestias sint dignissimos.
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                                Close
-                                            </button>
-                                            <button type="button" class="btn btn-primary">Save changes</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div><!-- End Vertically centered Modal-->
-
                         </div>
                     </div>
                 </div>

@@ -2,7 +2,7 @@
 
 {% block title %} Trainee Profile {% endblock %}
 {% block content %}
-    <!-- Manager Dashboard contents goes here, feel free to add whatever you want -->
+    <!-- Trainee Dashboard contents goes here, feel free to add whatever you want -->
     <main id="main" class="main">
 
         <div class="pagetitle">
@@ -15,14 +15,11 @@
                 </ol>
             </nav>
         </div><!-- End Page Title -->
-
         <section class="section profile">
             <div class="row">
                 <div class="col-xl-4">
-
                     <div class="card">
                         <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
-
                             <img src="../static/assets/img/profile-img.jpg" alt="Profile" class="rounded-circle">
                             <h2>{{ trainee.username }}</h2>
                             <h3>{{ trainee.desired_field }}</h3>
@@ -34,68 +31,53 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
-
                 <div class="col-xl-8">
-
                     <div class="card">
                         <div class="card-body pt-3">
                             <!-- Bordered Tabs -->
                             <ul class="nav nav-tabs nav-tabs-bordered">
-
                                 <li class="nav-item">
                                     <button class="nav-link active" data-bs-toggle="tab"
                                             data-bs-target="#profile-overview">Overview
                                     </button>
                                 </li>
-
                                 <li class="nav-item">
                                     <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Edit
                                         Profile
                                     </button>
                                 </li>
-
                                 <li class="nav-item">
                                     <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-settings">
                                         Settings
                                     </button>
                                 </li>
-
                                 <li class="nav-item">
                                     <button class="nav-link" data-bs-toggle="tab"
                                             data-bs-target="#profile-change-password">Change Password
                                     </button>
                                 </li>
-
                             </ul>
                             <div class="tab-content pt-2">
-
                                 <div class="tab-pane fade show active profile-overview" id="profile-overview">
                                     <h5 class="card-title">About</h5>
                                     <p class="small fst-italic">
                                         Perhaps we should add a `description` field in the trainee schema,
                                         `phone`
                                     </p>
-
                                     <h5 class="card-title">Profile Details</h5>
-
                                     <div class="row">
                                         <div class="col-lg-3 col-md-4 label ">Full Name</div>
                                         <div class="col-lg-9 col-md-8">{{ trainee.fullname }}</div>
                                     </div>
-
                                     <div class="row">
                                         <div class="col-lg-3 col-md-4 label">Area of Interest</div>
                                         <div class="col-lg-9 col-md-8">{{ trainee.area_of_training }}</div>
                                     </div>
-
                                     <div class="row">
                                         <div class="col-lg-3 col-md-4 label">Desired Field</div>
                                         <div class="col-lg-9 col-md-8">{{ trainee.desired_field }}</div>
                                     </div>
-
-
                                     <div class="row">
                                         <div class="col-lg-3 col-md-4 label">Email</div>
                                         <div class="col-lg-9 col-md-8">{{ trainee.email }}</div>
@@ -105,11 +87,8 @@
                                         <div class="col-lg-3 col-md-4 label">Phone</div>
                                         <div class="col-lg-9 col-md-8">(436) 486-3538 x29071</div>
                                     </div>
-
                                 </div>
-
                                 <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
-
                                     <!-- Profile Edit Form -->
                                     <form method="POST" action="{{ url_for('trainee.profile_edit') }}">
                                         <div class="row mb-3">
@@ -141,16 +120,6 @@
                                                        value="{{ trainee.fullname }}">
                                             </div>
                                         </div>
-                                        <!--
-                                        <div class="row mb-3">
-                                            <label for="about" class="col-md-4 col-lg-3 col-form-label">About</label>
-                                            <div class="col-md-8 col-lg-9">
-                                                <textarea name="about" class="form-control" id="about"
-                                                          style="height: 100px">Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Tempora libero non est unde veniam est qui dolor. Ut sunt iure rerum quae quisquam autem eveniet perspiciatis odit. Fuga sequi sed ea saepe at unde.</textarea>
-                                            </div>
-                                        </div>
-                                        -->
-
                                         <div class="row mb-3">
                                             <label for="area"
                                                    class="col-md-4 col-lg-3 col-form-label">Area of Training</label>
@@ -159,7 +128,6 @@
                                                        value="{{ trainee.area_of_training }}">
                                             </div>
                                         </div>
-
                                         <div class="row mb-3">
                                             <label for="desiredField" class="col-md-4 col-lg-3 col-form-label">Desired
                                                 Field</label>
@@ -169,7 +137,6 @@
                                                        value="{{ trainee.desired_field }}">
                                             </div>
                                         </div>
-
                                         <div class="row mb-3">
                                             <label for="email"
                                                    class="col-md-4 col-lg-3 col-form-label">Email</label>
@@ -178,53 +145,6 @@
                                                        value="{{ trainee.email }}">
                                             </div>
                                         </div>
-
-                                        <!--
-                                        <div class="row mb-3">
-                                            <label for="Phone" class="col-md-4 col-lg-3 col-form-label">Phone</label>
-                                            <div class="col-md-8 col-lg-9">
-                                                <input name="phone" type="text" class="form-control" id="Phone"
-                                                       value="(436) 486-3538 x29071">
-                                            </div>
-                                        </div>
-
-
-                                        <div class="row mb-3">
-                                            <label for="Twitter" class="col-md-4 col-lg-3 col-form-label">Twitter
-                                                Profile</label>
-                                            <div class="col-md-8 col-lg-9">
-                                                <input name="twitter" type="text" class="form-control" id="Twitter"
-                                                       value="https://twitter.com/#">
-                                            </div>
-                                        </div>
-
-                                        <div class="row mb-3">
-                                            <label for="Facebook" class="col-md-4 col-lg-3 col-form-label">Facebook
-                                                Profile</label>
-                                            <div class="col-md-8 col-lg-9">
-                                                <input name="facebook" type="text" class="form-control" id="Facebook"
-                                                       value="https://facebook.com/#">
-                                            </div>
-                                        </div>
-
-                                        <div class="row mb-3">
-                                            <label for="Instagram" class="col-md-4 col-lg-3 col-form-label">Instagram
-                                                Profile</label>
-                                            <div class="col-md-8 col-lg-9">
-                                                <input name="instagram" type="text" class="form-control" id="Instagram"
-                                                       value="https://instagram.com/#">
-                                            </div>
-                                        </div>
-
-                                        <div class="row mb-3">
-                                            <label for="Linkedin" class="col-md-4 col-lg-3 col-form-label">Linkedin
-                                                Profile</label>
-                                            <div class="col-md-8 col-lg-9">
-                                                <input name="linkedin" type="text" class="form-control" id="Linkedin"
-                                                       value="https://linkedin.com/#">
-                                            </div>
-                                        </div>
--->
                                         <div class="text-center">
                                             <button type="submit" class="btn btn-primary">Request Changes</button>
                                         </div>
@@ -244,48 +164,10 @@
                                             {% endif %}
                                         {% endwith %}
                                     </form><!-- End Profile Edit Form -->
-
                                 </div>
-
                                 <div class="tab-pane fade pt-3" id="profile-settings">
-
                                     <!-- Settings Form -->
                                     <form method="POST" action="{{ url_for('trainee.profile_deactivate') }}">
-                                        <!--
-                                        <div class="row mb-3">
-                                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Email
-                                                Notifications</label>
-                                            <div class="col-md-8 col-lg-9">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="changesMade"
-                                                           checked>
-                                                    <label class="form-check-label" for="changesMade">
-                                                        Changes made to your account
-                                                    </label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="newProducts"
-                                                           checked>
-                                                    <label class="form-check-label" for="newProducts">
-                                                        Information on new products and services
-                                                    </label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="proOffers">
-                                                    <label class="form-check-label" for="proOffers">
-                                                        Marketing and promo offers
-                                                    </label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="securityNotify"
-                                                           checked disabled>
-                                                    <label class="form-check-label" for="securityNotify">
-                                                        Security alerts
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
--->
                                         <div class="text-center">
                                             <button type="submit" class="btn btn-danger">Deactivate Account</button>
                                         </div>
@@ -306,9 +188,7 @@
                                             {% endif %}
                                         {% endwith %}
                                     </form><!-- End settings Form -->
-
                                 </div>
-
                                 <div class="tab-pane fade pt-3" id="profile-change-password">
                                     <!-- Change Password Form -->
                                     <form>
@@ -321,7 +201,6 @@
                                                        id="currentPassword">
                                             </div>
                                         </div>
-
                                         <div class="row mb-3">
                                             <label for="newPassword" class="col-md-4 col-lg-3 col-form-label">New
                                                 Password</label>
@@ -330,7 +209,6 @@
                                                        id="newPassword">
                                             </div>
                                         </div>
-
                                         <div class="row mb-3">
                                             <label for="renewPassword" class="col-md-4 col-lg-3 col-form-label">Re-enter
                                                 New Password</label>
@@ -339,22 +217,17 @@
                                                        id="renewPassword">
                                             </div>
                                         </div>
-
                                         <div class="text-center">
                                             <button type="submit" class="btn btn-primary">Change Password</button>
                                         </div>
                                     </form><!-- End Change Password Form -->
-
                                 </div>
-
                             </div><!-- End Bordered Tabs -->
-
                         </div>
                     </div>
 
                 </div>
             </div>
         </section>
-
     </main><!-- End #main -->
 {% endblock %}
