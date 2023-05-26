@@ -13,7 +13,7 @@ def verify_manager(token):
     if not payload:
         flash('Paylod not found', 'error')
         return redirect(url_for('auth.login_view'))
-    query = text("SELECT * from managers where userID ")
+    query = text("SELECT * from managers where userID=:userID ")
     result_set = db.session.execute(query, {'userID':payload['userID']})
     manager = result_set.fetchone()
     if not manager: 

@@ -47,34 +47,39 @@ def send_email(request):
     # sender email credentials 
     token = request.cookies['token']
     manager = mghelper.verify_manager(token)
-    print(manager)
-    return mghelper.verify_manager(token)
-    # gmail_user = 'your_email@gmail.com'
-    # gmail_password = 'your_password'
+    # print(manager.email)
 
-    # sent_from = gmail_user
-    # # recipient credentials 
-    # to = ['person_a@gmail.com', 'person_b@gmail.com']
-    # subject = 'Lorem ipsum dolor sit amet'
-    # body = 'consectetur adipiscing elit'
+    recipient = request.form['email']
+    message = request.form['message']
+    subject = request.form['subject']
+ 
+    # return mghelper.verify_manager(manager.email)
 
-    # email_text = """\
-    # From: %s
-    # To: %s
-    # Subject: %s
+    gmail_user = 'ayahs19302@gmail.com'
+    gmail_password = 'mylafamilia'
+    sent_from = gmail_user
+    # recipient credentials 
+    to = ['hudaelshawa@gmail.com@gmail.com']
+    subject = 'testting flask'
+    body = 'i hope it wokrls adipiscing elit'
 
-    # %s
-    # """ % (sent_from, ", ".join(to), subject, body)
+    email_text = """\
+    From: %s
+    To: %s
+    Subject: %s
 
-    # try:
-    #     smtp_server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-    #     smtp_server.ehlo()
-    #     smtp_server.login(gmail_user, gmail_password)
-    #     smtp_server.sendmail(sent_from, to, email_text)
-    #     smtp_server.close()
-    #     print ("Email sent successfully!")
-    # except Exception as ex:
-    #     print ("Something went wrong….",ex)
+    %s
+    """ % (sent_from, ", ".join(to), subject, body)
+
+    try:
+        smtp_server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        smtp_server.ehlo()
+        smtp_server.login(gmail_user, gmail_password)
+        smtp_server.sendmail(sent_from, to, email_text)
+        smtp_server.close()
+        print ("Email sent successfully!")
+    except Exception as ex:
+        print ("Something went wrong….",ex)
 
 
 def get_system_log(request):

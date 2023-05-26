@@ -188,7 +188,13 @@
             <ul id="trainees-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                 <li>
                     <a href="{{ url_for('manager.get_pending_trainees_view') }}">
-                        <i class="bi bi-circle"></i><span>Approve Registration</span>
+                        <i class="bi bi-circle"></i><span>Approve Trainee Registration</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ url_for('manager.get_training_requests') }}">
+                        <i class="bi bi-circle"></i><span>Approve Training Requests</span>
                     </a>
                 </li>
 

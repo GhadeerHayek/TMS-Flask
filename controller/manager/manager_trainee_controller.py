@@ -27,8 +27,6 @@ def get_pending_trainees(request):
     This is the controller function that handles the approve button in the pending trainees view
     it's actually not yet implemented or linked to its view
 """
-
-
 def approve_trainee_registration(request):
     token = request.cookies['token']
     # make sure manager is authorized
@@ -81,6 +79,18 @@ def reject_trainee_registration(request):
         return redirect(url_for('manager.get_pending_trainees_view'))
     flash('Trainee rejected successfully', 'success')
     return redirect(url_for('manager.get_pending_trainees_view'))
+
+
+def get_training_requests_view():
+    pass
+
+
+def approve_training_request():
+    pass
+
+
+def reject_training_request():
+    pass
 
 
 def get_trainee_account(request):

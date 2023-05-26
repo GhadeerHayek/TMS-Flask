@@ -25,6 +25,21 @@ def reject_trainee():
     return manager_trainee_controller.reject_trainee_registration(request)
 
 
+@manager_blueprint.route('/training/requests', methods=["GET"])
+def get_training_requests():
+    return manager_trainee_controller.get_training_requests_view(request)
+
+
+@manager_blueprint.route('/training/requests/approve', methods=["POST"])
+def approve_training_requests():
+    return manager_trainee_controller.approve_training_request(request)
+
+
+@manager_blueprint.route('/training/requests/reject', methods=["POST"])
+def reject_training_requests():
+    return manager_trainee_controller.reject_training_request(request)
+
+
 @manager_blueprint.route('/trainees/deactivate/all', methods=["GET"])
 def get_deactivate_trainees_view():
     return manager_trainee_controller.get_deactivate_trainees(request)
