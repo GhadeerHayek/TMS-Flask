@@ -11,19 +11,10 @@ import os
 
 
 def generate_token(user_record):
-    # set token expiry date
-    exp_time = datetime.utcnow() + timedelta(hours=1)
-    # prepare payload
-    token_payload = {
-        "userID": user_record[0],
-        "password": user_record[1],
-        "classification": user_record[2],
-        "email": user_record[3],
-        "expire": exp_time.strftime('%Y-%m-%d %H:%M:%S')
-    }
+    # TODO: token expiration
     # generate token
     token = jwt.encode(
-        token_payload, os.getenv('SECRET_KEY'), algorithm='HS256')
+        user_record, os.getenv('SECRET_KEY'), algorithm='HS256')
     return token
 
 
@@ -38,20 +29,21 @@ def verify_token(token):
         payload = jwt.decode(token, os.getenv('SECRET_KEY'), algorithms=['HS256'])
         # if it reaches this line, this means that it's decoded correctly
         # check expiration time
-        if 'expire' in payload:
-            exp_time = datetime.strptime(payload['expire'], '%Y-%m-%d %H:%M:%S')
-            if datetime.utcnow() > exp_time:
-                return False
-            # token not expired and return data
-            payload = {
-                "userID": payload["userID"],
-                "password": payload["password"],
-                "classification": payload["classification"],
-                "email": payload["email"],
-            }
-            return payload
-        else:
-            return False
+        # if 'expire' in payload:
+        #     exp_time = datetime.strptime(payload['expire'], '%Y-%m-%d %H:%M:%S')
+        #     if datetime.utcnow() > exp_time:
+        #         return False
+        #     # token not expired and return data
+        #     payload = {
+        #         "userID": payload["userID"],
+        #         "password": payload["password"],
+        #         "classification": payload["classification"],
+        #         "email": payload["email"],
+        #     }
+        #     return payload
+        # else:
+        #     return False
+        return payload
     except jwt.exceptions.DecodeError:
         # if it reaches this line, this means that it's decoded incorrectly
         return False
