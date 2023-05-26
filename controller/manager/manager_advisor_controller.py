@@ -100,10 +100,11 @@ def get_advisor_account_details(request):
     userID = request.args.get('id')
     query = text("SELECT * from advisors where userID = :userID")
     result_cursor = db.session.execute(query, {'userID':userID})
-    rows = result_cursor.fetchall()
-    advisor = []
-    for row in rows:
-        advisor.append(row._data)
+    advisor = result_cursor.fetchone()
+    # advisor = []
+    # for row in rows:
+    #     advisor.append(row._data)
+    print(advisor.fullName)
     return render_template("manager/advisor/advisor-profile-details.html", manager=manager, advisor=advisor)
 
 

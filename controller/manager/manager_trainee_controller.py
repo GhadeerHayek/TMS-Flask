@@ -102,12 +102,12 @@ def get_trainee_account_details(request):
     userID = request.args.get('id')
     query = text("SELECT * from trainees where userID = :userID")
     result_cursor = db.session.execute(query, {'userID':userID})
-    rows = result_cursor.fetchall()
-    trainee = []
-    for row in rows:
-        trainee.append(row._data)
-    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-    print(trainee)
+    trainee = result_cursor.fetchone()
+    # trainee = []
+    # for row in rows:
+    #     trainee.append(row._data)
+    # print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    # print(trainee)
     return render_template("manager/trainee/trainee-profile-details.html", trainee=trainee, manager=manager)
 
 
