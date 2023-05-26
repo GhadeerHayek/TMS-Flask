@@ -112,6 +112,7 @@ def deactivate_advisor():
 def reject_deactivate_advisor():
     return manager_advisor_controller.reject_advisor_deactivation(request)
 
+# Progam Routes
 
 @manager_blueprint.route('/programs', methods=["GET"])
 def get_all_programs_view():
@@ -134,4 +135,19 @@ def get_balance_sheet_view():
 
 
 
+# Manager - Emailing
+@manager_blueprint.route('/email/create', methods=["GET"])
+def get_email_form():
+    return manager_controller.get_email_form(request)
+
+
+@manager_blueprint.route('/email/send', methods=["POST"])
+def send_email():
+    return manager_controller.send_email(request)
+
+
+
 # Manager - System Log
+@manager_blueprint.route('/systemlog', methods=["GET"])
+def get_system_log():
+    return manager_controller.get_system_log(request)

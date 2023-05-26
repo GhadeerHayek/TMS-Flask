@@ -1,27 +1,24 @@
 from flask import request, render_template, jsonify
 from sqlalchemy import text
+import helpers.manager_helper as mghelper
 from app import db
 
-manager = {
-    "id": "100",
-    "username": "Jupiter2000",
-    "email": "jupiter@gmail.com"
-}
+
+
 """
     gets all available programs, returns the view that displays all the programs alongside with this data
 """
-
-
 def get_all_programs(request):
-    # execute query to select all the training programs
-    # prepare the resultSet
-    # return the view with the result
-    # program has: id, name, description, area, fees, start date, end date
-    programs = [
-        ["1", "program1", "program1 description", "area1", "money", "somedate", "somedate"],
-        ["2", "program2", "program2 description", "area1", "money", "somedate", "somedate"],
-        ["3", "program3", "program3 description", "area1", "money", "somedate", "somedate"],
-    ]
+    token = request.cookies['token']
+    manager = mghelper.verify_manager(token)
+
+    # token is the manager id or the manager record
+    query = text("SELECT * FROM training_programs")
+    result_cursor = db.session.execute(query)
+    rows = result_cursor.fetchall()
+    programs = []
+    for row in rows:
+        programs.append(row._data)
     return render_template("manager/training-program/all_programs.html", manager=manager, programs=programs)
 
 
@@ -31,6 +28,8 @@ def get_all_programs(request):
 
 
 def get_add_program(request):
+    token = request.cookies['token']
+    manager = mghelper.verify_manager(token)
     # must prepare areas so that it could be a drop-down list
     areas = ['area1', 'area2', 'area3']
     return render_template('manager/training-program/add_program.html', manager=manager, areas=areas)
@@ -42,6 +41,8 @@ def get_add_program(request):
 
 
 def handle_add_program(request):
+    token = request.cookies['token']
+    manager = mghelper.verify_manager(token)
     pass
 
 
@@ -51,6 +52,8 @@ def handle_add_program(request):
 
 
 def get_edit_program(request):
+    token = request.cookies['token']
+    manager = mghelper.verify_manager(token)
     # must prepare areas so that it could be a drop-down list
     areas = ['area1', 'area2', 'area3']
     # also must fetch the program details from the database and fill it in the form
@@ -65,6 +68,8 @@ def get_edit_program(request):
 
 
 def handle_edit_program(request):
+    token = request.cookies['token']
+    manager = mghelper.verify_manager(token)
     pass
 
 
@@ -74,4 +79,6 @@ def handle_edit_program(request):
 
 
 def handle_delete_program(request):
+    token = request.cookies['token']
+    manager = mghelper.verify_manager(token)
     pass

@@ -31,3 +31,18 @@ def get_balance_sheet(request):
         ["3", "program registration 3", "credit", 100, "some trainee id", "some datetime"],
     ]
     return render_template("manager/billing.html", transactions=transactions, manager=manager)
+
+
+def get_email_form(request):
+    token = request.cookies['token']
+    manager = mghelper.verify_manager(token)
+    return render_template("manager/mailing.html", manager=manager)
+
+
+
+def send_email(request):
+    pass
+
+
+def get_system_log(request):
+    pass

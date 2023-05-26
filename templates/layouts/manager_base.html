@@ -183,7 +183,7 @@
 
         <li class="nav-item">
             <a class="nav-link collapsed" data-bs-target="#trainees-nav" data-bs-toggle="collapse" href="#">
-                <i class="bi bi-menu-button-wide"></i><span>Trainees</span><i class="bi bi-chevron-down ms-auto"></i>
+                <i class="bi bi-people"></i><span>Trainees</span><i class="bi bi-chevron-down ms-auto"></i>
             </a>
             <ul id="trainees-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                 <li>
@@ -209,7 +209,7 @@
 
         <li class="nav-item">
             <a class="nav-link collapsed" data-bs-target="#advisors-nav" data-bs-toggle="collapse" href="#">
-                <i class="bi bi-menu-button-wide"></i><span>Advisors</span><i class="bi bi-chevron-down ms-auto"></i>
+                <i class="bi bi-people"></i><span>Advisors</span><i class="bi bi-chevron-down ms-auto"></i>
             </a>
             <ul id="advisors-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                 <li>
@@ -257,11 +257,17 @@
             </a>
         </li>
 
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="{{ url_for('manager.get_email_form') }}">
+                <i class="bi bi-envelope"></i>
+                <span>Send an Email</span>
+            </a>
+        </li>
 
         <li class="nav-item">
-            <a class="nav-link collapsed" href="#">
+            <a class="nav-link collapsed" href="{{ url_for('manager.get_system_log') }}">
                 <i class="bi bi-archive"></i>
-                <span>System Log</span>
+                <span>System Log</span>                
             </a>
         </li>
     </ul>
