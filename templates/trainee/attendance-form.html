@@ -43,7 +43,7 @@
                                 {% endfor %}
                                 </tbody>
                             </table>
-                            <a class="btn btn-primary" href="{{ url_for('trainee.add_attendance_record_view') }}">Add
+                            <a class="btn btn-primary" href="{{ url_for('trainee.add_attendance_record_view', registration_id=registration_id) }}">Add
                                 new record</a>
                             <div class="modal fade" id="verticalycentered" tabindex="-1">
                                 <div class="modal-dialog modal-dialog-centered">

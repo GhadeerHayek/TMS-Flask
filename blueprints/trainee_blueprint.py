@@ -29,13 +29,13 @@ def attendance_form_view(registration_id):
     return trainee_controller.get_attendance_form(request, registration_id)
 
 
-@trainee_blueprint.route('/training/form/add', methods=['GET'])
-def add_attendance_record_view():
-    return trainee_controller.get_record_add(request)
+@trainee_blueprint.route('/training/<registration_id>/add', methods=['GET'])
+def add_attendance_record_view(registration_id):
+    return trainee_controller.get_record_add(request,registration_id)
 
-@trainee_blueprint.route('/training/form/add', methods=['POST'])
-def handle_attendance_record():
-    return trainee_controller.handle_attendance_record_add(request)
+@trainee_blueprint.route('/training/<registration_id>/add', methods=['POST'])
+def handle_attendance_record(registration_id):
+    return trainee_controller.handle_attendance_record_add(request, registration_id)
 
 
 @trainee_blueprint.route('/program/<program_id>', methods=["GET"])

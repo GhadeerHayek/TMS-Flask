@@ -182,7 +182,8 @@ def get_attendance_form(request, registration_id):
     ).fetchall()
     if not attendance_records1:
         flash("No records found")
-    return render_template('trainee/attendance-form.html', trainee=trainee1, records=attendance_records1)
+    return render_template('trainee/attendance-form.html', trainee=trainee1, registration_id=registration_id,
+                           records=attendance_records1)
 
 
 """
@@ -190,8 +191,8 @@ def get_attendance_form(request, registration_id):
 """
 
 
-def get_record_add(request):
-    return render_template('/trainee/add-record.html', trainee=trainee)
+def get_record_add(request, registration_id):
+    return render_template('/trainee/add-record.html', registration_id=registration_id, trainee=trainee)
 
 
 """
@@ -200,8 +201,34 @@ def get_record_add(request):
 """
 
 
-def handle_attendance_record_add(request):
-    pass
+def handle_attendance_record_add(request, registration_id):
+    # check the token for authorization purposes
+    # from the request, we'll fetch the hashed user_id (trainee)
+    token = request.cookies['token']
+    trainee1 = token_helper.verify_token(token)
+    if not trainee1:
+        flash("Invalid token", 'error')
+        return redirect(url_for('auth.login_view'))
+    # get the registration id from path parameters
+    date = request.form['date']
+    check_in = request.form['startTime']
+    check_out = request.form['endTime']
+    # insert record into database
+    result = db.session.execute(
+        text("""
+    INSERT INTO attendance_records (training_programID, date,check_in, check_out) VALUES (:registration_id, :date, :check_in, :check_out)
+    """),
+        {"registration_id": registration_id,
+         "date": date,
+         "check_in": check_in,
+         "check_out": check_out
+         }
+    ).rowcount
+    # flash
+    if not result:
+        flash("failed to insert records", 'error')
+    db.session.commit()
+    return redirect(request.referrer)
 
 
 """

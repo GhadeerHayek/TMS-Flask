@@ -10,7 +10,8 @@
                     <li class="breadcrumb-item"><a href="{{ url_for('trainee.dashboard_view') }}">Trainee</a></li>
                     <li class="breadcrumb-item"><a href="{{ url_for('trainee.training_view') }}">My Training
                         Program</a></li>
-                    <li class="breadcrumb-item"><a href="{{ url_for('trainee.attendance_form_view') }}">Attendance
+                    <li class="breadcrumb-item"><a
+                            href="{{ url_for('trainee.attendance_form_view', registration_id=registration_id) }}">Attendance
                         Form</a></li>
                     <li class="breadcrumb-item"><a href="#">Records</a></li>
                     <li class="breadcrumb-item"><a href="#">Add</a></li>
@@ -25,7 +26,8 @@
                         <div class="card-body">
                             <h5 class="card-title">Fill in this form to add a new record to the attendance form</h5>
                             <!-- Horizontal Form -->
-                            <form>
+                            <form action="{{ url_for('trainee.handle_attendance_record', registration_id=registration_id) }}"
+                                  method="POST">
                                 <div class="row mb-3">
                                     <label for="date" class="col-sm-2 col-form-label">Date</label>
                                     <div class="col-sm-10">
@@ -42,11 +44,11 @@
                                 </div>
 
                                 <div class="row mb-3">
-                                    <label for="fees" class="col-sm-2 col-form-label">End Time
+                                    <label for="endTime" class="col-sm-2 col-form-label">End Time
                                     </label>
                                     <div class="col-sm-10">
-                                        <input type="time" class="form-control" id="fees"
-                                               name="fees">
+                                        <input type="time" class="form-control" id="endTime"
+                                               name="endTime">
                                     </div>
                                 </div>
 
