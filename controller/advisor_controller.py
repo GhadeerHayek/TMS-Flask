@@ -1,74 +1,400 @@
-from flask import render_template
-
-advisor = {
-    "id": "20",
-    "username": "venus2023",
-    "email": "someemail@gmail.com",
-    "discipline": "Python Programming",
-    "department": "comp sci",
-    "interest": "AI",
-    "phone": "123456",
-    "max_number_of_trainees": 5,
-    "img":"../../static/assets/img/profile-img.jpg"
-}
-
-# the status should be calculated based on enrollment
-programs = [
-    ["1", "private", "program1", "program1 description", "area1", "money", "sometime", "somedate"],
-    ["2",  "uni collaborator", "program2", "program2 description", "area1", "money", "sometime", "somedate"],
-    ["3", "private", "program3", "program3 description", "area1", "money", "sometime", "somedate"],
-]
-
-trainees = [
-    ["1",  "new", "name1", "email1", "df1", "area1"],
-    ["2", "on training", "name2", "email2", "df1", "area1"],
-    ["3",  "new", "name3", "email3", "df1", "area1"]
-]
-
-meetings = [
-    ["meetingid1", "meeting for followup", "Approved", "https://linktoyou",
-     "2001-09-09", "15:15", "14:14", "trainee id", "advisor id"],
-    ["meetingid2", "meeting for followup", "Pending", "https://linktoyou",
-     "2001-09-09", "15:15", "14:14", "trainee id", "advisor id"],
-    ["meetingid3", "meeting for followup", "Approved", "https://linktoyou",
-     "2001-09-09", "15:15", "14:14", "trainee id", "advisor id"]
-]
+from flask import render_template, flash, redirect, url_for, jsonify
+from sqlalchemy import text
+import helpers.token as token_helper
+import helpers.helper as helper
+from app import db
 
 
-
-def index(token):
+def index(request):
     # from token, fetch advisor id, then fetch the record from the database
-    
-    return render_template('advisor/index.html', advisor = advisor)
+    token = request.cookies['token']
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    advisor = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not advisor:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
+        # If, however, the query returned the row -> render the dashboard
+    return render_template('advisor/index.html', advisor=advisor)
 
 
 def get_my_trainees(request):
-    return render_template('advisor/my_trainees.html', trainees = trainees, advisor = advisor)
+    # from token, fetch advisor id, then fetch the record from the database
+    token = request.cookies['token']
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    advisor = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not advisor:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
+        # If, however, the query returned the row -> render the dashboard
+
+    # select all registration process where the advisor ID is my ID
+    # join that with the trainee table
+    # return the result
+    trainees = db.session.execute(
+        text("""
+                SELECT t.`traineeID`, t.`username`, t.`fullName`, t.`email`, t.`desired_field`, t.`area_of_training`, t.`status`, t.`training_materials`
+                from `training_registration` r join `trainees` t on r.`traineeID` = t.`traineeID`
+                where r.`status` = 'approved'
+                GROUP BY r.`advisorID` 
+                HAVING r.`advisorID` = :advisorID
+                
+            """),
+        {"advisorID": advisor["advisorID"]}
+    ).fetchall()
+    if not trainees:
+        flash("No trainees to display", 'error')
+        return render_template('advisor/current-trainees.html', trainees=[], advisor=advisor)
+    else:
+        return render_template('advisor/current-trainees.html', trainees=trainees, advisor=advisor)
 
 
 def get_trainees_contact(request):
-    return render_template('advisor/contact_trainees.html', trainees = trainees, advisor = advisor)
+    # get all trainess that their status is pending, registration is approved
+    # from token, fetch advisor id, then fetch the record from the database
+    token = request.cookies['token']
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    advisor = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not advisor:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
+        # If, however, the query returned the row -> render the dashboard
+
+    # select all registration process where the advisor ID is my ID
+    # join that with the trainee table
+    # return the result
+    trainees = db.session.execute(
+        text("""
+                    SELECT t.`traineeID`, t.`username`, t.`fullName`, t.`email`, t.`desired_field`, t.`area_of_training`, t.`status`, t.`training_materials`
+                    from `training_registration` r join `trainees` t on r.`traineeID` = t.`traineeID`
+                    where r.`status` = 'approved' and t.`status` = 'pending'
+                    GROUP BY r.`advisorID` 
+                    HAVING r.`advisorID` = :advisorID
+
+                """),
+        {"advisorID": advisor["advisorID"]}
+    ).fetchall()
+    if not trainees:
+        flash("No trainees to display", 'error')
+        return render_template('advisor/new-trainees-requests.html', trainees=[], advisor=advisor)
+    else:
+        return render_template('advisor/new-trainees-requests.html', trainees=trainees, advisor=advisor)
 
 
-def get_program_materials(request):
-    return render_template('advisor/my_programs.html', programs = programs, advisor = advisor)
-
-
-def get_meeting_requests(request):
-    return render_template('advisor/meetings.html', meetings = meetings, advisor = advisor)
-
-
-def get_meeting_form(request):
-    return render_template('advisor/create_meeting.html', advisor = advisor)
-
-
-def get_attendance_form(request):
-    return render_template('advisor/attendance_form.html', advisor = advisor, trainee = trainees[0])
-
-
-def get_reschedule_form(request):
-    return render_template('advisor/reschedule.html', advisor = advisor, trainee = trainees[0])
+# handles the get attendance form for trainee button
+def get_attendance_form(request, traineeID):
+    # from the request, we'll fetch the hashed user_id (trainee)
+    token = request.cookies['token']
+    advisor = token_helper.verify_token(token)
+    if not advisor:
+        flash("Invalid token", 'error')
+        return redirect(url_for('auth.login_view'))
+    # TODO: I should actually check for the registration ID existence
+    registration_record = db.session.execute(
+        text("""
+            SELECT * from `training_registration` where `traineeID` = :traineeID and `status`='approved'
+        """),
+        {"traineeID": traineeID}
+    ).fetchone()
+    if not registration_record:
+        flash("Trainee has not registered")
+        return redirect(request.referrer)
+    else:
+        # from the attendance_records, we'll select all records that belong to a specific registration_id
+        # I think this is a list of records objects
+        attendance_records = db.session.execute(
+            text("""
+                    SELECT * 
+                    from attendance_records 
+                    WHERE training_programID = :registration_id 
+                """), {
+                "registration_id": registration_record[0]
+            }
+        ).fetchall()
+        if not attendance_records:
+            flash("No records found")
+            return render_template('advisor/attendance-form.html', advisor=advisor, attendance_records=[])
+        else:
+            return render_template('advisor/attendance-form.html', advisor=advisor,
+                                   attendance_records=attendance_records)
 
 
 def get_training_material(request):
-    return render_template('advisor/training_program.html', advisor = advisor, programs=programs)
+    # from the request, we'll fetch the hashed user_id (trainee)
+    token = request.cookies['token']
+    advisor = token_helper.verify_token(token)
+    if not advisor:
+        flash("Invalid token", 'error')
+        return redirect(url_for('auth.login_view'))
+    return render_template('advisor/training-program.html', advisor=advisor, programs=[])
+
+
+# handles the send email to trainee button
+def approve_trainne(request, traineeID):
+    return jsonify("inside approve trainee action")
+
+
+def reject_trainee(request, traineeID):
+    return jsonify("inside reject trainee action")
+
+
+def get_meetings(request):
+    # get the user id from the token in the request
+    # ensure token existence
+    # from the request, we'll fetch the hashed user_id (trainee)
+    token = request.cookies['token']
+    advisor = token_helper.verify_token(token)
+    if not advisor:
+        flash("Invalid token", 'error')
+        return redirect(url_for('auth.login_view'))
+    registration_record = db.session.execute(
+        text(
+            """
+            SELECT * from `training_registration` where `advisorID` = :advisorID and `status`='approved'
+            """
+        ), {
+            "advisorID": advisor["advisorID"]
+        }
+    ).fetchone()
+    if not registration_record:
+        flash("Inconsistency btw")
+        return redirect(request.referrer)
+    else:
+        # select * from meetings using registration id
+        meetings = db.session.execute(
+            text("""
+                        SELECT * from `meetings` where `registration_id` = :registration_id
+                    """),
+            {
+                "registration_id": registration_record[0]
+            }).fetchall()
+        if not meetings:
+            flash("No meetings yet")
+            return render_template('advisor/advisor-meetings.html', advisor=advisor, meetings=[],
+                                   registration_id=registration_record[0])
+        else:
+            return render_template('advisor/advisor-meetings.html', advisor=advisor, meetings=meetings,
+                                   registration_id=registration_record[0])
+
+
+"""
+    This function renders the add new meeting form
+"""
+
+
+def get_add_meeting(request, registration_id):
+    # supposed to get the trainee id and the advisor id associated to the training program and sends that to this
+    # form view it also MUST call the function that handles meetings conflict
+    token = request.cookies['token']
+    advisor = token_helper.verify_token(token)
+    if not advisor:
+        flash("Invalid token", 'error')
+        return redirect(url_for('auth.login_view'))
+    registration_record = db.session.execute(text("""
+        SELECT * from `training_registration` where `ID` = :registration_id 
+    """), {"registration_id": registration_id}).fetchone()
+    if not registration_record:
+        flash('Something went wrong')
+        return redirect(request.referrer)
+    else:
+        return render_template('advisor/advisor-new-meeting.html', advisor=advisor,
+                               registration_record=registration_record)
+
+
+"""
+    This is the function that handles the meeting addition request
+"""
+
+
+def handle_meeting_add(request, registration_id):
+    # get the trainee from token
+    token = request.cookies['token']
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    advisor = token_helper.verify_token(token)
+    if not advisor:
+        flash("Invalid whatever", 'error')
+        return redirect(request.referrer)
+    # get meeting data from request
+    meeting_details = request.form['details']
+    advisorID = request.form['advisor']
+    traineeID = request.form['trainee']
+    start_datetime = request.form['start']
+    end_datetime = request.form['end']
+    params = {
+        "registration_id": registration_id,
+        "meeting_details": meeting_details,
+        "advisorID": advisorID,
+        "traineeID": traineeID,
+        "start_datetime": start_datetime,
+        "end_datetime": end_datetime
+    }
+    if not meeting_details or not advisorID or not traineeID or not start_datetime or not end_datetime:
+        flash("Missing date", 'error')
+        return redirect(request.referrer)
+    # check for conflict
+    conflict = helper.resolve_conflict(new_meeting=params)
+    # if no conflict then add the meeting pending for approval from advisor
+    if conflict:
+        flash("meetings conflict", 'error')
+        return redirect(request.referrer)
+    else:
+        # insert meeting to the database
+        params = {
+            "registration_id": registration_id,
+            "meeting_details": meeting_details,
+            "advisorID": advisorID,
+            "traineeID": traineeID,
+            "start_datetime": start_datetime,
+            "end_datetime": end_datetime
+        }
+        result = db.session.execute(
+            text(""" 
+                INSERT INTO `meetings` (registration_id, meeting_details, start_datetime, end_datetime, status) 
+                VALUES (:registration_id,:meeting_details, :start_datetime, :end_datetime, 'pending')
+            """),
+            params
+        )
+        if not result:
+            flash("Failed to add meeting", 'error')
+            return redirect(request.referrer)
+        else:
+            db.session.commit()
+            flash("Waiting for advisor approval")
+            return redirect(url_for('advisor.get_advisor_meetings_view'))
+
+
+"""
+    This is the function that handles account modifications requests. 
+"""
+
+
+def handle_profile_update(request):
+    # the profile update request contains all the trainee information
+    username = request.form['username']
+    fullname = request.form['fullName']
+    dicsipline = request.form['desiredField']
+    email = request.form['email']
+    # those value can not be null, there's a default value
+    token = request.cookies['token']
+    advisor = token_helper.verify_token(token)
+    if not advisor:
+        flash("Invalid token", 'error')
+        return redirect(url_for('auth.login_view'))
+    # proceed with the update
+    query = text("""
+            UPDATE `advisors` 
+            SET `username`=:username,
+            `fullname`=:fullname,
+            `dicsipline`=:dicsipline,
+            `email`=:email,
+            `status` = 'in_review'
+            WHERE `advisorID` = :advisorID;
+        """)
+    params = {
+        "username": username,
+        "fullname": fullname,
+        "dicsipline": dicsipline,
+        "email": email,
+        "advisorID": advisor["advisorID"]
+    }
+    result_set = db.session.execute(query, params).rowcount
+    # the user information is updated, but the thing is, this information must be reviewed, so the status must be
+    # pending
+    if result_set > 0:
+        # success
+        db.session.commit()
+        flash('Account modification is in manager review, your account is onhold until. Check your email')
+        return redirect(url_for('auth.login_view'))
+    else:
+        flash('Failed to submit account modification, try again', 'error')
+        return redirect(url_for('advisorID.dashboard_view'))
+
+
+"""
+    This is the function that handles account deactivation requests.
+"""
+
+
+def handle_profile_deactivation(request):
+    token = request.cookies['token']
+    advisor = token_helper.verify_token(token)
+    if not advisor:
+        flash("Invalid token", 'error')
+        return redirect(url_for('auth.login_view'))
+    # proceed with the update
+    query = text("""
+                UPDATE `advisors` 
+                SET `status` = 'inactive'
+                WHERE `advisorID` = :advisorID;
+            """)
+    params = {
+        "advisorID": advisor["advisorID"]
+    }
+    result_set = db.session.execute(query, params).rowcount
+    # the user information is updated, but the thing is, this information must be reviewed, so the status must be pending
+    if result_set > 0:
+        # success
+        db.session.commit()
+        flash('Account deactivation is in manager review. Check your email')
+        return redirect(url_for('auth.login_view'))
+    else:
+        flash('Failed to submit account deactivation, try again', 'error')
+        return redirect(url_for('advisor.dashboard_view'))
+
+
+def cancel_meeting(request, meetingID):
+    # request has meetingID
+    token = request.cookies['token']
+    advisor = token_helper.verify_token(token)
+    if not advisor:
+        flash("Invalid token", 'error')
+        return redirect(url_for('auth.login_view'))
+    # update the status
+    result = db.session.execute(
+        text("""
+        UPDATE `meetings`
+        SET `status` = 'cancelled'
+        where `meetingID` = :meetingID
+        """),
+        {"meetingID": meetingID}
+    ).rowcount
+    if not result:
+        flash("Failed to cancel meeting")
+        return redirect(request.referrer)
+    else:
+        db.session.commit()
+        return redirect(url_for('advisor.get_advisor_meetings_view'))
+
+
+def approve_meeting(request, meetingID):
+    # request has meetingID
+    token = request.cookies['token']
+    advisor = token_helper.verify_token(token)
+    if not advisor:
+        flash("Invalid token", 'error')
+        return redirect(url_for('auth.login_view'))
+    # update the status
+    result = db.session.execute(
+        text("""
+           UPDATE `meetings`
+           SET `status` = 'approved'
+           where `meetingID` = :meetingID
+           """),
+        {"meetingID": meetingID}
+    ).rowcount
+    if not result:
+        flash("Failed to approve meeting")
+        return redirect(request.referrer)
+    else:
+        db.session.commit()
+        return redirect(url_for('advisor.get_advisor_meetings_view'))
