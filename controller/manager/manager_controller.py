@@ -1,6 +1,9 @@
-from flask import request, render_template, jsonify
+from flask import request, render_template, jsonify, flash, redirect, url_for
 from sqlalchemy import text
 from app import db
+import helpers.manager_helper as mghelper
+import smtplib
+
 
 manager = {
     "id": "100",
@@ -15,18 +18,69 @@ manager = {
 
 def index(request):
     # from token get id, from the id get the record in the database
-    manager_id = "something"
-    query = text("SELECT * from ")
-
+    token = request.cookies['token']
+    manager = mghelper.verify_manager(token)
     return render_template('manager/index.html', manager=manager)
 
 
 # id, transaction name, type(credit/debit), amount, trainee Id, timestamp
 def get_balance_sheet(request):
     # prepare list of balance sheet records
-    transactions = [
-        ["1", "program registration", "credit", 100, "some trainee id", "some datetime"],
-        ["2", "program registration 2", "credit", 100, "some trainee id", "some datetime"],
-        ["3", "program registration 3", "credit", 100, "some trainee id", "some datetime"],
-    ]
+    # token is the manager id or the manager record
+    query = text("SELECT * FROM balance_sheet")
+    result_cursor = db.session.execute(query)
+    rows = result_cursor.fetchall()
+    transactions = []
+    for row in rows:
+        transactions.append(row._data)
     return render_template("manager/billing.html", transactions=transactions, manager=manager)
+
+
+def get_email_form(request):
+    token = request.cookies['token']
+    manager = mghelper.verify_manager(token)
+    return render_template("manager/mailing.html", manager=manager)
+
+
+
+def send_email(request):
+    # sender email credentials 
+    token = request.cookies['token']
+    manager = mghelper.verify_manager(token)
+    # print(manager.email)
+
+    recipient = request.form['email']
+    message = request.form['message']
+    subject = request.form['subject']
+ 
+    # return mghelper.verify_manager(manager.email)
+
+    gmail_user = 'ayahs19302@gmail.com'
+    gmail_password = 'mylafamilia'
+    sent_from = gmail_user
+    # recipient credentials 
+    to = ['hudaelshawa@gmail.com@gmail.com']
+    subject = 'testting flask'
+    body = 'i hope it wokrls adipiscing elit'
+
+    email_text = """\
+    From: %s
+    To: %s
+    Subject: %s
+
+    %s
+    """ % (sent_from, ", ".join(to), subject, body)
+
+    try:
+        smtp_server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        smtp_server.ehlo()
+        smtp_server.login(gmail_user, gmail_password)
+        smtp_server.sendmail(sent_from, to, email_text)
+        smtp_server.close()
+        print ("Email sent successfully!")
+    except Exception as ex:
+        print ("Something went wrong….",ex)
+
+
+def get_system_log(request):
+    pass

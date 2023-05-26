@@ -104,7 +104,7 @@ def handle_login(request):
         response.set_cookie('token', token)
         return response
     else:
-        flash('Something went wrong', 'error')
+        flash('Email or password is wrong', 'error')
         return redirect(url_for('auth.login_view'))
 
 
@@ -166,3 +166,10 @@ def handle_advisor_signup(request):
         flash('Successfully added your information, wait for our email')
         db.session.commit()
         return redirect(url_for('auth.login_view'))
+
+
+def signout(request):
+    pass
+    # response.set_cookie('token', token)
+    # print(request.cookies.get('token'))
+    # return redirect(url_for('auth.login_view'))

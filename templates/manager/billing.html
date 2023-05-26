@@ -22,12 +22,11 @@
                             <table class="table datatable">
                                 <thead>
                                 <tr>
-                                    <th scope="col">Id</th>
-                                    <th scope="col">Transaction Name</th>
+                                    <th scope="col">Transaction ID</th>
+                                    <th scope="col">User ID</th>
                                     <th scope="col">Transaction Type</th>
-                                    <th scope="col">Transaction Amount</th>
-                                    <th scope="col">Trainee ID/ User ID</th>
-                                    <th scope="col">Transaction Datetime</th>
+                                    <th scope="col">Amount</th>
+                                    <th scope="col">Transaction Time</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -38,7 +37,6 @@
                                         <td>{{ transaction[2] }}</td>
                                         <td>{{ transaction[3] }}</td>
                                         <td>{{ transaction[4] }}</td>
-                                        <td>{{ transaction[5] }}</td>
                                     </tr>
                                 {% endfor %}
                                 </tbody>

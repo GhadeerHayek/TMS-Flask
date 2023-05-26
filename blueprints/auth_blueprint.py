@@ -33,3 +33,11 @@ def signup():
     else:
         flash('Something is not right', 'error')
         return redirect(url_for('auth.login_view'))
+
+# signout route
+@auth_blueprint.route('/signout', methods=['GET'])
+def signout():
+    return auth_controller.signout(request)
+
+
+

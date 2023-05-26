@@ -21,7 +21,7 @@
                         <div class="card-body">
                             <h5 class="card-title">Training Program Details</h5>
                             <!-- Horizontal Form -->
-                            <form>
+                            <form action="{{url_for('manager.add_program')}}" method="post">
                                 <div class="row mb-3">
                                     <label for="programName" class="col-sm-2 col-form-label">Program Name</label>
                                     <div class="col-sm-10">

@@ -1,126 +1,219 @@
-from flask import request, render_template, jsonify
+from flask import request, render_template, jsonify, flash, url_for, redirect
 from sqlalchemy import text
 from app import db
+import secrets
+import helpers.manager_helper as mghelper
 
-manager = {
-    "id": "100",
-    "username": "Jupiter2000",
-    "email": "jupiter@gmail.com"
-}
+
 
 """
     This is the function that prepares data for the 'pending advisors' view, and returns the view with its data 
 """
-
-
 def get_pending_advisors(request):
     # token is the manager id or the manager record
+    token = request.cookies['token']
+    manager = mghelper.verify_manager(token)
+    query = text("SELECT * from advisors where status = 'pending'")
+    result_cursor = db.session.execute(query)
+    rows = result_cursor.fetchall()
+    advisors = []
+    for row in rows:
+        advisors.append(row._data)
+    return render_template('manager/advisor/pending_advisors.html', manager=manager, advisors=advisors)
 
-    manager = {
-        "id": "100",
-        "username": "Jupiter2000",
-        "email": "jupiter@gmail.com"
-    }
-    # query = text("SELECT * from trainees where current_status = 'pending'")
-    # result_cursor = db.session.execute(query)
-    # rows = result_cursor.fetchall()
-    # trainees = []
-    # for row in rows:
-    #     trainees.append(row._data)
-    #  return render_template("manager/pending_trainees.html", manager=manager, trainees=trainees)
-
-    return render_template('manager/advisor/pending_advisors.html', manager=manager, advisors=[
-        ["1", "name1", "email1", "discipline1"],
-        ["2", "name2", "email2", "discipline1"],
-        ["3", "name3", "email3", "discipline1"],
-    ])
 
 
 """
     This is the controller function that handles the approve button in the pending advisors view
-    it's actually not yet implemented or linked to its view
 """
-
-
 def approve_advisors_registration(request):
-    pass
+    token = request.cookies['token']
+    # make sure manager is authorized
+    manager = mghelper.verify_manager(token)
+    # get hidden form data
+    advisorID = request.form['advisorID']
+    advisorEmail= request.form['advisorEmail']   
+    pass_length = 7
+    # secret is python module that generates passwords according to ur prefered length
+    password = secrets.token_urlsafe(pass_length)
+    # insert advisor to user table first to link it to advisor table using userID(PK->FK relationship)
+    user_query = text("INSERT INTO users (password, email, classification) VALUES (:password, :email, 'advisor')")
+    user_cursor = db.session.execute(user_query, {'password':password, 'email':advisorEmail})
+    db.session.commit()
+    if not user_cursor:
+        flash('Failed to approve advisor', 'error')
+        return redirect(url_for('manager.get_pending_advisors_view'))
+    # get userID from previous query
+    userID = user_cursor.lastrowid
+    # update advisor table with userID
+    advisor_query= text("UPDATE advisors SET status = 'active', userID = :userID  WHERE advisorID = :advisorID")
+    advisor_cursor = db.session.execute(advisor_query, {'userID': userID, 'advisorID': advisorID})
+    advisor_rows = advisor_cursor.rowcount
+    db.session.commit()
+    if not advisor_rows:   
+        flash('Failed to approve advisor', 'error')
+        return redirect(url_for('manager.get_pending_advisors_view'))
+    flash('Advisor approved successfully', 'success')
+    return redirect(url_for('manager.get_pending_advisors_view'))
 
 
 """
     This is the controller function that handles the reject button in the pending advisors view
-    it's actually not yet implemented or linked to its view
 """
-
-
 def reject_advisors_registration(request):
-    pass
-
-
-"""
-    This is the function that prepares the data for the view 'deactivate trainee account', 
-    returns the view along with its data 
-
-"""
-
-
-def get_deactivate_advisors(request):
-    # token is the manager record from the database
-
-    # implement the query so that you get the trainees deactivation requests
-    # i think we are supposed to implement something in the database for it
-
-    # let's just assume this is the result from executing the query
-    advisors = [
-        ["1", "name1", "email1"],
-        ["2", "name2", "email2"],
-        ["3", "name3", "email3"],
-    ]
-
-    return render_template("manager/advisor/deactivate_advisor.html", manager=manager, advisors=advisors)
-
-
-"""
-    This is the controller function that handles the deactivate button in the deactivate trainees view
-    it's actually not yet implemented or linked to its view
-"""
-
-
-def approve_advisor_deactivation(request):
-    pass
-
-
-"""
-    This is the controller function that handles the reject button in the deactivate trainees view
-    it's actually not yet implemented or linked to its view
-"""
-
-
-def reject_advisor_deactivation(request):
-    pass
+    token = request.cookies['token']
+    # make sure manager is authorized
+    manager = mghelper.verify_manager(token)
+    # get hidden form data
+    advisorID = request.form['advisorID']   
+    # update advisor table with userID
+    advisor_query= text("UPDATE advisors SET status = 'rejected' WHERE advisorID = :advisorID")
+    advisor_cursor = db.session.execute(advisor_query, {'advisorID': advisorID})
+    advisor_rows = advisor_cursor.rowcount
+    # commit changes to db
+    db.session.commit()
+    if not advisor_rows:   
+        flash('Failed to approve advisor', 'error')
+        return redirect(url_for('manager.get_pending_advisors_view'))
+    flash('Advisor rejected successfully', 'success')
+    return redirect(url_for('manager.get_pending_advisors_view'))
 
 
 def get_advisor_account(request):
-    # from the token, get the manager id
-    manager = {
-        "id": "100",
-        "username": "Jupiter2000",
-        "email": "jupiter@gmail.com"
-    }
-    # get all account modification requests from the database
-
-    # here's a mock of the returned data
-    advisors = [
-        ["1", "", "name1", "somehow the account details object"],
-        ["2", "", "name2", "somehow the account details object"],
-        ["3", "", "name3", "somehow the account details object"]
-    ]
+    token = request.cookies['token']
+    # make sure manager is authorized
+    manager = mghelper.verify_manager(token)
+    # get hidden form data
+    query = text("SELECT * from advisors where status = 'inreview'")
+    result_cursor = db.session.execute(query)
+    rows = result_cursor.fetchall()
+    advisors = []
+    for row in rows:
+        advisors.append(row._data)
     return render_template("manager/advisor/advisor_account_modification.html", manager=manager, advisors=advisors)
 
 
 def get_advisor_account_details(request):
-    # assuming this is a get request, that has the trainee id in its get parameters
-    # we should select all the user account details
-    # before we do that, we'll render something like a profile.html page
-    # which i am going to do later
-    advisor = ["1", "name1", "email1", "discipline1", "number"]
+    token = request.cookies['token']
+    # make sure manager is authorized
+    manager = mghelper.verify_manager(token)
+    userID = request.args.get('id')
+    query = text("SELECT * from advisors where userID = :userID")
+    result_cursor = db.session.execute(query, {'userID':userID})
+    advisor = result_cursor.fetchone()
+    # advisor = []
+    # for row in rows:
+    #     advisor.append(row._data)
+    print(advisor.fullName)
     return render_template("manager/advisor/advisor-profile-details.html", manager=manager, advisor=advisor)
+
+
+
+def accept_advisor_modifications(request):
+    token = request.cookies['token']
+    # make sure manager is authorized
+    manager = mghelper.verify_manager(token)
+    # get hidden form data
+    advisorID = request.form['advisorID']   
+    # update advisor table with userID
+    advisor_query= text("UPDATE advisors SET status = 'active' where advisorID = :advisorID")
+    print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+    print(advisorID[0])
+    advisor_cursor = db.session.execute(advisor_query, {'advisorID': advisorID})
+    # commit changes to db
+    db.session.commit()
+    if not advisor_cursor:   
+        flash('Failed to approve advisor modification request', 'error')
+        return redirect(url_for('manager.get_advisors_accounts_view', manager=manager))
+    flash('Advisor modifications approved successfully', 'success')
+    return redirect(url_for('manager.get_advisors_accounts_view', manager=manager))
+
+
+def reject_advisor_modifications(request):
+    token = request.cookies['token']
+    # make sure manager is authorized
+    manager = mghelper.verify_manager(token)
+    # get hidden form data
+    advisorID = request.form['advisorID']   
+    # update advisor table with userID
+    advisor_query= text("UPDATE advisors SET status = 'active' where advisorID = :advisorID")
+    print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+    print(advisorID[0])
+    advisor_cursor = db.session.execute(advisor_query, {'advisorID': advisorID})
+    # commit changes to db
+    db.session.commit()
+    result = advisor_cursor.rowcount
+    if not result:   
+        flash('Failed to approve advisor modification request', 'error')
+        return redirect(url_for('manager.get_advisors_accounts_view', manager=manager))
+    flash('Advisor modifications rejected successfully', 'success')
+    return redirect(url_for('manager.get_advisors_accounts_view', manager=manager))
+
+
+
+"""
+    This is the function that prepares the data for the view 'deactivate advisor account', 
+    returns the view along with its data 
+
+"""
+def get_deactivate_advisors(request):
+    # token is the manager record from the database
+    token = request.cookies['token']
+    manager = mghelper.verify_manager(token)
+    query = text("SELECT * from advisors where status = 'inactive'")
+    result_cursor = db.session.execute(query)
+    rows = result_cursor.fetchall()
+    advisors = []
+    for row in rows:
+        advisors.append(row._data)
+    return render_template("manager/advisor/deactivate_advisor.html", manager=manager, advisors=advisors)
+
+
+
+"""
+    This is the controller function that handles the deactivate button in the deactivate advisors view
+"""
+def approve_advisor_deactivation(request):
+    token = request.cookies['token']
+    # make sure manager is authorized
+    manager = mghelper.verify_manager(token)
+    # get hidden form data
+    advisorID = request.form['advisorID']   
+    # update advisor table with userID
+    advisor_query= text("UPDATE advisors SET status = 'active' where advisorID = :advisorID")
+    print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+    print(advisorID[0])
+    advisor_cursor = db.session.execute(advisor_query, {'advisorID': advisorID})
+    # commit changes to db
+    db.session.commit()
+    if not advisor_cursor:   
+        flash('Failed to deactivate advisor', 'error')
+        return redirect(url_for('manager.get_deactivate_advisors_view'))
+    flash('Advisor deactivated successfully', 'success')
+    return redirect(url_for('manager.get_deactivate_advisors_view'))
+
+
+
+"""
+    This is the controller function that handles the reject button in the deactivate advisors view
+"""
+def reject_advisor_deactivation(request):
+    token = request.cookies['token']
+    # make sure manager is authorized
+    manager = mghelper.verify_manager(token)
+    # get hidden form data
+    advisorID = request.form['advisorID']   
+    # update advisor table with userID
+    advisor_query= text("UPDATE advisors SET status = 'rejected' where advisorID = :advisorID")
+    print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+    print(advisorID[0])
+    advisor_cursor = db.session.execute(advisor_query, {'advisorID': advisorID})
+    # commit changes to db
+    db.session.commit()
+    if not advisor_cursor:   
+        flash('Failed to reject advisor', 'error')
+        return redirect(url_for('manager.get_deactivate_advisors_view'))
+    flash('Advisor rejected successfully', 'success')
+    return redirect(url_for('manager.get_deactivate_advisors_view'))
+
+
