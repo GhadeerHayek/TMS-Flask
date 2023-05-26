@@ -147,7 +147,7 @@
                     </li>
 
                     <li>
-                        <a class="dropdown-item d-flex align-items-center" href="#">
+                        <a class="dropdown-item d-flex align-items-center" href="{{ url_for('trainee.profile_view') }}">
                             <i class="bi bi-gear"></i>
                             <span>Account Settings</span>
                         </a>
@@ -207,23 +207,15 @@
 </aside>
 <!-- End Sidebar-->
 
-<!-- ======= Flask Flashed Messages ======= -->
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-        <ul class="flash-messages">
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-{% endwith %}
+
 <!-- ======= Main page content goes here ======= -->
 
 {% block content %}
+<!-- ======= Flask Flashed Messages ======= -->
 {% endblock %}
-
 <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
         class="bi bi-arrow-up-short"></i></a>
+
 
 <!-- Vendor JS Files -->
 <script src="../../static/assets/vendor/apexcharts/apexcharts.min.js"></script>

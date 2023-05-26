@@ -28,7 +28,7 @@ def mock_view():
     ])
 
 
-@mock_blueprint.route('/profile', methods=['GET'])
+@mock_blueprint.route('/mock2', methods=['GET'])
 def mock2():
     return render_template('manager/profile-details.html',
                            manager={

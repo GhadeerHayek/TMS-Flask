@@ -2,7 +2,7 @@
 
 {% block title %} Trainee Dashboard {% endblock %}
 {% block content %}
-    <!-- Manager Dashboard contents goes here, feel free to add whatever you want -->
+    <!-- Trainee Dashboard contents goes here -->
     <main id="main" class="main">
         <div class="pagetitle">
             <h1>Trainee</h1>
@@ -17,16 +17,17 @@
                 <div class="row d-flex justify-content-center align-items-center h-100">
                     <div class="col col-lg-8 mb-8 mb-lg-0">
                         <div class="card mb-3" style="border-radius: .5rem;">
-                            <div class="row g-0">
-                                <div class="col-md-3 gradient-custom text-center text-white"
-                                     style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;">
+                            <div class="row g-0" style="padding: 2rem">
+                                <div class="col-md-12 gradient-custom text-center text-white"
+                                     style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem; ">
                                     <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
-                                         alt="Avatar" class="img-fluid my-5" style="width: 80px;"/>
+                                         alt="Avatar" class="img-fluid my-5" style="width: 180px;"/>
                                     <h5 style="color:black">{{ trainee.username }}</h5>
-                                    <p style="color:black">{{ trainee.area }}<br> {{ trainee.desired_field }}</p>
+                                    <p style="color:black">{{ trainee.area_of_training }}<br> {{ trainee.desired_field }}
+                                    </p>
                                     <i class="far fa-edit mb-5"></i>
                                 </div>
-                                <div class="col-md-8">
+                                <div class="col-md-12">
                                     <div class="card-body p-4">
                                         <h6>Information</h6>
                                         <hr class="mt-0 mb-4">
@@ -37,11 +38,11 @@
                                             </div>
                                             <div class="col-6 mb-3">
                                                 <h6>Trainee ID</h6>
-                                                <p class="text-muted">{{ trainee.id }}</p>
+                                                <p class="text-muted">{{ trainee.traineeID }}</p>
                                             </div>
                                             <div class="col-6 mb-3">
-                                                <h6>On training</h6>
-                                                <p class="text-muted">{{ trainee.current_training }}</p>
+                                                <h6>Status</h6>
+                                                <p class="text-muted">{{ trainee.status }}</p>
                                             </div>
                                         </div>
                                         <h6>User Documents</h6>

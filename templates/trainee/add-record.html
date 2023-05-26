@@ -1,5 +1,4 @@
 {% extends "layouts/trainee_base.html" %}
-
 {% block title %} Add Attendance Records {% endblock %}
 {% block content %}
     <main id="main" class="main">
@@ -8,16 +7,13 @@
             <nav>
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ url_for('trainee.dashboard_view') }}">Trainee</a></li>
-                    <li class="breadcrumb-item"><a href="{{ url_for('trainee.training_view') }}">My Training
-                        Program</a></li>
-                    <li class="breadcrumb-item"><a href="{{ url_for('trainee.attendance_form_view') }}">Attendance
-                        Form</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('trainee.training_view') }}">My Training Program</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('trainee.attendance_form_view', registration_id=registration_id) }}">Attendance Form</a></li>
                     <li class="breadcrumb-item"><a href="#">Records</a></li>
                     <li class="breadcrumb-item"><a href="#">Add</a></li>
                 </ol>
             </nav>
         </div><!-- End Page Title -->
-
         <section class="section">
             <div class="row">
                 <div class="col-lg-12">
@@ -25,7 +21,8 @@
                         <div class="card-body">
                             <h5 class="card-title">Fill in this form to add a new record to the attendance form</h5>
                             <!-- Horizontal Form -->
-                            <form>
+                            <form action="{{ url_for('trainee.handle_attendance_record', registration_id=registration_id) }}"
+                                  method="POST">
                                 <div class="row mb-3">
                                     <label for="date" class="col-sm-2 col-form-label">Date</label>
                                     <div class="col-sm-10">
@@ -40,13 +37,12 @@
                                                name="startTime">
                                     </div>
                                 </div>
-
                                 <div class="row mb-3">
-                                    <label for="fees" class="col-sm-2 col-form-label">End Time
+                                    <label for="endTime" class="col-sm-2 col-form-label">End Time
                                     </label>
                                     <div class="col-sm-10">
-                                        <input type="time" class="form-control" id="fees"
-                                               name="fees">
+                                        <input type="time" class="form-control" id="endTime"
+                                               name="endTime">
                                     </div>
                                 </div>
 
@@ -54,6 +50,21 @@
                                     <button type="submit" class="btn btn-primary">Add</button>
                                     <button type="reset" class="btn btn-secondary">Reset</button>
                                 </div>
+                                {% with messages = get_flashed_messages() %}
+                                    {% if messages %}
+                                        <ul class="flash-messages">
+                                            {% for message in messages %}
+                                                <div class="alert alert-danger bg-danger text-light border-0 alert-dismissible fade show"
+                                                     role="alert">
+                                                    {{ message }}
+                                                    <button type="button" class="btn-close btn-close-white"
+                                                            data-bs-dismiss="alert"
+                                                            aria-label="Close"></button>
+                                                </div>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                {% endwith %}
                             </form><!-- End Horizontal Form -->
                         </div>
                     </div>

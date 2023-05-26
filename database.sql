@@ -39,7 +39,8 @@ CREATE TABLE trainees
         ),
     -- trainee statuses
     status             ENUM (
-        'pending',     -- waiting for admin approval
+        'pending',     -- waiting for admin approval on registration
+        'in_review',   -- waiting for admin approval on account update
         'active',      -- approved by the admin and is on the system + has no training
         'on_training', -- the trainee has a registered a training program
         'rejected',    -- rejected by the admin
@@ -75,11 +76,12 @@ CREATE TABLE advisors
         ),
     -- advisor statuses
     status     ENUM (
-        'pending',  -- waiting for admin approval
-        'active',   -- approved by the admin and is on the system + is not training anyone
-        'training', -- the advisor has a some trainees assigned to him via the registered training programs
-        'rejected', -- rejected by the admin
-        'inactive'  -- the advisor has requested the account deactivation, after the approval from the manager, the status is inactive
+        'pending',   -- waiting for admin approval
+        'active',    -- approved by the admin and is on the system + is not training anyone
+        'in_review', -- waiting for admin approval on account update
+        'training',  -- the advisor has a some trainees assigned to him via the registered training programs
+        'rejected',  -- rejected by the admin
+        'inactive'   -- the advisor has requested the account deactivation, after the approval from the manager, the status is inactive
         )          default 'pending',
     -- advisor authentication
     userID     int default NULL,
@@ -125,24 +127,28 @@ CREATE TABLE balance_sheet
 );
 
 
-CREATE TABLE meeting
+CREATE TABLE meetings
 (
     meetingID       int PRIMARY KEY AUTO_INCREMENT,
-    traineeID       int          NOT NULL,
-    advisorID       int          NOT NULL,
+    -- traineeID       int          NOT NULL,
+    -- advisorID       int          NOT NULL,
+    -- the meeting has to be specific for a training
+    registration_id int,
     meeting_details varchar(250) NOT NULL,
-    meeting_link    varchar(50),
-    date            datetime     NOT NULL,
-    start_time      datetime     NOT NULL,
-    end_time        datetime     NOT NULL,
+    meeting_link    varchar(50) default NULL,
+    start_datetime  datetime     NOT NULL,
+    end_datetime    datetime     NOT NULL,
     -- for meeting management purposes, there's a status field
     status          ENUM (
-        'approved', -- approved by the advisor
-        'cancelled' -- cancelled by the advisor
+        'approved',  -- approved by the advisor
+        'cancelled', -- cancelled by the advisor
+        'pending'    -- waiting for advisor approve
         -- what about rescheduled? this question until the meeting feature is implemented
         )                        NOT NULL,
-    FOREIGN KEY (traineeID) REFERENCES trainees (traineeID) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (advisorID) REFERENCES advisors (advisorID) ON DELETE CASCADE ON UPDATE CASCADE
+    -- FOREIGN KEY (traineeID) REFERENCES trainees (traineeID) ON DELETE CASCADE ON UPDATE CASCADE,
+    -- FOREIGN KEY (advisorID) REFERENCES advisors (advisorID) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (registration_id) REFERENCES training_registration (ID) ON DELETE CASCADE ON UPDATE CASCADE
+
 );
 
 
@@ -171,15 +177,18 @@ CREATE TABLE training_programs
 -- Training Registration process
 CREATE TABLE training_registration
 (
-    ID                      int PRIMARY KEY AUTO_INCREMENT,
-    training_program_id     int NOT NULL,
-    traineeID               int NOT NULL,
-    advisorID               int NOT NULL,
-    training_request_status enum (
+    ID                  int PRIMARY KEY AUTO_INCREMENT,
+    training_program_id int      NOT NULL,
+    traineeID           int      NOT NULL,
+    advisorID           int               default NULL,
+    status              enum (
         'approved', -- approved by the manager
         'rejected', -- rejected by the manager
-        'pending'   -- waiting for approval by the manager
-        )                       NOT NULL,
+        'pending',  -- waiting for approval by the manager
+        'finished'  -- finished by the trainee
+        )                        NOT NULL,
+    -- i think it's curial
+    registration_time   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (training_program_id) REFERENCES training_programs (programID) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (advisorID) REFERENCES advisors (advisorID) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (traineeID) REFERENCES trainees (traineeID) ON DELETE CASCADE ON UPDATE CASCADE
@@ -252,3 +261,37 @@ VALUES (3, 'ghadeer123', 'advisor', 'ghadeerhayek2001@gmail.com');
 update advisors
 set userID = 3
 where advisorID = 1;
+
+
+
+-- add training programs into the system
+-- Who does that? the manager from his dashboard
+
+INSERT INTO `training_programs`(`name`, `description`, `area_of_training`, `fees`, `start_date`, `end_date`)
+VALUES ('Backend Development Training',
+        'Frappe/ERPNext framework training, the framework depends mainly on python and javasctipt ...',
+        'Software Development', 100, '2023-07-01', '2023-10-01');
+INSERT INTO `training_programs`(`name`, `description`, `area_of_training`, `fees`, `start_date`, `end_date`)
+VALUES ('Frontend Development Training', 'Vue.js training, javascript framework ... ', 'Software Development', 90,
+        '2023-08-01', '2023-10-01');
+INSERT INTO `training_programs`(`name`, `description`, `area_of_training`, `fees`, `start_date`, `end_date`)
+VALUES ('Date Engineer', 'AI programming with python, creating image classifiers ... ', 'Machine Learning', 90,
+        '2023-06-01', '2023-09-01');
+
+
+-- training registration is performed at the trainee component,
+-- a record is inserted ( id, program_id, trainee_id, status='pending')
+-- when manager approves the application, he should assign the advisor ID, Attendance Form ID,
+-- and change the status to 'approved' and send email for final approval from trainee
+
+UPDATE training_registration
+SET advisorID               = 1,
+    training_request_status ='approved'
+WHERE ID = 1;
+-- attendance records must have notes field, training_program_registrationID
+INSERT INTO attendance_records (training_programID, date, check_in, check_out)
+VALUES (1, '2023-05-26', '6:06', '5:05');
+
+-- insertion to meetings table, whenever a meeting is not conflicting with anyone
+INSERT INTO `meetings`(`registration_id`, `meeting_details`, `date`, `start_time`, `end_time`, `status`)
+VALUES (1, 'Follow up meeting', '2023-05-26', '15:15', '16:16', 'approved');
