@@ -236,7 +236,7 @@ def reject_trainee_modifications(request):
     # get hidden form data
     traineeID = request.form['traineeID']   
     # update trainee table with userID
-    trainee_query= text("UPDATE trainees SET status = 'rejectedChanges' where traineeID = :traineeID")
+    trainee_query= text("UPDATE trainees SET status = 'active' where traineeID = :traineeID")
     print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
     print(traineeID[0])
     trainee_cursor = db.session.execute(trainee_query, {'traineeID': traineeID})
