@@ -14,24 +14,33 @@ def programs_view():
     return trainee_controller.get_programs(request)
 
 
+@trainee_blueprint.route('/trainee/programs/apply/<training_program_id>', methods=['POST'])
+def program_application(training_program_id):
+    return trainee_controller.handle_program_application(request, training_program_id)
+
+
 @trainee_blueprint.route('/trainee/training', methods=["GET"])
 def training_view():
     return trainee_controller.get_training(request)
 
 
-@trainee_blueprint.route('/training/form', methods=["GET"])
-def attendance_form_view():
-    return trainee_controller.get_attendance_form(request)
+@trainee_blueprint.route('/training/<registration_id>/form', methods=['GET'])
+def attendance_form_view(registration_id):
+    return trainee_controller.get_attendance_form(request, registration_id)
 
 
-@trainee_blueprint.route('/training/form/add', methods=["GET"])
+@trainee_blueprint.route('/training/form/add', methods=['GET'])
 def add_attendance_record_view():
     return trainee_controller.get_record_add(request)
 
+@trainee_blueprint.route('/training/form/add', methods=['POST'])
+def handle_attendance_record():
+    return trainee_controller.handle_attendance_record_add(request)
 
-@trainee_blueprint.route('/trainee/training/program', methods=["GET"])
-def one_program_view():
-    return trainee_controller.get_program(request)
+
+@trainee_blueprint.route('/program/<program_id>', methods=["GET"])
+def one_program_view(program_id):
+    return trainee_controller.get_program(request, program_id)
 
 
 @trainee_blueprint.route('/meetings', methods=["GET"])

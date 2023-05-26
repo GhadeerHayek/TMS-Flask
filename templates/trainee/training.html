@@ -24,8 +24,8 @@
                                 <thead>
                                 <tr>
                                     <th scope="col">Registration ID</th>
+                                    <th scope="col">Registration Time</th>
                                     <th scope="col">Program ID</th>
-                                    <th scope="col">Trainee ID</th>
                                     <th scope="col">Advisor ID</th>
                                     <th scope="col">Training Status</th>
                                     <th scope="col">Attendance Form</th>
@@ -33,15 +33,15 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <th scope="row">{{ registered_program[0] }}</th>
+                                    <th scope="row">{{ registered_program.ID }}</th>
+                                    <td>{{ registered_program.registration_time }}</td>
                                     <td>
-                                        <a href="{{ url_for('trainee.one_program_view') }}">{{ registered_program[1] }}</a>
+                                        <a href="{{ url_for('trainee.one_program_view', program_id = registered_program.training_program_id) }}">{{ registered_program.training_program_id }}</a>
                                     </td>
-                                    <td>{{ registered_program[2] }}</td>
-                                    <td>{{ registered_program[4] }}</td>
-                                    <td>{{ registered_program[5] }}</td>
+                                    <td>{{ registered_program.advisorID }}</td>
+                                    <td>{{ registered_program.status }}</td>
                                     <td>
-                                        <a href="{{ url_for('trainee.attendance_form_view') }}">{{ registered_program[3] }}</a>
+                                        <a href="{{ url_for('trainee.attendance_form_view', registration_id = registered_program.ID) }}">Details</a>
                                     </td>
                                 </tr>
                                 </tbody>

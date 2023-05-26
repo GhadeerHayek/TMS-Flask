@@ -35,10 +35,10 @@
                                 <tbody>
                                 {% for record in records %}
                                     <tr>
-                                        <th scope="row">{{ record[0] }}</th>
-                                        <td>{{ record[2] }}</td>
-                                        <td>{{ record[3] }}</td>
-                                        <td>{{ record[4] }}</td>
+                                        <th scope="row">{{ record.ID }}</th>
+                                        <td>{{ record.date }}</td>
+                                        <td>{{ record.check_in }}</td>
+                                        <td>{{ record.check_out }}</td>
                                     </tr>
                                 {% endfor %}
                                 </tbody>

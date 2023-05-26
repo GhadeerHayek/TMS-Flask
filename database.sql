@@ -173,15 +173,18 @@ CREATE TABLE training_programs
 -- Training Registration process
 CREATE TABLE training_registration
 (
-    ID                      int PRIMARY KEY AUTO_INCREMENT,
-    training_program_id     int NOT NULL,
-    traineeID               int NOT NULL,
-    advisorID               int NOT NULL,
-    training_request_status enum (
+    ID                  int PRIMARY KEY AUTO_INCREMENT,
+    training_program_id int      NOT NULL,
+    traineeID           int      NOT NULL,
+    advisorID           int               default NULL,
+    status              enum (
         'approved', -- approved by the manager
         'rejected', -- rejected by the manager
-        'pending'   -- waiting for approval by the manager
-        )                       NOT NULL,
+        'pending',  -- waiting for approval by the manager
+        'finished'  -- finished by the trainee
+        )                        NOT NULL,
+    -- i think it's curial
+    registration_time   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (training_program_id) REFERENCES training_programs (programID) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (advisorID) REFERENCES advisors (advisorID) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (traineeID) REFERENCES trainees (traineeID) ON DELETE CASCADE ON UPDATE CASCADE
@@ -254,3 +257,33 @@ VALUES (3, 'ghadeer123', 'advisor', 'ghadeerhayek2001@gmail.com');
 update advisors
 set userID = 3
 where advisorID = 1;
+
+
+
+-- add training programs into the system
+-- Who does that? the manager from his dashboard
+
+INSERT INTO `training_programs`(`name`, `description`, `area_of_training`, `fees`, `start_date`, `end_date`)
+VALUES ('Backend Development Training',
+        'Frappe/ERPNext framework training, the framework depends mainly on python and javasctipt ...',
+        'Software Development', 100, '2023-07-01', '2023-10-01');
+INSERT INTO `training_programs`(`name`, `description`, `area_of_training`, `fees`, `start_date`, `end_date`)
+VALUES ('Frontend Development Training', 'Vue.js training, javascript framework ... ', 'Software Development', 90,
+        '2023-08-01', '2023-10-01');
+INSERT INTO `training_programs`(`name`, `description`, `area_of_training`, `fees`, `start_date`, `end_date`)
+VALUES ('Date Engineer', 'AI programming with python, creating image classifiers ... ', 'Machine Learning', 90,
+        '2023-06-01', '2023-09-01');
+
+
+-- training registration is performed at the trainee component,
+-- a record is inserted ( id, program_id, trainee_id, status='pending')
+-- when manager approves the application, he should assign the advisor ID, Attendance Form ID,
+-- and change the status to 'approved' and send email for final approval from trainee
+
+UPDATE training_registration
+SET advisorID               = 1,
+    training_request_status ='approved'
+WHERE ID = 1;
+-- attendance records must have notes field, training_program_registrationID
+INSERT INTO attendance_records (training_programID, date, check_in, check_out)
+VALUES (1, '2023-05-26', '6:06', '5:05');

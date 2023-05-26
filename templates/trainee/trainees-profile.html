@@ -82,7 +82,7 @@
 
                                     <div class="row">
                                         <div class="col-lg-3 col-md-4 label ">Full Name</div>
-                                        <div class="col-lg-9 col-md-8">{{ trainee.fullName }}</div>
+                                        <div class="col-lg-9 col-md-8">{{ trainee.fullname }}</div>
                                     </div>
 
                                     <div class="row">
@@ -228,6 +228,21 @@
                                         <div class="text-center">
                                             <button type="submit" class="btn btn-primary">Request Changes</button>
                                         </div>
+                                        {% with messages = get_flashed_messages() %}
+                                            {% if messages %}
+                                                <ul class="flash-messages">
+                                                    {% for message in messages %}
+                                                        <div class="alert alert-danger bg-danger text-light border-0 alert-dismissible fade show"
+                                                             role="alert">
+                                                            {{ message }}
+                                                            <button type="button" class="btn-close btn-close-white"
+                                                                    data-bs-dismiss="alert"
+                                                                    aria-label="Close"></button>
+                                                        </div>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% endif %}
+                                        {% endwith %}
                                     </form><!-- End Profile Edit Form -->
 
                                 </div>
@@ -274,6 +289,22 @@
                                         <div class="text-center">
                                             <button type="submit" class="btn btn-danger">Deactivate Account</button>
                                         </div>
+                                        {% with messages = get_flashed_messages() %}
+                                            {% if messages %}
+                                                <ul class="flash-messages">
+                                                    {% for message in messages %}
+                                                        <div class="alert alert-danger bg-danger text-light border-0 alert-dismissible fade show"
+                                                             role="alert">
+                                                            {{ message }}
+                                                            <button type="button" class="btn-close btn-close-white"
+                                                                    data-bs-dismiss="alert"
+                                                                    aria-label="Close"></button>
+                                                        </div>
+                                                    {% endfor %}
+                                                </ul>
+
+                                            {% endif %}
+                                        {% endwith %}
                                     </form><!-- End settings Form -->
 
                                 </div>

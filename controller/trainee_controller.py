@@ -3,6 +3,7 @@ from sqlalchemy import text
 import helpers.token as token_helper
 import helpers.trainee_helper as trainee_helper
 from app import db
+import time
 
 programs = [
     ["1", "program1", "program1 description", "area1", "money", "somedate", "somedate"],
@@ -65,41 +66,95 @@ def index(request):
 
 def get_programs(request):
     # from the request, we'll fetch the hashed user_id (trainee)
+    token = request.cookies['token']
+    trainee1 = token_helper.verify_token(token)
+    if not trainee1:
+        flash("Invalid token", 'error')
+        return redirect(url_for('auth.login_view'))
     # from the trainee, we'll fetch the interested area
     # from this field, we'll select all training programs using the area field
+    query = text("""
+        SELECT * from training_programs where area_of_training = :area
+    """)
+    result_set = db.session.execute(query, {"area": trainee1['area_of_training']}).fetchall()
     # finally, return the view alongside with this data
-    return render_template('trainee/programs.html', trainee=trainee, programs=programs)
+    return render_template('trainee/programs.html', trainee=trainee1, programs=result_set)
 
 
 """
-    action function that handles the application request and flashes messages for user in case of success or failure 
+    action function that handles the training program application request and flashes messages for user in case of success or failure 
     not yet implemented 
 """
 
 
-def handle_program_application(request):
-    pass
+def handle_program_application(request, training_program_id):
+    # from the request, we'll fetch the hashed user_id (trainee)
+    token = request.cookies['token']
+    trainee1 = token_helper.verify_token(token)
+    if not trainee1:
+        flash("Invalid token", 'error')
+        return redirect(url_for('auth.login_view'))
+    # the trainee can only have one training program at a time, so check that first
+    if trainee1['status'] == 'on_training':
+        flash('You are already on training', 'error')
+        # TODO: is sufficient to flash messages?
+    # if not, then add the training program to the registered training programs
+    # the default registration status is pending, waiting for approval by the manager
+    query = text(""" INSERT INTO training_registration  (training_program_id, traineeID, training_request_status)
+    VALUES (:training_program_id, :traineeID, 'pending');
+    """)
+    params = {'training_program_id': training_program_id, 'traineeID': trainee1["traineeID"]}
+    result = db.session.execute(query, params)
+    if not result:
+        flash('failed to apply, please try again')
+        return redirect(request.referrer)
+    db.session.commit()
+    flash("Your training application is in review, wait for reply", 'error')
+    # NOTE: the trainee can submit any number of application as long as his status is active
+    # the manager should see all of these applications.
+    # once an application is approved, the trainee status has to be "on_training", assigns advisor, assigns form_id
+    # but what happens for all other applications? revoked?
+    return redirect(url_for('trainee.programs_view'))
 
 
 """
-    This is the form-view function that renders the current training of a trainee details, which include the program data itself,
-     the registration details of the program itself, link to the attendance form, link to schedule meetings
-     So i'd guess it's the view that contains three components in one 
+    This is the form-view function that renders the current training of a trainee details,
+    which include the program data itself,
+    the registration details of the program itself,
+    link to the attendance form,
+    link to schedule meetings.
+    So i'd guess it's the view that contains three components in one 
+    
+    to get the current training, I are assuming that there's a status: approved that indicates current training
+    and the finished trainings are marked as completed, so i can guarantee the current training is only selected 
 """
 
 
 def get_training(request):
-    # from the request, we'll get the token. From the token, we'll get the hashed user_id (trainee)
+    # from the request, we'll fetch the hashed user_id (trainee)
+    token = request.cookies['token']
+    trainee1 = token_helper.verify_token(token)
+    if not trainee1:
+        flash("Invalid token", 'error')
+        return redirect(url_for('auth.login_view'))
     # from this trainee, we'll get its status (on_training)
-    # if the current status is not on_training then we'll display an empty page, or a flashed message .. whatever error is
+    # if the current status is not on_training then we'll display an empty page,
+    # or a flashed message .. whatever error is
+    if trainee1['status'] != 'on_training':
+        flash("No current training to display")
     # if the current_status is on_training, then we'll select the application_registiration record using the trainee_id
+    query = text("""
+        SELECT * from training_registration where traineeID = :traineeID and status = 'approved'
+    """)
+    registered_program1 = db.session.execute(query, {"traineeID": trainee1['traineeID']}).fetchone()
     # this record contains IDs
     # data: registiration id, training program id, advisor id, attendance form id, status of the registiration itself
     # the attendance form id is a link to a page that displays all the attendance records related to the whole thing
     # the training program is also a link to a page that displays the training program details in a card format
-    # I haven't decided what to do with the advisor ID
-
-    return render_template('trainee/training.html', trainee=trainee, registered_program=registered_program)
+    # I haven't decided what to do with the advisor ID, i could display an advisor card
+    if not registered_program1:
+        flash("Failed to get training", 'error')
+    return render_template('trainee/training.html', trainee=trainee1, registered_program=registered_program1)
 
 
 """
@@ -107,10 +162,27 @@ def get_training(request):
 """
 
 
-def get_attendance_form(request):
-    # this request shall contain the token, the form id
-    # we'll select all records from the database where there's a match in the form ID then render the view
-    return render_template('trainee/attendance-form.html', trainee=trainee, records=attendance_records)
+def get_attendance_form(request, registration_id):
+    # from the request, we'll fetch the hashed user_id (trainee)
+    token = request.cookies['token']
+    trainee1 = token_helper.verify_token(token)
+    if not trainee1:
+        flash("Invalid token", 'error')
+        return redirect(url_for('auth.login_view'))
+    # from the attendance_records, we'll select all records that belong to a specific registration_id
+    # i think this is a list of records objects
+    attendance_records1 = db.session.execute(
+        text("""
+            SELECT * 
+            from attendance_records 
+            WHERE training_programID = :registration_id 
+        """), {
+            "registration_id": registration_id
+        }
+    ).fetchall()
+    if not attendance_records1:
+        flash("No records found")
+    return render_template('trainee/attendance-form.html', trainee=trainee1, records=attendance_records1)
 
 
 """
@@ -123,12 +195,40 @@ def get_record_add(request):
 
 
 """
+    This function handles the add attendance record functionality 
+
+"""
+
+
+def handle_attendance_record_add(request):
+    pass
+
+
+"""
     This function renders the view that displays the information regarding a selected training program 
 """
 
 
-def get_program(request):
-    return render_template('trainee/one-program.html', trainee=trainee, program=programs[0])
+def get_program(request, program_id):
+    # ensure token existence
+    # from the request, we'll fetch the hashed user_id (trainee)
+    token = request.cookies['token']
+    trainee1 = token_helper.verify_token(token)
+    if not trainee1:
+        flash("Invalid token", 'error')
+        return redirect(url_for('auth.login_view'))
+    # select the program_id no matter is the case
+    program = db.session.execute(
+        text("""
+            SELECT * from training_programs where programID = :programID
+        """),
+        {
+            "programID": program_id
+        }
+    ).fetchone()
+    if not program:
+        flash("program not found", 'error')
+    return render_template('trainee/one-program.html', trainee=trainee1, program=program)
 
 
 """
@@ -154,6 +254,12 @@ def get_add_meeting(request):
     z
 
 
+"""
+    This is the function that prepares the profile view for a specific trainee
+    it prepares the data and renders the trainee profile view 
+"""
+
+
 def get_profile_view(request):
     token = request.cookies['token']
     if not token:
@@ -165,6 +271,11 @@ def get_profile_view(request):
         flash('Invalid token', 'error')
         return redirect(url_for('auth.login_view'))
     return render_template('trainee/trainees-profile.html', trainee=trainee1)
+
+
+"""
+    This is the function that handles account modifications requests. 
+"""
 
 
 def handle_profile_update(request):
@@ -210,6 +321,11 @@ def handle_profile_update(request):
     else:
         flash('Failed to submit account modification, try again', 'error')
         return redirect(url_for('trainee.profile_view'))
+
+
+"""
+    This is the function that handles account deactivation requests.
+"""
 
 
 def handle_profile_deactivation(request):
