@@ -174,12 +174,46 @@ def get_deactivate_advisors(request):
     This is the controller function that handles the deactivate button in the deactivate advisors view
 """
 def approve_advisor_deactivation(request):
-    pass
+    token = request.cookies['token']
+    # make sure manager is authorized
+    manager = mghelper.verify_manager(token)
+    # get hidden form data
+    advisorID = request.form['advisorID']   
+    # update advisor table with userID
+    advisor_query= text("UPDATE advisors SET status = 'active' where advisorID = :advisorID")
+    print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+    print(advisorID[0])
+    advisor_cursor = db.session.execute(advisor_query, {'advisorID': advisorID})
+    # commit changes to db
+    db.session.commit()
+    if not advisor_cursor:   
+        flash('Failed to deactivate advisor', 'error')
+        return redirect(url_for('manager.get_deactivate_advisors_view'))
+    flash('Advisor deactivated successfully', 'success')
+    return redirect(url_for('manager.get_deactivate_advisors_view'))
+
 
 
 """
     This is the controller function that handles the reject button in the deactivate advisors view
 """
 def reject_advisor_deactivation(request):
-    pass
+    token = request.cookies['token']
+    # make sure manager is authorized
+    manager = mghelper.verify_manager(token)
+    # get hidden form data
+    advisorID = request.form['advisorID']   
+    # update advisor table with userID
+    advisor_query= text("UPDATE advisors SET status = 'rejected' where advisorID = :advisorID")
+    print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+    print(advisorID[0])
+    advisor_cursor = db.session.execute(advisor_query, {'advisorID': advisorID})
+    # commit changes to db
+    db.session.commit()
+    if not advisor_cursor:   
+        flash('Failed to reject advisor', 'error')
+        return redirect(url_for('manager.get_deactivate_advisors_view'))
+    flash('Advisor rejected successfully', 'success')
+    return redirect(url_for('manager.get_deactivate_advisors_view'))
+
 
