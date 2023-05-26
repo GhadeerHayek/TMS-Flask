@@ -119,14 +119,29 @@ def get_all_programs_view():
     return manager_programs_controller.get_all_programs(request)
 
 
-@manager_blueprint.route('/programs/create', methods=["GET"])
+@manager_blueprint.route('/programs/create/form', methods=["GET"])
 def get_add_program_view():
     return manager_programs_controller.get_add_program(request)
+
+
+@manager_blueprint.route('/program/create', methods=["POST"])
+def add_program():
+    return manager_programs_controller.handle_add_program(request)
 
 
 @manager_blueprint.route('/programs/edit', methods=["GET"])
 def get_edit_program_view():
     return manager_programs_controller.get_edit_program(request)
+
+
+@manager_blueprint.route('/programs/edit/save', methods=["POST"])
+def edit_program():
+    return manager_programs_controller.handle_edit_program(request)
+
+
+@manager_blueprint.route('/program/delete', methods=["POST"])
+def delete_program():
+    return manager_programs_controller.handle_delete_program(request)
 
 # Manager - Billing
 @manager_blueprint.route('/billing', methods=["GET"])

@@ -141,7 +141,8 @@ def reject_advisor_modifications(request):
     print(advisorID[0])
     advisor_cursor = db.session.execute(advisor_query, {'advisorID': advisorID})
     # commit changes to db
-    result = db.session.commit()
+    db.session.commit()
+    result = advisor_cursor.rowcount
     if not result:   
         flash('Failed to approve advisor modification request', 'error')
         return redirect(url_for('manager.get_advisors_accounts_view', manager=manager))
@@ -165,8 +166,6 @@ def get_deactivate_advisors(request):
     advisors = []
     for row in rows:
         advisors.append(row._data)
-    # implement the query so that you get the advisors deactivation requests
-    # i think we are supposed to implement something in the database for it
     return render_template("manager/advisor/deactivate_advisor.html", manager=manager, advisors=advisors)
 
 

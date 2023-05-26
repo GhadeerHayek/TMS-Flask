@@ -33,5 +33,4 @@ app.register_blueprint(advisor_blueprint)
 
 @app.errorhandler(404)
 def page_not_found(e):
-    # Render the 404.html template
     return render_template('404.html'), 404

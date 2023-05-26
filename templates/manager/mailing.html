@@ -8,7 +8,7 @@
             <nav>
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="#">Manager</a></li>
-                    <li class="breadcrumb-item"><a href="#">Send an Email</a></li>
+                    <li class="breadcrumb-item"><a href="">Send an Email</a></li>
                 </ol>
             </nav>
         </div><!-- End Page Title -->
@@ -38,7 +38,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Email Details</h5>
-                            <form action=" {{url_for('manager.send_email')}} " method="post" class="php-email-form">
+                            <form action="{{url_for('manager.send_email')}} " method="post">
                                 <div class="row gy-4">
                 
                                   <div class="col-md-12 ">
