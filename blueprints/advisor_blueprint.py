@@ -38,11 +38,7 @@ def handle_trainee_approval(traineeID):
 @advisor_blueprint.route('/advisor/trainees/<traineeID>/reject', methods=["POST"])
 def handle_trainee_rejection(traineeID):
     return advisor_controller.reject_trainee(request, traineeID)
-#
-#
-# @advisor_blueprint.route('/program', methods=["GET"])
-# def program_material():
-#     return advisor_controller.get_program_materials(request)
+
 
 # Meetings Form-View Route
 @advisor_blueprint.route('/advisor/meetings', methods=["GET"])
@@ -63,35 +59,6 @@ def handle_advisor_meeting_add(registration_id):
     return advisor_controller.handle_meeting_add(request, registration_id)
 
 
-
-"""
-
-# get all meetings for this advisor, where the meeting status is pending for approval
-@advisor_blueprint.route('/advisor/meetings', methods=["GET"])
-def meetings():
-    return advisor_controller.get_meeting_requests(request)
-
-# Add new Meeting
-@advisor_blueprint.route('/advisor/meeting/create', methods=["GET"])
-def create_meeting():
-    return advisor_controller.get_meeting_form(request)
-
-
-# I don't know
-@advisor_blueprint.route('/advisor/reschedule', methods=["GET"])
-def reschedule():
-    return advisor_controller.get_reschedule_form(request)
-
-
-
-"""
-
-
-@advisor_blueprint.route('/advisor/trainingprogram', methods=["GET"])
-def training_program():
-    return advisor_controller.get_training_material(request)
-
-
 # Advisor Profile Modification Action Route
 @advisor_blueprint.route('/profile/edit', methods=['POST'])
 def advisor_profile_edit():
@@ -102,3 +69,13 @@ def advisor_profile_edit():
 @advisor_blueprint.route('/profile/delete', methods=['POST'])
 def advisor_profile_deactivate():
     return advisor_controller.handle_profile_deactivation(request)
+
+
+@advisor_blueprint.route('/meeting/<meetingID>/approve', methods=['POST'])
+def handle_approve_meeting(meetingID):
+    return advisor_controller.approve_meeting(request, meetingID)
+
+
+@advisor_blueprint.route('/meeting/<meetingID>/cancel', methods=['POST'])
+def handle_cancel_meeting(meetingID):
+    return advisor_controller.cancel_meeting(request, meetingID)

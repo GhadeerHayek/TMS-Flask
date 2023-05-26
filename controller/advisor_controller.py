@@ -88,19 +88,6 @@ def get_trainees_contact(request):
     else:
         return render_template('advisor/new-trainees-requests.html', trainees=trainees, advisor=advisor)
 
-#
-# def get_program_materials(request):
-#     return render_template('advisor/my_programs.html', programs=programs, advisor=advisor)
-#
-
-#
-# def get_meeting_requests(request):
-#     return render_template('advisor/advisor-meetings.html', meetings=meetings, advisor=advisor)
-#
-#
-# def get_meeting_form(request):
-#     return render_template('advisor/create_meeting.html', advisor=advisor)
-
 
 # handles the get attendance form for trainee button
 def get_attendance_form(request, traineeID):
@@ -115,7 +102,7 @@ def get_attendance_form(request, traineeID):
         text("""
             SELECT * from `training_registration` where `traineeID` = :traineeID and `status`='approved'
         """),
-             {"traineeID":traineeID}
+        {"traineeID": traineeID}
     ).fetchone()
     if not registration_record:
         flash("Trainee has not registered")
@@ -136,13 +123,10 @@ def get_attendance_form(request, traineeID):
             flash("No records found")
             return render_template('advisor/attendance-form.html', advisor=advisor, attendance_records=[])
         else:
-            return render_template('advisor/attendance-form.html', advisor=advisor, attendance_records=attendance_records)
+            return render_template('advisor/attendance-form.html', advisor=advisor,
+                                   attendance_records=attendance_records)
 
-#
-# def get_reschedule_form(request):
-#     return render_template('advisor/reschedule.html', advisor=advisor, trainee=trainees[0])
-#
-#
+
 def get_training_material(request):
     # from the request, we'll fetch the hashed user_id (trainee)
     token = request.cookies['token']
@@ -221,7 +205,8 @@ def get_add_meeting(request, registration_id):
         flash('Something went wrong')
         return redirect(request.referrer)
     else:
-        return render_template('advisor/advisor-new-meeting.html', advisor=advisor, registration_record=registration_record)
+        return render_template('advisor/advisor-new-meeting.html', advisor=advisor,
+                               registration_record=registration_record)
 
 
 """
@@ -318,7 +303,7 @@ def handle_profile_update(request):
     params = {
         "username": username,
         "fullname": fullname,
-        "dicsipline":dicsipline,
+        "dicsipline": dicsipline,
         "email": email,
         "advisorID": advisor["advisorID"]
     }
@@ -365,3 +350,51 @@ def handle_profile_deactivation(request):
     else:
         flash('Failed to submit account deactivation, try again', 'error')
         return redirect(url_for('advisor.dashboard_view'))
+
+
+def cancel_meeting(request, meetingID):
+    # request has meetingID
+    token = request.cookies['token']
+    advisor = token_helper.verify_token(token)
+    if not advisor:
+        flash("Invalid token", 'error')
+        return redirect(url_for('auth.login_view'))
+    # update the status
+    result = db.session.execute(
+        text("""
+        UPDATE `meetings`
+        SET `status` = 'cancelled'
+        where `meetingID` = :meetingID
+        """),
+        {"meetingID": meetingID}
+    ).rowcount
+    if not result:
+        flash("Failed to cancel meeting")
+        return redirect(request.referrer)
+    else:
+        db.session.commit()
+        return redirect(url_for('advisor.get_advisor_meetings_view'))
+
+
+def approve_meeting(request, meetingID):
+    # request has meetingID
+    token = request.cookies['token']
+    advisor = token_helper.verify_token(token)
+    if not advisor:
+        flash("Invalid token", 'error')
+        return redirect(url_for('auth.login_view'))
+    # update the status
+    result = db.session.execute(
+        text("""
+           UPDATE `meetings`
+           SET `status` = 'approved'
+           where `meetingID` = :meetingID
+           """),
+        {"meetingID": meetingID}
+    ).rowcount
+    if not result:
+        flash("Failed to approve meeting")
+        return redirect(request.referrer)
+    else:
+        db.session.commit()
+        return redirect(url_for('advisor.get_advisor_meetings_view'))

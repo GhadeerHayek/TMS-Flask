@@ -30,6 +30,7 @@
                                     <th scope="col">Link</th>
                                     <th scope="col">Start Datetime</th>
                                     <th scope="col">End Datetime</th>
+                                    <th scope="col">Action</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -41,6 +42,21 @@
                                         <td>{{ meeting.link }}</td>
                                         <td>{{ meeting.start_datetime }}</td>
                                         <td>{{ meeting.end_datetime }}</td>
+                                        <td>
+                                            {% if meeting.status == 'approved' %}
+                                                <form method="POST"
+                                                      action="{{ url_for('advisor.handle_approve_meeting', meetingID=meeting.meetingID) }}">
+                                                    <button type="submit" class="btn btn-danger">Cancel</button>
+                                                </form>
+                                            {% elif meeting.status == 'pending' %}
+                                                <form method="POST"
+                                                      action="{{ url_for('advisor.handle_cancel_meeting',meetingID=meeting.meetingID) }}">
+                                                    <button type="submit" class="btn btn-success">Approve</button>
+                                                </form>
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
                                     </tr>
                                 {% endfor %}
                                 </tbody>
