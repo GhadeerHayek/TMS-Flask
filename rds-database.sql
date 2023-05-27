@@ -138,13 +138,12 @@ CREATE TABLE IF NOT EXISTS meetings
     meeting_link    varchar(50) default NULL,
     start_datetime  datetime     NOT NULL,
     end_datetime    datetime     NOT NULL,
-    -- for meeting management purposes, there's a status field
-    status          ENUM ( 'approved', -- approved by the advisor
-        'cancelled',                   -- cancelled by the advisor
-        'pending'                      -- waiting for advisor approve
-        ) NOT NULL,
-    FOREIGN KEY (registration_id) REFERENCES training_registration (ID) ON DELETE CASCADE ON UPDATE CASCADE
-
+    status          ENUM ('approved', 'cancelled', 'pending') NOT NULL,
+    CONSTRAINT fk_meetings_registration
+        FOREIGN KEY (registration_id)
+        REFERENCES training_registration (ID)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
 
 
