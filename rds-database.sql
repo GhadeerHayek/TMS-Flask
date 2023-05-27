@@ -1,7 +1,7 @@
 -- Ghadeer's edit , 24th May
 
 -- insertion to this table occurs when a manager approves a trainee or an advisor
-CREATE TABLE users
+CREATE TABLE IF NOT EXISTS  users
 (
     userID         INT PRIMARY KEY AUTO_INCREMENT,
     password       VARCHAR(250) NOT NULL,
@@ -18,7 +18,7 @@ CREATE TABLE users
 
 -- Trainee component
 -- insertion to this table occurs when a trainee registers through the signup form
-CREATE TABLE trainees
+CREATE TABLE IF NOT EXISTS trainees
 (
     -- trainee basic information
     traineeID int PRIMARY KEY AUTO_INCREMENT,
@@ -57,7 +57,7 @@ CREATE TABLE trainees
 
 -- Advisor Component
 -- insertion to this table is done via the registration form
-CREATE TABLE advisors
+CREATE TABLE IF NOT EXISTS  advisors
 (
     -- advisor basic info
     advisorID int PRIMARY KEY AUTO_INCREMENT,
@@ -92,7 +92,7 @@ CREATE TABLE advisors
 
 -- Manager Component
 -- the data for this table is actually built-in
-CREATE TABLE managers
+CREATE TABLE IF NOT EXISTS managers
 (
     managerID int PRIMARY KEY AUTO_INCREMENT,
     username  VARCHAR(250) NOT NULL,
@@ -105,7 +105,7 @@ CREATE TABLE managers
 );
 
 -- All emails manipulation in the system
-CREATE TABLE emails
+CREATE TABLE IF NOT EXISTS  emails
 (
     emailID          int PRIMARY KEY AUTO_INCREMENT,
     sender           int          NOT NULL,
@@ -118,7 +118,7 @@ CREATE TABLE emails
 );
 
 -- Balance Sheet is where the system keeps its billing records
-CREATE TABLE balance_sheet
+CREATE TABLE IF NOT EXISTS  balance_sheet
 (
     transactionID    int PRIMARY KEY AUTO_INCREMENT,
     userID           int      not NULL,
@@ -130,7 +130,7 @@ CREATE TABLE balance_sheet
 );
 
 
-CREATE TABLE meetings
+CREATE TABLE IF NOT EXISTS meetings
 (
     meetingID       int PRIMARY KEY AUTO_INCREMENT,
     registration_id int,
@@ -149,7 +149,7 @@ CREATE TABLE meetings
 
 
 -- Training Program Component, it is equal to our summer training programs
-CREATE TABLE training_programs
+CREATE TABLE IF NOT EXISTS training_programs
 (
     programID        int PRIMARY KEY AUTO_INCREMENT,
     name             varchar(250) NOT NULL,
@@ -171,7 +171,7 @@ CREATE TABLE training_programs
 
 
 -- Training Registration process
-CREATE TABLE training_registration
+CREATE TABLE IF NOT EXISTS training_registration
 (
     ID                  int PRIMARY KEY AUTO_INCREMENT,
     training_program_id int      NOT NULL,
@@ -190,7 +190,7 @@ CREATE TABLE training_registration
 
 -- Attendance Records related to the training registration process
 
-CREATE TABLE attendance_records
+CREATE TABLE IF NOT EXISTS  attendance_records
 (
     ID                 int PRIMARY KEY AUTO_INCREMENT,
     training_programID int  NOT NULL,
@@ -202,7 +202,7 @@ CREATE TABLE attendance_records
 
 
 -- Notifications management
-CREATE TABLE notifications
+CREATE TABLE IF NOT EXISTS  notifications
 (
     id                INT PRIMARY KEY AUTO_INCREMENT,
     sender_id         INT,
