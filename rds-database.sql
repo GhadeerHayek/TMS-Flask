@@ -202,3 +202,4 @@ CREATE TABLE IF NOT EXISTS notifications
     status            VARCHAR(20) CHECK (status IN ('read', 'unread')),
     FOREIGN KEY (recipient_id) REFERENCES trainees (userID) ON DELETE CASCADE ON UPDATE CASCADE
 );
+
