@@ -5,17 +5,9 @@ import helpers.manager_helper as mghelper
 import smtplib
 
 
-manager = {
-    "id": "100",
-    "username": "Jupiter2000",
-    "email": "jupiter@gmail.com"
-}
-
 """
     This is the function that prepares the data for the 'manager dashboard' view, returns the view with its data
 """
-
-
 def index(request):
     # from token get id, from the id get the record in the database
     token = request.cookies['token']
@@ -25,6 +17,8 @@ def index(request):
 
 # id, transaction name, type(credit/debit), amount, trainee Id, timestamp
 def get_balance_sheet(request):
+    token = request.cookies['token']
+    manager = mghelper.verify_manager(token)
     # prepare list of balance sheet records
     # token is the manager id or the manager record
     query = text("SELECT * FROM balance_sheet")
@@ -54,33 +48,10 @@ def send_email(request):
     subject = request.form['subject']
  
     # return mghelper.verify_manager(manager.email)
-
-    gmail_user = 'ayahs19302@gmail.com'
-    gmail_password = 'mylafamilia'
-    sent_from = gmail_user
-    # recipient credentials 
-    to = ['hudaelshawa@gmail.com@gmail.com']
-    subject = 'testting flask'
-    body = 'i hope it wokrls adipiscing elit'
-
-    email_text = """\
-    From: %s
-    To: %s
-    Subject: %s
-
-    %s
-    """ % (sent_from, ", ".join(to), subject, body)
-
-    try:
-        smtp_server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-        smtp_server.ehlo()
-        smtp_server.login(gmail_user, gmail_password)
-        smtp_server.sendmail(sent_from, to, email_text)
-        smtp_server.close()
-        print ("Email sent successfully!")
-    except Exception as ex:
-        print ("Something went wrong….",ex)
+    pass
 
 
 def get_system_log(request):
-    pass
+    token = request.cookies['token']
+    manager = mghelper.verify_manager(token)
+    return render_template("manager/logging.html", manager=manager)

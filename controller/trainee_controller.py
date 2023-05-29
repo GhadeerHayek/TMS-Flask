@@ -38,9 +38,8 @@ def get_programs(request):
     # from the trainee, we'll fetch the area of interest
     # from this field, we'll select all training programs using the area field
     query = text("""
-            SELECT * from `training_programs` where `area_of_training` = :area
-    """)
-    programs = db.session.execute(query, {"area": trainee['area_of_training']}).fetchall()
+            SELECT * from `training_programs`;""")
+    programs = db.session.execute(query).fetchall()
     # finally, return the view alongside with this data
     if not programs:
         return render_template('trainee/programs.html', trainee=trainee, programs=[])

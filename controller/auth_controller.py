@@ -21,14 +21,16 @@ def handle_login(request):
     params = {"email": email, "password": password}
     result = db.session().execute(query, params)
     row = result.fetchone()
+    # return jsonify('querying trainee returned nothing')
     # print(row)
     if not row:
+        return jsonify("nothing");
         flash('Email or password are incorrect, please try again', 'error')
         return redirect(url_for('auth.login_view'))
     # NOTE: We need to check the statuses of the trainee and the advisor before authorizing them to the system
     # Which means we'll fetch the trainee and advisor records
     # which also means deleting the trainee, advisor helpers :))))))
-    classification = row[2]
+    classification = row[3]
     # print(classification)
     if classification == "manager":
         # get the row from the database

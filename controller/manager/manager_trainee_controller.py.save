@@ -53,7 +53,7 @@ def approve_trainee_registration(request):
     trainee_rows = trainee_cursor.rowcount
     db.session.commit()
     if not trainee_rows:   
-        return jsonify('the problem is in update trainees', userID)
+        return jsonify('the problem is in update trainees')
         flash('Failed to approve trainee', 'error')
         return redirect(url_for('manager.get_pending_trainees_view'))
     flash('Trainee approved successfully', 'success')
@@ -83,71 +83,16 @@ def reject_trainee_registration(request):
     return redirect(url_for('manager.get_pending_trainees_view'))
 
 
-def get_training_requests_view(request):
-    token = request.cookies['token']
-    manager = mghelper.verify_manager(token)
-    # token is the manager id or the manager record
-    request_query = text("SELECT * from training_registration where status = 'pending'")
-    advisor_query = text("SELECT advisorID, username from advisors")
-    result_cursor = db.session.execute(request_query)
-    advisor_cursor = db.session.execute(advisor_query)
-    request_rows = result_cursor.fetchall()
-    advisor_rows = advisor_cursor.fetchall()
-    #print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
-    #print(advisor_rows)
-    advisor = []
-    requests = []
-    for row in request_rows:
-        requests.append(row._data)
-    for row in advisor_rows:
-        advisor.append(row._data)
-    print(advisor)
-    return render_template("manager/trainee/pending_requests.html", manager=manager, requests=requests, advisor=advisor)
+def get_training_requests_view():
+    pass
 
 
-def approve_training_request(request):
-    token = request.cookies['token']
-    # make sure manager is authorized
-    manager = mghelper.verify_manager(token)
-    # get hidden form data
-    requestID = request.form['requestID']   
-    advisorID = request.form['advisorID'] 
-    traineeID =  request.form['traineeID']
-    # update trainee and training_registration table with status
-    request_query= text("UPDATE training_registration SET status = 'approved', advisorID=:advisorID where ID = :requestID")
-    trainee_query= text("UPDATE trainees SET status = 'on_training' where traineeID = :traineeID")
-    balance_query= text("INSERT INTO balance_sheet (userID, type, amount, transaction_time) VALUES (:userID, 'Credit', 100.0, NOW())")
-    request_cursor = db.session.execute(request_query, {'requestID': requestID, 'advisorID':advisorID})
-    trainee_cursor = db.session.execute(trainee_query, {'traineeID': traineeID})
-    balance_cursor = db.session.execute(balance_query, {'userID': traineeID})
-    # commit changes to db
-    db.session.commit()
-    if not request_cursor and not trainee_cursor and not balance_cursor:   
-        flash('Failed to approve trainee training request', 'error')
-        return redirect(url_for('manager.get_training_requests'))
-    flash('Trainee training request approved successfully', 'success')
-    return redirect(url_for('manager.get_training_requests'))
+def approve_training_request():
+    pass
 
 
-
-def reject_training_request(request):
-    # print("inside reject")
-    token = request.cookies['token']
-    # make sure manager is authorized
-    manager = mghelper.verify_manager(token)
-    # get hidden form data
-    requestID = request.form['requestID']   
-    # update trainee table with userID
-    request_query= text("UPDATE training_registration SET status = 'rejected' where ID = :requestID")
-    request_cursor = db.session.execute(request_query, {'requestID': requestID})
-    # commit changes to db
-    db.session.commit()
-    if not request_cursor:   
-        flash('Failed to reject training request', 'error')
-        return redirect(url_for('manager.get_training_requests'))
-    flash('Trainee training request rejected successfully', 'success')
-    return redirect(url_for('manager.get_training_requests'))
-
+def reject_training_request():
+    pass
 
 
 def get_trainee_account(request):
@@ -181,7 +126,7 @@ def get_trainee_account_details(request):
 def accept_trainee_modifications(request):
     token = request.cookies['token']
     # make sure manager is authorized
-    manager = mghelper.verify_manager(token)
+    # manager = mghelper.verify_manager(token)
     # get hidden form data
     traineeID = request.form['traineeID']   
     # update trainee table with userID
@@ -202,7 +147,7 @@ def accept_trainee_modifications(request):
 def reject_trainee_modifications(request):
     token = request.cookies['token']
     # make sure manager is authorized
-    manager = mghelper.verify_manager(token)
+    # manager = mghelper.verify_manager(token)
     # get hidden form data
     traineeID = request.form['traineeID']   
     # update trainee table with userID
@@ -228,7 +173,7 @@ def reject_trainee_modifications(request):
 def get_deactivate_trainees(request):
     # token is the manager record from the database
     token = request.cookies['token']
-    manager = mghelper.verify_manager(token)
+    # manager = mghelper.verify_manager(token)
     # token is the manager id or the manager record
     query = text("SELECT * from trainees where status = 'active'")
     result_cursor = db.session.execute(query)
@@ -251,7 +196,7 @@ def get_deactivate_trainees(request):
 def approve_trainee_deactivation(request):
     token = request.cookies['token']
     # make sure manager is authorized
-    manager = mghelper.verify_manager(token)
+    # manager = mghelper.verify_manager(token)
     # get hidden form data
     traineeID = request.form['traineeID']   
     # update trainee table with userID
@@ -274,7 +219,7 @@ def approve_trainee_deactivation(request):
 def reject_trainee_deactivation(request):
     token = request.cookies['token']
     # make sure manager is authorized
-    manager = mghelper.verify_manager(token)
+    # manager = mghelper.verify_manager(token)
     # get hidden form data
     traineeID = request.form['traineeID']   
     # update trainee table with userID
