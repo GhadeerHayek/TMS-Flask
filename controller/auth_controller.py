@@ -62,14 +62,14 @@ def handle_login(request):
             flash("you are not authorized to the system.")
             return redirect(url_for('auth.login_view'))
         advisor = {
-                "advisorID": advisor_record[0],
-                "username": advisor_record[1],
-                "fullname": advisor_record[2],
-                "email": advisor_record[3],
-                "discipline": advisor_record[4],
-                "status": advisor_record[5],
-                "userID": advisor_record[6],
-            }
+            "advisorID": advisor_record[0],
+            "username": advisor_record[1],
+            "fullname": advisor_record[2],
+            "email": advisor_record[3],
+            "discipline": advisor_record[4],
+            "status": advisor_record[5],
+            "userID": advisor_record[6],
+        }
         # generate token
         token = tokenHelper.generate_token(advisor)
         # print("inside manager")
@@ -172,7 +172,7 @@ def handle_advisor_signup(request):
 
 def signout(request):
     response = redirect(url_for('auth.login_view'))
-    response.set_cookie('token','')
-#    return jsonify(var)
- #   return jsonify(response.headers['Cookie'])
-    return response  
+    response.set_cookie('token', '')
+    #    return jsonify(var)
+    #   return jsonify(response.headers['Cookie'])
+    return response

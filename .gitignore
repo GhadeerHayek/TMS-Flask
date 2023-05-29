@@ -1,2 +1,4 @@
 .env
 /blueprints/mock_blueprint.py
+main.py
+app.py

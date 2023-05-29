@@ -9,7 +9,7 @@
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ url_for('advisor.dashboard_view') }}">Advisor</a></li>
                     <li class="breadcrumb-item"><a
-                            href="{{ url_for('advisor.get_advisor_meetings_view', registration_id=registration_record[0]) }}">Create
+                            href="{{ url_for('advisor.get_advisor_meetings_view') }}">Create
                         a New
                         Meeting</a></li>
                 </ol>
@@ -23,7 +23,7 @@
                             <h5 class="card-title">Meeting Details</h5>
                             <!-- Horizontal Form -->
                             <form method="POST"
-                                  action="{{ url_for('advisor.handle_advisor_meeting_add',  registration_id=registration_record[0]) }}">
+                                  action="{{ url_for('advisor.handle_advisor_meeting_add')}}">
                                 <div class="row mb-3">
                                     <label for="details" class="col-sm-2 col-form-label">Meeting Details</label>
                                     <div class="col-sm-10">
@@ -34,15 +34,20 @@
                                     <label for="advisor" class="col-sm-2 col-form-label">Advisor</label>
                                     <div class="col-sm-10">
                                         <input type="number" class="form-control" id="advisor" name="advisor"
-                                               value="{{ registration_record.advisorID }}">
+                                               value="{{ advisor.advisorID }}">
                                     </div>
                                 </div>
                                 <div class="row mb-3">
                                     <label for="trainee" class="col-sm-2 col-form-label">Trainee</label>
-                                    <div class="col-sm-10">
-                                        <input type="number" class="form-control" id="trainee" name="trainee"
-                                               value="{{ registration_record.traineeID }}">
-                                    </div>
+                                    <select class="col-sm-10" class="form-control" id="trainee" name="trainee">
+                                        {% for record in registration_records %}
+                                        <option value="{{ record.ID }}">{{ record.ID }}</option>
+                                        {% endfor %}
+                                    </select>
+{#                                    <div class="col-sm-10">#}
+{#                                        <input type="number" class="form-control" id="trainee" name="trainee"#}
+{#                                               value="{{ registration_record.traineeID }}">#}
+{#                                    </div>#}
                                 </div>
                                 <div class="row mb-3">
                                     <label for="start" class="col-sm-2 col-form-label">Start Datetime</label>

@@ -48,9 +48,9 @@ def get_advisor_meetings_view():
 
 # Arrange-New-Meeting Form-View Route in the Meetings Form-View
 @advisor_blueprint.route('/meetings/<registration_id>/add', methods=["GET"])
-def get_advisor_add_meeting_view(registration_id):
+def get_advisor_add_meeting_view():
     # the meeting has to be specific to a training
-    return advisor_controller.get_add_meeting(request, registration_id)
+    return advisor_controller.get_add_meeting(request)
 
 
 # Add new meeting button Action Route

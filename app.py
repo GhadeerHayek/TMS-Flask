@@ -20,8 +20,6 @@ app.config['USER_UPLOADS'] = '/static/user-uploads/'
 db = SQLAlchemy(app)
 
 # Register app blueprints here
-from blueprints.mock_blueprint import mock_blueprint
-app.register_blueprint(mock_blueprint)
 from blueprints.auth_blueprint import auth_blueprint
 app.register_blueprint(auth_blueprint)
 from blueprints.trainee_blueprint import trainee_blueprint

@@ -4,14 +4,13 @@ from app import db
 import helpers.token as token_helper
 import boto3
 
-
 ses_client = boto3.client('ses', region_name='eu-north-1')
-
-
 
 """
  This is the function that prepares the data for the 'manager dashboard' view, returns the view with its data
 """
+
+
 def index(request):
     # from token get id, from the id get the record in the database
     token = request.cookies['token']
@@ -61,38 +60,32 @@ def get_email_form(request):
     return render_template("manager/mailing.html", manager=manager)
 
 
-
 def send_email(request):
     # sender email credentials 
     token = request.cookies['token']
     if not token:
         flash('Token not found, invalid request', 'error')
         return redirect(url_for('auth.login_view'))
-    email_message = {
-    'Subject':{'Data', subject},
-    'Body':{'Text': {'Data':body}},
-    'Source': sender,
-    'Destination':{'ToAddresses': [recipient]}
-     }
-     response = ses_client.send_email(
-     Source=email_message['Source'],
-     Destination=email_message['Destination'],
-     Message = email_message
- )   
-
-
-
-}
-    # print(manager.email)
-
-    recipient = request.form['email']
+    recipient = request.form['recipient']
     message = request.form['message']
     subject = request.form['subject']
- 
-    # return mghelper.verify_manager(manager.email)
-    pass
+    sender = "ghadeerhayek2001@gmail.com"
+    if not recipient or not message or not subject:
+        flash("Missing parameters", "error")
+        return redirect(request.referrer)
+    email_message = {
+        'Subject': {'Data', subject},
+        'Body': {'Text': {'Data': message}},
+        'Source': sender,
+        'Destination': {'ToAddresses': [recipient]}
+    }
+    response = ses_client.send_email(
+        Source=email_message['Source'],
+        Destination=email_message['Destination'],
+        Message=email_message)
+    return response
 
 
 def get_system_log(request):
-    return render_template("manager/logging.html", manager=manager)
-
+    # return render_template("manager/logging.html", manager=manager)
+    pass
