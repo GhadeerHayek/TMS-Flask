@@ -155,7 +155,7 @@ def get_meetings(request):
     if not advisor:
         flash("Invalid token", 'error')
         return redirect(url_for('auth.login_view'))
-    registration_record = db.session.execute(
+    registration_records = db.session.execute(
         text(
             """
             SELECT * from `training_registration` where `advisorID` = :advisorID and `status`='approved'
@@ -163,11 +163,12 @@ def get_meetings(request):
         ), {
             "advisorID": advisor["advisorID"]
         }
-    ).fetchone()
-    if not registration_record:
+    ).fetchall()
+    if not registration_records:
         flash("Inconsistency btw")
         return redirect(request.referrer)
     else:
+        return jsonify(type(registration_records))
         # select * from meetings using registration id
         meetings = db.session.execute(
             text("""

@@ -10,7 +10,14 @@ from app import db
 """
 def get_all_programs(request):
     token = request.cookies['token']
-    manager = mghelper.verify_manager(token)
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    manager = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not manager:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
     # token is the manager id or the manager record
     query = text("SELECT * FROM training_programs")
     result_cursor = db.session.execute(query)
@@ -24,11 +31,16 @@ def get_all_programs(request):
 """
     gets the view the has the add program form 
 """
-
-
 def get_add_program(request):
     token = request.cookies['token']
-    manager = mghelper.verify_manager(token)
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    manager = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not manager:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
     # must prepare areas so that it could be a drop-down list
     areas = ['Software Development','Healthcare','Machine Learning','Network Security','Data Warehousing','Digital Marketing','Renewable Energy','Graphic Design','Pastry and Baking']
     return render_template('manager/training-program/add_program.html', manager=manager, areas=areas)
@@ -37,11 +49,17 @@ def get_add_program(request):
 """
     handles the action of the add program form 
 """
-
-
 def handle_add_program(request):
     token = request.cookies['token']
-    manager = mghelper.verify_manager(token)
+    # verify manager
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    manager = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not manager:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
     name = request.form['programName']
     description = request.form['description']
     area = request.form['area']
@@ -68,7 +86,14 @@ def handle_add_program(request):
 def get_edit_program(request):
     token = request.cookies['token']
     # make sure manager is authorized
-    manager = mghelper.verify_manager(token)
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    manager = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not manager:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
     programID = request.args.get('id')
     areas = ['Software Development','Healthcare','Machine Learning','Network Security','Data Warehousing','Digital Marketing','Renewable Energy','Graphic Design','Pastry and Baking']
     query = text("SELECT * from training_programs where programID = :programID")
@@ -84,7 +109,14 @@ def get_edit_program(request):
 """
 def handle_edit_program(request):
     token = request.cookies['token']
-    manager = mghelper.verify_manager(token)
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    manager = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not manager:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
     programID = request.form['programID']
     name = request.form['programName']
     description = request.form['description']
@@ -113,7 +145,14 @@ def handle_edit_program(request):
 """
 def handle_delete_program(request):
     token = request.cookies['token']
-    manager = mghelper.verify_manager(token)
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    manager = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not manager:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
     programID = request.form['programID']
     query = text("DELETE FROM training_programs WHERE programID=:programID")
     cursor = db.session.execute(query, {'programID':programID})

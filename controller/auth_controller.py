@@ -171,6 +171,8 @@ def handle_advisor_signup(request):
 
 
 def signout(request):
-#    response.set_cookie('token', '')
-    #print(request.cookies.get('token'))
- #   return redirect(url_for('auth.login_view'))
+    response = redirect(url_for('auth.login_view'))
+    response.set_cookie('token','')
+#    return jsonify(var)
+ #   return jsonify(response.headers['Cookie'])
+    return response  

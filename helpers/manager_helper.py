@@ -6,18 +6,12 @@ from app import db
 
 
 def verify_manager(token):
-    if not token:
-        flash('Token not found', 'error')
-        return redirect(url_for('auth.login_view')) 
+    verified = False
+    if not token and token != "":
+        return verified
     payload = tokenHelper.verify_token(token)
     if not payload:
-        flash('Paylod not found', 'error')
-        return redirect(url_for('auth.login_view'))
-    query = text("SELECT * from managers where userID=:userID ")
-    result_set = db.session.execute(query, {'userID':payload['userID']})
-    manager = result_set.fetchone()
-    if not manager: 
-        flash('Manager is not listed', 'error')
-        return(redirect(url_for('auth.login')))
-    return manager
-
+        return verified
+    verified = True
+    data = [verified, payload]
+    return jsonify(data)

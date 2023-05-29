@@ -12,7 +12,14 @@ import helpers.manager_helper as mghelper
 def get_pending_advisors(request):
     # token is the manager id or the manager record
     token = request.cookies['token']
-    manager = mghelper.verify_manager(token)
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    manager = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not manager:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
     query = text("SELECT * from advisors where status = 'pending'")
     result_cursor = db.session.execute(query)
     rows = result_cursor.fetchall()
@@ -29,7 +36,14 @@ def get_pending_advisors(request):
 def approve_advisors_registration(request):
     token = request.cookies['token']
     # make sure manager is authorized
-    manager = mghelper.verify_manager(token)
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    manager = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not manager:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
     # get hidden form data
     advisorID = request.form['advisorID']
     advisorEmail= request.form['advisorEmail']   
@@ -63,7 +77,14 @@ def approve_advisors_registration(request):
 def reject_advisors_registration(request):
     token = request.cookies['token']
     # make sure manager is authorized
-    manager = mghelper.verify_manager(token)
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    manager = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not manager:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
     # get hidden form data
     advisorID = request.form['advisorID']   
     # update advisor table with userID
@@ -82,7 +103,14 @@ def reject_advisors_registration(request):
 def get_advisor_account(request):
     token = request.cookies['token']
     # make sure manager is authorized
-    manager = mghelper.verify_manager(token)
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    manager = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not manager:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
     # get hidden form data
     query = text("SELECT * from advisors where status = 'inreview'")
     result_cursor = db.session.execute(query)
@@ -96,7 +124,14 @@ def get_advisor_account(request):
 def get_advisor_account_details(request):
     token = request.cookies['token']
     # make sure manager is authorized
-    manager = mghelper.verify_manager(token)
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    manager = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not manager:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
     userID = request.args.get('id')
     query = text("SELECT * from advisors where userID = :userID")
     result_cursor = db.session.execute(query, {'userID':userID})
@@ -112,7 +147,14 @@ def get_advisor_account_details(request):
 def accept_advisor_modifications(request):
     token = request.cookies['token']
     # make sure manager is authorized
-    manager = mghelper.verify_manager(token)
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    manager = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not manager:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
     # get hidden form data
     advisorID = request.form['advisorID']   
     # update advisor table with userID
@@ -132,7 +174,14 @@ def accept_advisor_modifications(request):
 def reject_advisor_modifications(request):
     token = request.cookies['token']
     # make sure manager is authorized
-    manager = mghelper.verify_manager(token)
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    manager = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not manager:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
     # get hidden form data
     advisorID = request.form['advisorID']   
     # update advisor table with userID
@@ -159,7 +208,14 @@ def reject_advisor_modifications(request):
 def get_deactivate_advisors(request):
     # token is the manager record from the database
     token = request.cookies['token']
-    manager = mghelper.verify_manager(token)
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    manager = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not manager:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
     query = text("SELECT * from advisors where status = 'inactive'")
     result_cursor = db.session.execute(query)
     rows = result_cursor.fetchall()
@@ -176,7 +232,14 @@ def get_deactivate_advisors(request):
 def approve_advisor_deactivation(request):
     token = request.cookies['token']
     # make sure manager is authorized
-    manager = mghelper.verify_manager(token)
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    manager = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not manager:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
     # get hidden form data
     advisorID = request.form['advisorID']   
     # update advisor table with userID
@@ -200,7 +263,14 @@ def approve_advisor_deactivation(request):
 def reject_advisor_deactivation(request):
     token = request.cookies['token']
     # make sure manager is authorized
-    manager = mghelper.verify_manager(token)
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    manager = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not manager:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
     # get hidden form data
     advisorID = request.form['advisorID']   
     # update advisor table with userID

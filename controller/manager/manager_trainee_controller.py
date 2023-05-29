@@ -11,7 +11,14 @@ import secrets
 """
 def get_pending_trainees(request):
     token = request.cookies['token']
-    manager = mghelper.verify_manager(token)
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    manager = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not manager:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
     # token is the manager id or the manager record
     query = text("SELECT * from trainees where status = 'pending'")
     result_cursor = db.session.execute(query)
@@ -30,7 +37,14 @@ def get_pending_trainees(request):
 def approve_trainee_registration(request):
     token = request.cookies['token']
     # make sure manager is authorized
-    manager = mghelper.verify_manager(token)
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    manager = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not manager:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
     # get hidden form data
     traineeID = request.form['traineeID']
     traineeEmail= request.form['traineeEmail']   
@@ -67,7 +81,14 @@ def approve_trainee_registration(request):
 def reject_trainee_registration(request):
     token = request.cookies['token']
     # make sure manager is authorized
-    manager = mghelper.verify_manager(token)
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    manager = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not manager:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
     # get hidden form data
     traineeID = request.form['traineeID']   
     # update trainee table with userID
@@ -85,7 +106,14 @@ def reject_trainee_registration(request):
 
 def get_training_requests_view(request):
     token = request.cookies['token']
-    manager = mghelper.verify_manager(token)
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    manager = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not manager:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
     # token is the manager id or the manager record
     request_query = text("SELECT * from training_registration where status = 'pending'")
     advisor_query = text("SELECT advisorID, username from advisors")
@@ -108,7 +136,14 @@ def get_training_requests_view(request):
 def approve_training_request(request):
     token = request.cookies['token']
     # make sure manager is authorized
-    manager = mghelper.verify_manager(token)
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    manager = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not manager:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
     # get hidden form data
     requestID = request.form['requestID']   
     advisorID = request.form['advisorID'] 
@@ -134,7 +169,14 @@ def reject_training_request(request):
     # print("inside reject")
     token = request.cookies['token']
     # make sure manager is authorized
-    manager = mghelper.verify_manager(token)
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    manager = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not manager:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
     # get hidden form data
     requestID = request.form['requestID']   
     # update trainee table with userID
@@ -152,7 +194,14 @@ def reject_training_request(request):
 
 def get_trainee_account(request):
     token = request.cookies['token']
-    manager = mghelper.verify_manager(token)
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    manager = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not manager:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
     # token is the manager id or the manager record
     query = text("SELECT * from trainees where status = 'in_review'")
     result_cursor = db.session.execute(query)
@@ -165,7 +214,14 @@ def get_trainee_account(request):
 
 def get_trainee_account_details(request):
     token = request.cookies['token']
-    manager = mghelper.verify_manager(token)    
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    manager = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not manager:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
     userID = request.args.get('id')
     query = text("SELECT * from trainees where userID = :userID")
     result_cursor = db.session.execute(query, {'userID':userID})
@@ -181,7 +237,14 @@ def get_trainee_account_details(request):
 def accept_trainee_modifications(request):
     token = request.cookies['token']
     # make sure manager is authorized
-    manager = mghelper.verify_manager(token)
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    manager = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not manager:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
     # get hidden form data
     traineeID = request.form['traineeID']   
     # update trainee table with userID
@@ -202,7 +265,14 @@ def accept_trainee_modifications(request):
 def reject_trainee_modifications(request):
     token = request.cookies['token']
     # make sure manager is authorized
-    manager = mghelper.verify_manager(token)
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    manager = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not manager:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
     # get hidden form data
     traineeID = request.form['traineeID']   
     # update trainee table with userID
@@ -228,7 +298,14 @@ def reject_trainee_modifications(request):
 def get_deactivate_trainees(request):
     # token is the manager record from the database
     token = request.cookies['token']
-    manager = mghelper.verify_manager(token)
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    manager = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not manager:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
     # token is the manager id or the manager record
     query = text("SELECT * from trainees where status = 'inactive'")
     result_cursor = db.session.execute(query)
@@ -251,7 +328,14 @@ def get_deactivate_trainees(request):
 def approve_trainee_deactivation(request):
     token = request.cookies['token']
     # make sure manager is authorized
-    manager = mghelper.verify_manager(token)
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    manager = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not manager:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
     # get hidden form data
     traineeID = request.form['traineeID']   
     # update trainee table with userID
@@ -274,7 +358,14 @@ def approve_trainee_deactivation(request):
 def reject_trainee_deactivation(request):
     token = request.cookies['token']
     # make sure manager is authorized
-    manager = mghelper.verify_manager(token)
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    manager = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not manager:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
     # get hidden form data
     traineeID = request.form['traineeID']   
     # update trainee table with userID
