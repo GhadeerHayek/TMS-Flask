@@ -63,8 +63,8 @@
                                         <td>{{ trainee[6] }}</td>
                                         <td>
                                             <form method="POST" action="{{ url_for('manager.approve_trainee') }}">
-                                                <input type="hidden" name="traineeID" value="{{trainee.traineeID}}">
-                                                <input type="hidden" name="traineeEmail" value="{{trainee.email}}">
+                                                <input type="hidden" name="traineeID" value="{{trainee[0]}}">
+                                                <input type="hidden" name="traineeEmail" value="{{trainee[3]}}">
                                                 <button class="btn btn-success" data-bs-toggle="modal"
                                                         data-bs-target="#verticalycentered" type="submit">Approve
                                                 </button>

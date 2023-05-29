@@ -176,6 +176,7 @@ def get_meetings(request):
             {
                 "registration_id": registration_record[0]
             }).fetchall()
+        return jsonify (meetings)
         if not meetings:
             flash("No meetings yet")
             return render_template('advisor/advisor-meetings.html', advisor=advisor, meetings=[],

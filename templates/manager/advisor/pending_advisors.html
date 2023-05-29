@@ -45,6 +45,7 @@
                                 <tr>
                                     <th scope="col">Id</th>
                                     <th scope="col">Username</th>
+                                    <th scope="col">Full Name</th>
                                     <th scope="col">Email</th>
                                     <th scope="col">Discipline</th>
                                     <th scope="col">-</th>
@@ -55,13 +56,14 @@
                                 {% for advisor in advisors %}
                                     <tr>
                                         <th scope="row">{{ advisor[0] }}</th>
-                                        <td>{{ advisor[1] }}</td>
-                                        <td>{{ advisor[2] }}</td>
-                                        <td>{{ advisor[3] }}</td>
+                                        <td>{{ advisor[1]}}</td>
+                                        <td>{{ advisor[2]}}</td>
+                                        <td>{{ advisor[3]}}</td>
+					<td>{{ advisor[4]}}</td>
                                         <td>
                                             <form method="POST" action="{{ url_for('manager.approve_advisor') }}">
                                                 <input type="hidden" name="advisorID" value="{{advisor[0]}}">
-                                                <input type="hidden" name="advisorEmail" value="{{advisor[2]}}">
+                                                <input type="hidden" name="advisorEmail" value="{{advisor[3]}}">
                                                 <button class="btn btn-success" data-bs-toggle="modal"
                                                         data-bs-target="#verticalycentered" type="submit">Approve
                                                 </button>
@@ -70,7 +72,7 @@
                                         <td>
                                             <form method="POST" action="{{ url_for('manager.reject_advisor') }}">
                                                 <input type="hidden" name="advisorID" value="{{advisor[0]}}">
-                                                <input type="hidden" name="advisorEmail" value="{{advisor[2]}}">
+                                                <input type="hidden" name="advisorEmail" value="{{advisor[3]}}">
                                                 <button class="btn btn-danger" data-bs-toggle="modal"
                                                         data-bs-target="#verticalycentered" type="submit">Reject
                                                 </button>

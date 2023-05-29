@@ -116,10 +116,10 @@ def approve_training_request(request):
     # update trainee and training_registration table with status
     request_query= text("UPDATE training_registration SET status = 'approved', advisorID=:advisorID where ID = :requestID")
     trainee_query= text("UPDATE trainees SET status = 'on_training' where traineeID = :traineeID")
-    balance_query= text("INSERT INTO balance_sheet (userID, type, amount, transaction_time) VALUES (:userID, 'Credit', 100.0, NOW())")
+    balance_query= text("INSERT INTO balance_sheet (traineeID, type, amount, transaction_time) VALUES (:traineeID, 'Credit', 100.0, NOW())")
     request_cursor = db.session.execute(request_query, {'requestID': requestID, 'advisorID':advisorID})
     trainee_cursor = db.session.execute(trainee_query, {'traineeID': traineeID})
-    balance_cursor = db.session.execute(balance_query, {'userID': traineeID})
+    balance_cursor = db.session.execute(balance_query, {'traineeID': traineeID})
     # commit changes to db
     db.session.commit()
     if not request_cursor and not trainee_cursor and not balance_cursor:   
@@ -154,7 +154,7 @@ def get_trainee_account(request):
     token = request.cookies['token']
     manager = mghelper.verify_manager(token)
     # token is the manager id or the manager record
-    query = text("SELECT * from trainees where status = 'inreview'")
+    query = text("SELECT * from trainees where status = 'in_review'")
     result_cursor = db.session.execute(query)
     rows = result_cursor.fetchall()
     trainees = []
@@ -230,7 +230,7 @@ def get_deactivate_trainees(request):
     token = request.cookies['token']
     manager = mghelper.verify_manager(token)
     # token is the manager id or the manager record
-    query = text("SELECT * from trainees where status = 'active'")
+    query = text("SELECT * from trainees where status = 'inactive'")
     result_cursor = db.session.execute(query)
     rows = result_cursor.fetchall()
     trainees = []
@@ -255,7 +255,7 @@ def approve_trainee_deactivation(request):
     # get hidden form data
     traineeID = request.form['traineeID']   
     # update trainee table with userID
-    trainee_query= text("UPDATE trainees SET status = 'inactive' where traineeID = :traineeID")
+    trainee_query= text("UPDATE trainees SET status = 'rejected' where traineeID = :traineeID")
     print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
     print(traineeID[0])
     trainee_cursor = db.session.execute(trainee_query, {'traineeID': traineeID})
@@ -278,7 +278,7 @@ def reject_trainee_deactivation(request):
     # get hidden form data
     traineeID = request.form['traineeID']   
     # update trainee table with userID
-    trainee_query= text("UPDATE trainees SET status = 'rejected' where traineeID = :traineeID")
+    trainee_query= text("UPDATE trainees SET status = 'active' where traineeID = :traineeID")
     print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
     print(traineeID[0])
     trainee_cursor = db.session.execute(trainee_query, {'traineeID': traineeID})
