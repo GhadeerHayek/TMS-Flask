@@ -2,6 +2,7 @@ from app import db
 from sqlalchemy import text
 from datetime import datetime
 import boto3
+from app import logger
 
 """This is a private helper function, aims to check all meetings related to a trainee and an advisor The trainee and 
 advisor can only request for meeting whenever there's a training between them. The function searches for conflicts by 
@@ -70,4 +71,5 @@ def send_email(recipient, message, subject, sender):
         Source=sender,
         Destination={'ToAddresses': [recipient]},
         Message=email_message)
+    logger.log('One email is sent, details: To: {0}, From: {1}, Subject:{2}'.format(recipient, sender, subject))
     return response
