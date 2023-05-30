@@ -74,14 +74,12 @@ def send_email(request):
         flash("Missing parameters", "error")
         return redirect(request.referrer)
     email_message = {
-        'Subject': {'Data', subject},
+        'Subject': {'Data': subject},
         'Body': {'Text': {'Data': message}},
-        'Source': sender,
-        'Destination': {'ToAddresses': [recipient]}
-    }
+       }
     response = ses_client.send_email(
-        Source=email_message['Source'],
-        Destination=email_message['Destination'],
+        Source=sender,
+        Destination={'ToAddresses':[recipient]},
         Message=email_message)
     return response
 
