@@ -77,10 +77,6 @@ def send_email(request):
         flash("Missing parameters", "error")
         return redirect(request.referrer)
     response = helper.send_email(recipient=recipient, sender=sender, message=message, subject=subject)
-    if response.status_code == 200:
-        flash("Email has been sent", "success")
-    else:
-        flash("Failed to send email, status code: {0}".format(response.status_code), "success")
     return redirect(request.referrer)
 
 

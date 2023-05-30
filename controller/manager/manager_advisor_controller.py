@@ -99,10 +99,7 @@ def approve_advisors_registration(request):
         """.format(user[1], user[0], manager["fullname"])
     subject = "Welcome to TMS!"
     response = helper.send_email(recipient=recipient, sender=sender, message=message, subject=subject)
-    if response["status_code"] == 200:
-        flash("Email has been sent", "success")
-    else:
-        flash("Failed to send email, status code: {0}".format(response["status_code"]), "success")
+
     return redirect(url_for('manager.get_pending_advisors_view'))
 
 
@@ -150,10 +147,7 @@ def reject_advisors_registration(request):
             """.format(user[1], manager["fullname"])
     subject = "Regarding Your Signup"
     response = helper.send_email(recipient=recipient, sender=sender, message=message, subject=subject)
-    if response["status_code"] == 200:
-        flash("Email has been sent", "success")
-    else:
-        flash("Failed to send email, status code: {0}".format(response["status_code"]), "success")
+
     return redirect(url_for('manager.get_pending_advisors_view'))
 
 
@@ -239,10 +233,6 @@ def accept_advisor_modifications(request):
                     """.format(user[1], manager["fullname"])
     subject = "Regarding Your Account Modification"
     response = helper.send_email(recipient=recipient, sender=sender, message=message, subject=subject)
-    if response["status_code"] == 200:
-        flash("Email has been sent", "success")
-    else:
-        flash("Failed to send email, status code: {0}".format(response["status_code"]), "success")
     return redirect(url_for('manager.get_advisors_accounts_view', manager=manager))
 
 
@@ -347,11 +337,6 @@ def approve_advisor_deactivation(request):
                         """.format(user[1], manager["fullname"])
     subject = "Regarding Your Account Deactivation"
     response = helper.send_email(recipient=recipient, sender=sender, message=message, subject=subject)
-    if response["status_code"] == 200:
-        flash("Email has been sent", "success")
-    else:
-        flash("Failed to send email, status code: {0}".format(response["status_code"]), "success")
-
 
     return redirect(url_for('manager.get_deactivate_advisors_view'))
 

@@ -98,10 +98,7 @@ Best regards,
     """.format(user[1], user[0], manager["fullname"])
     subject = "Welcome to TMS!"
     response = helper.send_email(recipient=recipient, sender=sender, message=message, subject=subject)
-    if response["status_code"] == 200:
-        flash("Email has been sent", "success")
-    else:
-        flash("Failed to send email, status code: {0}".format(response["status_code"]), "success")
+
     return redirect(url_for('manager.get_pending_trainees_view'))
 
 
@@ -149,10 +146,6 @@ Best regards,
         """.format(user[1], manager["fullname"])
     subject = "Regarding Your Signup"
     response = helper.send_email(recipient=recipient, sender=sender, message=message, subject=subject)
-    if response["status_code"] == 200:
-        flash("Email has been sent", "success")
-    else:
-        flash("Failed to send email, status code: {0}".format(response["status_code"]), "success")
     return redirect(url_for('manager.get_pending_trainees_view'))
 
 
@@ -227,7 +220,7 @@ def approve_training_request(request):
     sender = manager["email"]
     message = """
     Dear {0},
-        The following trainee has been assigned to you in the '{1}' training program
+        The following trainee has been assigned to you in the '{ training program
         Trainee Information:
             Trainee ID: {2}
             Trainee Name: {3}
@@ -270,12 +263,6 @@ Best regards,
             """.format(trainee[1], program[0], program[1], program[2], program[3], manager["fullname"])
     subject = "Congratulations! Your Training Application has been Approved"
     response2 = helper.send_email(recipient=recipient, sender=sender, message=message, subject=subject)
-    if response1["status_code"] == 200 and response2["status_code"] == 200:
-        flash("Emails has been sent", "success")
-    else:
-        flash(
-            "Failed to send email, statuses code: {0}, {1}".format(response1["status_code"], response2["status_code"]),
-            "success")
     return redirect(url_for('manager.get_training_requests'))
 
 
@@ -321,11 +308,6 @@ def reject_training_request(request):
             """.format(user[1], manager["fullname"])
     subject = "Regarding Your Training Application"
     response = helper.send_email(recipient=recipient, sender=sender, message=message, subject=subject)
-    if response["status_code"] == 200:
-        flash("Email has been sent", "success")
-    else:
-        flash("Failed to send email, status code: {0}".format(response["status_code"]), "success")
-
     return redirect(url_for('manager.get_training_requests'))
 
 
@@ -410,11 +392,6 @@ def accept_trainee_modifications(request):
                 """.format(user[1], manager["fullname"])
     subject = "Regarding Your Account Modification"
     response = helper.send_email(recipient=recipient, sender=sender, message=message, subject=subject)
-    if response["status_code"] == 200:
-        flash("Email has been sent", "success")
-    else:
-        flash("Failed to send email, status code: {0}".format(response["status_code"]), "success")
-
     return redirect(url_for('manager.get_trainees_accounts_view'))
 
 
@@ -524,11 +501,6 @@ def approve_trainee_deactivation(request):
                     """.format(user[1], manager["fullname"])
     subject = "Regarding Your Account Deactivation"
     response = helper.send_email(recipient=recipient, sender=sender, message=message, subject=subject)
-    if response["status_code"] == 200:
-        flash("Email has been sent", "success")
-    else:
-        flash("Failed to send email, status code: {0}".format(response["status_code"]), "success")
-
     return redirect(url_for('manager.get_deactivate_trainees_view'))
 
 
