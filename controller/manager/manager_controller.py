@@ -2,9 +2,7 @@ from flask import request, render_template, jsonify, flash, redirect, url_for
 from sqlalchemy import text
 from app import db
 import helpers.token as token_helper
-import boto3
-
-ses_client = boto3.client('ses', region_name='eu-north-1')
+import helpers.helper as helper
 
 """
  This is the function that prepares the data for the 'manager dashboard' view, returns the view with its data
@@ -66,22 +64,24 @@ def send_email(request):
     if not token:
         flash('Token not found, invalid request', 'error')
         return redirect(url_for('auth.login_view'))
+    manager = token_helper.verify_token(token)
+    # if the query returned nothing -> it actually means we can't render the dashboard
+    if not manager:
+        flash('Invalid token', 'error')
+        return redirect(url_for('auth.login_view'))
     recipient = request.form['recipient']
     message = request.form['message']
     subject = request.form['subject']
-    sender = "ghadeerhayek2001@gmail.com"
+    sender = manager["email"]
     if not recipient or not message or not subject:
         flash("Missing parameters", "error")
         return redirect(request.referrer)
-    email_message = {
-        'Subject': {'Data': subject},
-        'Body': {'Text': {'Data': message}},
-       }
-    response = ses_client.send_email(
-        Source=sender,
-        Destination={'ToAddresses':[recipient]},
-        Message=email_message)
-    return response
+    response = helper.send_email(recipient=recipient, sender=sender, message=message, subject=subject)
+    if response.status_code == 200:
+        flash("Email has been sent", "success")
+    else:
+        flash("Failed to send email, status code: {0}".format(response.status_code), "success")
+    return redirect(request.referrer)
 
 
 def get_system_log(request):

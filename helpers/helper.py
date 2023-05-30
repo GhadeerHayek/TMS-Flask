@@ -1,7 +1,7 @@
 from app import db
 from sqlalchemy import text
 from datetime import datetime
-from flask import jsonify
+import boto3
 
 """This is a private helper function, aims to check all meetings related to a trainee and an advisor The trainee and 
 advisor can only request for meeting whenever there's a training between them. The function searches for conflicts by 
@@ -53,3 +53,21 @@ def resolve_conflict(new_meeting):
             # TODO: Handle conflicts (e.g., reschedule conflicting meetings or notify the parties) -- or no need
             return False
         return True
+
+
+"""
+    This helper function uses AWS SES to send emails. 
+"""
+
+
+def send_email(recipient, message, subject, sender):
+    ses_client = boto3.client('ses', region_name='eu-north-1')
+    email_message = {
+        'Subject': {'Data': subject},
+        'Body': {'Text': {'Data': message}},
+    }
+    response = ses_client.send_email(
+        Source=sender,
+        Destination={'ToAddresses': [recipient]},
+        Message=email_message)
+    return response

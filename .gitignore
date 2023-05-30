@@ -3,3 +3,7 @@
 main.py
 app.py
 .env.save
+controller/__pycache__
+helpers/__pycache__
+blueprints/__pycache__
+/__pycache__

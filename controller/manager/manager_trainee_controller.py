@@ -3,12 +3,13 @@ from sqlalchemy import text
 from app import db
 import helpers.token as token_helper
 import secrets
-
-
+from helpers import helper as helper
 
 """
     This is the function that prepares data for the 'pending trainees' view, and returns the view with its data 
 """
+
+
 def get_pending_trainees(request):
     token = request.cookies['token']
     if not token:
@@ -29,11 +30,12 @@ def get_pending_trainees(request):
     return render_template("manager/trainee/pending_trainees.html", manager=manager, trainees=trainees)
 
 
-
 """
     This is the controller function that handles the approve button in the pending trainees view
     it's actually not yet implemented or linked to its view
 """
+
+
 def approve_trainee_registration(request):
     token = request.cookies['token']
     # make sure manager is authorized
@@ -47,13 +49,13 @@ def approve_trainee_registration(request):
         return redirect(url_for('auth.login_view'))
     # get hidden form data
     traineeID = request.form['traineeID']
-    traineeEmail= request.form['traineeEmail']   
+    traineeEmail = request.form['traineeEmail']
     pass_length = 7
     # secret is python module that generates passwords according to ur prefered length
     password = secrets.token_urlsafe(pass_length)
     # insert trainee to user table first to link it to trainee table using userID(PK->FK relationship)
     user_query = text("INSERT INTO users (password, email, classification) VALUES (:password, :email, 'trainee')")
-    user_cursor = db.session.execute(user_query, {'password':password, 'email':traineeEmail})
+    user_cursor = db.session.execute(user_query, {'password': password, 'email': traineeEmail})
     db.session.commit()
     if not user_cursor:
         return jsonify('the problem is in insert to users')
@@ -62,22 +64,48 @@ def approve_trainee_registration(request):
     # get userID from previous query
     userID = user_cursor.lastrowid
     # update trainee table with userID
-    trainee_query= text("UPDATE trainees SET status = 'active', userID = :userID  WHERE traineeID = :traineeID")
+    trainee_query = text("UPDATE trainees SET status = 'active', userID = :userID  WHERE traineeID = :traineeID")
     trainee_cursor = db.session.execute(trainee_query, {'userID': userID, 'traineeID': traineeID})
     trainee_rows = trainee_cursor.rowcount
     db.session.commit()
-    if not trainee_rows:   
-        return jsonify('the problem is in update trainees', userID)
+    if not trainee_rows:
+        # return jsonify('the problem is in update trainees', userID)
         flash('Failed to approve trainee', 'error')
         return redirect(url_for('manager.get_pending_trainees_view'))
     flash('Trainee approved successfully', 'success')
-    return redirect(url_for('manager.get_pending_trainees_view'))
+    # get the user so we can send him his data
+    user = db.session.execute(text("SELECT password, email from users where userID = :userID"),
+                              {"userID": userID}).fetchone()
+    # send credentials to the trainee
+    recipient = user[1]
+    sender = manager["email"]
+    message = """
+    Dear trainee,
 
+Welcome! We're delighted to have you join our system.<br>
+As a valued member, we're here to support you every step of the way. If you have any questions or need assistance, don't hesitate to reach out to our friendly support team.<br>
+Let's embark on this exciting journey together!<br>
+Here are your login credentials, <b>Don't share them with anyone</b> <br>
+Email: {0}<br>
+Password: {1}<br>
+Note: you can change your information anytime. <br>
+Best regards,<br>
+{2} from TMS.
+    """.format(user[1], user[0], manager["fullName"])
+    subject = "Welcome to TMS!"
+    response = helper.send_email(recipient=recipient, sender=sender, message=message, subject=subject)
+    if response.status_code == 200:
+        flash("Email has been sent", "success")
+    else:
+        flash("Failed to send email, status code: {0}".format(response.status_code), "success")
+    return redirect(url_for('manager.get_pending_trainees_view'))
 
 
 """
     This is the controller function that handles the reject button in the pending trainees view
 """
+
+
 def reject_trainee_registration(request):
     token = request.cookies['token']
     # make sure manager is authorized
@@ -90,14 +118,14 @@ def reject_trainee_registration(request):
         flash('Invalid token', 'error')
         return redirect(url_for('auth.login_view'))
     # get hidden form data
-    traineeID = request.form['traineeID']   
+    traineeID = request.form['traineeID']
     # update trainee table with userID
-    trainee_query= text("UPDATE trainees SET status = 'rejected' WHERE traineeID = :traineeID")
+    trainee_query = text("UPDATE trainees SET status = 'rejected' WHERE traineeID = :traineeID")
     trainee_cursor = db.session.execute(trainee_query, {'traineeID': traineeID})
     trainee_rows = trainee_cursor.rowcount
     # commit changes to db
     db.session.commit()
-    if not trainee_rows:   
+    if not trainee_rows:
         flash('Failed to approve trainee', 'error')
         return redirect(url_for('manager.get_pending_trainees_view'))
     flash('Trainee rejected successfully', 'success')
@@ -121,8 +149,8 @@ def get_training_requests_view(request):
     advisor_cursor = db.session.execute(advisor_query)
     request_rows = result_cursor.fetchall()
     advisor_rows = advisor_cursor.fetchall()
-    #print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
-    #print(advisor_rows)
+    # print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
+    # print(advisor_rows)
     advisor = []
     requests = []
     for row in request_rows:
@@ -145,24 +173,25 @@ def approve_training_request(request):
         flash('Invalid token', 'error')
         return redirect(url_for('auth.login_view'))
     # get hidden form data
-    requestID = request.form['requestID']   
-    advisorID = request.form['advisorID'] 
-    traineeID =  request.form['traineeID']
+    requestID = request.form['requestID']
+    advisorID = request.form['advisorID']
+    traineeID = request.form['traineeID']
     # update trainee and training_registration table with status
-    request_query= text("UPDATE training_registration SET status = 'approved', advisorID=:advisorID where ID = :requestID")
-    trainee_query= text("UPDATE trainees SET status = 'on_training' where traineeID = :traineeID")
-    balance_query= text("INSERT INTO balance_sheet (traineeID, type, amount, transaction_time) VALUES (:traineeID, 'Credit', 100.0, NOW())")
-    request_cursor = db.session.execute(request_query, {'requestID': requestID, 'advisorID':advisorID})
+    request_query = text(
+        "UPDATE training_registration SET status = 'approved', advisorID=:advisorID where ID = :requestID")
+    trainee_query = text("UPDATE trainees SET status = 'on_training' where traineeID = :traineeID")
+    balance_query = text(
+        "INSERT INTO balance_sheet (traineeID, type, amount, transaction_time) VALUES (:traineeID, 'Credit', 100.0, NOW())")
+    request_cursor = db.session.execute(request_query, {'requestID': requestID, 'advisorID': advisorID})
     trainee_cursor = db.session.execute(trainee_query, {'traineeID': traineeID})
     balance_cursor = db.session.execute(balance_query, {'traineeID': traineeID})
     # commit changes to db
     db.session.commit()
-    if not request_cursor and not trainee_cursor and not balance_cursor:   
+    if not request_cursor and not trainee_cursor and not balance_cursor:
         flash('Failed to approve trainee training request', 'error')
         return redirect(url_for('manager.get_training_requests'))
     flash('Trainee training request approved successfully', 'success')
     return redirect(url_for('manager.get_training_requests'))
-
 
 
 def reject_training_request(request):
@@ -178,18 +207,17 @@ def reject_training_request(request):
         flash('Invalid token', 'error')
         return redirect(url_for('auth.login_view'))
     # get hidden form data
-    requestID = request.form['requestID']   
+    requestID = request.form['requestID']
     # update trainee table with userID
-    request_query= text("UPDATE training_registration SET status = 'rejected' where ID = :requestID")
+    request_query = text("UPDATE training_registration SET status = 'rejected' where ID = :requestID")
     request_cursor = db.session.execute(request_query, {'requestID': requestID})
     # commit changes to db
     db.session.commit()
-    if not request_cursor:   
+    if not request_cursor:
         flash('Failed to reject training request', 'error')
         return redirect(url_for('manager.get_training_requests'))
     flash('Trainee training request rejected successfully', 'success')
     return redirect(url_for('manager.get_training_requests'))
-
 
 
 def get_trainee_account(request):
@@ -224,7 +252,7 @@ def get_trainee_account_details(request):
         return redirect(url_for('auth.login_view'))
     userID = request.args.get('id')
     query = text("SELECT * from trainees where userID = :userID")
-    result_cursor = db.session.execute(query, {'userID':userID})
+    result_cursor = db.session.execute(query, {'userID': userID})
     trainee = result_cursor.fetchone()
     # trainee = []
     # for row in rows:
@@ -246,20 +274,19 @@ def accept_trainee_modifications(request):
         flash('Invalid token', 'error')
         return redirect(url_for('auth.login_view'))
     # get hidden form data
-    traineeID = request.form['traineeID']   
+    traineeID = request.form['traineeID']
     # update trainee table with userID
-    trainee_query= text("UPDATE trainees SET status = 'active' where traineeID = :traineeID")
+    trainee_query = text("UPDATE trainees SET status = 'active' where traineeID = :traineeID")
     print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
     print(traineeID[0])
     trainee_cursor = db.session.execute(trainee_query, {'traineeID': traineeID})
     # commit changes to db
     db.session.commit()
-    if not trainee_cursor:   
+    if not trainee_cursor:
         flash('Failed to approve trainee modification request', 'error')
         return redirect(url_for('manager.get_trainees_accounts_view'))
     flash('Trainee modifications approved successfully', 'success')
     return redirect(url_for('manager.get_trainees_accounts_view'))
-
 
 
 def reject_trainee_modifications(request):
@@ -274,20 +301,19 @@ def reject_trainee_modifications(request):
         flash('Invalid token', 'error')
         return redirect(url_for('auth.login_view'))
     # get hidden form data
-    traineeID = request.form['traineeID']   
+    traineeID = request.form['traineeID']
     # update trainee table with userID
-    trainee_query= text("UPDATE trainees SET status = 'active' where traineeID = :traineeID")
+    trainee_query = text("UPDATE trainees SET status = 'active' where traineeID = :traineeID")
     print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
     print(traineeID[0])
     trainee_cursor = db.session.execute(trainee_query, {'traineeID': traineeID})
     # commit changes to db
     result = db.session.commit()
-    if not result:   
+    if not result:
         flash('Failed to approve trainee modification request', 'error')
         return redirect(url_for('manager.get_trainees_accounts_view'))
     flash('Trainee modifications rejected successfully', 'success')
     return redirect(url_for('manager.get_trainees_accounts_view'))
-
 
 
 """
@@ -295,6 +321,8 @@ def reject_trainee_modifications(request):
     returns the view along with its data 
 
 """
+
+
 def get_deactivate_trainees(request):
     # token is the manager record from the database
     token = request.cookies['token']
@@ -337,24 +365,27 @@ def approve_trainee_deactivation(request):
         flash('Invalid token', 'error')
         return redirect(url_for('auth.login_view'))
     # get hidden form data
-    traineeID = request.form['traineeID']   
+    traineeID = request.form['traineeID']
     # update trainee table with userID
-    trainee_query= text("UPDATE trainees SET status = 'rejected' where traineeID = :traineeID")
+    trainee_query = text("UPDATE trainees SET status = 'rejected' where traineeID = :traineeID")
     print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
     print(traineeID[0])
     trainee_cursor = db.session.execute(trainee_query, {'traineeID': traineeID})
     # commit changes to db
     db.session.commit()
-    if not trainee_cursor:   
+    if not trainee_cursor:
         flash('Failed to deactivate trainee', 'error')
         return redirect(url_for('manager.get_deactivate_trainees_view'))
     flash('Trainee deactivated successfully', 'success')
     return redirect(url_for('manager.get_deactivate_trainees_view'))
 
+
 """
     This is the controller function that handles the reject button in the deactivate trainees view
     it's actually not yet implemented or linked to its view
 """
+
+
 def reject_trainee_deactivation(request):
     token = request.cookies['token']
     # make sure manager is authorized
@@ -367,17 +398,16 @@ def reject_trainee_deactivation(request):
         flash('Invalid token', 'error')
         return redirect(url_for('auth.login_view'))
     # get hidden form data
-    traineeID = request.form['traineeID']   
+    traineeID = request.form['traineeID']
     # update trainee table with userID
-    trainee_query= text("UPDATE trainees SET status = 'active' where traineeID = :traineeID")
+    trainee_query = text("UPDATE trainees SET status = 'active' where traineeID = :traineeID")
     print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
     print(traineeID[0])
     trainee_cursor = db.session.execute(trainee_query, {'traineeID': traineeID})
     # commit changes to db
     db.session.commit()
-    if not trainee_cursor:   
+    if not trainee_cursor:
         flash('Failed to reject trainee', 'error')
         return redirect(url_for('manager.get_deactivate_trainees_view'))
     flash('Trainee rejected successfully', 'success')
     return redirect(url_for('manager.get_deactivate_trainees_view'))
-
