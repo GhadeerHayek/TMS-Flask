@@ -2,3 +2,4 @@
 /blueprints/mock_blueprint.py
 main.py
 app.py
+.env.save

@@ -387,14 +387,26 @@ def approve_meeting(request, meetingID):
     if not advisor:
         flash("Invalid token", 'error')
         return redirect(url_for('auth.login_view'))
-    meeting_status = db.session.execute(
-        text("select status from meetings where meetingID = :meetingID and status ='approved'"),
+    meeting_record = db.session.execute(
+        text("select * from meetings where meetingID = :meetingID"),
         {"meetingID": meetingID}).fetchone()
-    if meeting_status:
+    if meeting_record[6] == 'approved':
         flash("already approved", 'error')
+        return redirect(request.referrer)
+    # check meeting conflict
+    params={
+        "registration_id": meeting_record[1],
+        "start_datetime": meeting_record[4].strftime("%Y-%m-%dT%H:%M"),
+        "end_datetime": meeting_record[5].strftime("%Y-%m-%dT%H:%M")
+
+} 
+    conflict = helper.resolve_conflict(new_meeting=params)
+    if conflict:
+        flash('failed to approve due to conflict', 'error')
         return redirect(request.referrer)
     # update the status
     result = db.session.execute(
+
         text("""
            UPDATE `meetings`
            SET `status` = 'approved'
