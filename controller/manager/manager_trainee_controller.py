@@ -82,7 +82,7 @@ def approve_trainee_registration(request):
     message = """
     Dear trainee,
 
-Welcome! We're delighted to have you join our system.<br>
+Welcome! We're delighted to have you join our system.
 
 As a valued member, we're here to support you every step of the way. If you have any questions or need assistance, don't hesitate to reach out to our friendly support team.
 
@@ -215,9 +215,31 @@ def approve_training_request(request):
         flash('Failed to approve trainee training request', 'error')
         return redirect(url_for('manager.get_training_requests'))
     flash('Trainee training request approved successfully', 'success')
-    # get the user so we can send him the email
-    user = db.session.execute(text("SELECT  email, fullName from trainees where traineeID = :traineeID"),
-                              {"traineeID": traineeID}).fetchone()
+    # inform advisor
+    advisor = db.session.execute(text("SELECT  email, fullName from advisors where advisorID = :advisorID"),
+                                 {"advisorID": advisorID}).fetchone()
+    # get the trainee so we can send him the email
+    trainee = db.session.execute(text("SELECT  email, fullName from trainees where traineeID = :traineeID"),
+                                 {"traineeID": traineeID}).fetchone()
+
+    # inform advisor
+    recipient = advisor[0]
+    sender = manager["email"]
+    message = """
+    Dear {0},
+        The following trainee has been assigned to you in the '{1}' training program
+        Trainee Information:
+            Trainee ID: {2}
+            Trainee Name: {3}
+            Trainee Email: {4}
+            Training Registration ID: {5}
+
+    Best regards,
+    {6} from TMS
+                """.format(advisor[1], traineeID, trainee[1], trainee[0], requestID, manager["fullname"])
+    subject = "New Trainee has been assigned"
+    response1 = helper.send_email(recipient=recipient, sender=sender, message=message, subject=subject)
+
     # get the training registration data so we can send him his data
     program = db.seesion.execute(text("""
         SELECT p.`name`, p.`fees`,p.`start_date`, p.`end_date` 
@@ -225,7 +247,7 @@ def approve_training_request(request):
         WHERE r.`ID` = :requestID 
     """))
     # send credentials to the trainee
-    recipient = user[0]
+    recipient = trainee[0]
     sender = manager["email"]
     message = """
 Dear {0},
@@ -245,13 +267,15 @@ Once again, congratulations on being selected for this training program. We look
 
 Best regards,
 {5} from TMS
-            """.format(user[1], program[0], program[1], program[2], program[3], manager["fullname"])
+            """.format(trainee[1], program[0], program[1], program[2], program[3], manager["fullname"])
     subject = "Congratulations! Your Training Application has been Approved"
-    response = helper.send_email(recipient=recipient, sender=sender, message=message, subject=subject)
-    if response["status_code"] == 200:
-        flash("Email has been sent", "success")
+    response2 = helper.send_email(recipient=recipient, sender=sender, message=message, subject=subject)
+    if response1["status_code"] == 200 and response2["status_code"] == 200:
+        flash("Emails has been sent", "success")
     else:
-        flash("Failed to send email, status code: {0}".format(response["status_code"]), "success")
+        flash(
+            "Failed to send email, statuses code: {0}, {1}".format(response1["status_code"], response2["status_code"]),
+            "success")
     return redirect(url_for('manager.get_training_requests'))
 
 
@@ -382,7 +406,7 @@ def accept_trainee_modifications(request):
 
     Your account modification has been approved, you can login now. 
     Best regards,
-    {5} from TMS
+    {1} from TMS
                 """.format(user[1], manager["fullname"])
     subject = "Regarding Your Account Modification"
     response = helper.send_email(recipient=recipient, sender=sender, message=message, subject=subject)
@@ -496,7 +520,7 @@ def approve_trainee_deactivation(request):
         
         
         Best regards,
-        {5} from TMS
+        {1} from TMS
                     """.format(user[1], manager["fullname"])
     subject = "Regarding Your Account Deactivation"
     response = helper.send_email(recipient=recipient, sender=sender, message=message, subject=subject)
