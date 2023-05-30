@@ -83,21 +83,25 @@ def approve_trainee_registration(request):
     Dear trainee,
 
 Welcome! We're delighted to have you join our system.<br>
-As a valued member, we're here to support you every step of the way. If you have any questions or need assistance, don't hesitate to reach out to our friendly support team.<br>
-Let's embark on this exciting journey together!<br>
-Here are your login credentials, <b>Don't share them with anyone</b> <br>
-Email: {0}<br>
-Password: {1}<br>
-Note: you can change your information anytime. <br>
-Best regards,<br>
+
+As a valued member, we're here to support you every step of the way. If you have any questions or need assistance, don't hesitate to reach out to our friendly support team.
+
+Let's embark on this exciting journey together!
+Here are your login credentials, Don't share them with anyone
+Email: {0}
+Password: {1}
+Note: you can change your information anytime. 
+
+
+Best regards,
 {2} from TMS.
-    """.format(user[1], user[0], manager["fullName"])
+    """.format(user[1], user[0], manager["fullname"])
     subject = "Welcome to TMS!"
     response = helper.send_email(recipient=recipient, sender=sender, message=message, subject=subject)
-    if response.status_code == 200:
+    if response["status_code"] == 200:
         flash("Email has been sent", "success")
     else:
-        flash("Failed to send email, status code: {0}".format(response.status_code), "success")
+        flash("Failed to send email, status code: {0}".format(response["status_code"]), "success")
     return redirect(url_for('manager.get_pending_trainees_view'))
 
 
