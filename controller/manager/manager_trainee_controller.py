@@ -133,6 +133,26 @@ def reject_trainee_registration(request):
         flash('Failed to approve trainee', 'error')
         return redirect(url_for('manager.get_pending_trainees_view'))
     flash('Trainee rejected successfully', 'success')
+    # get the user so we can send him his data
+    user = db.session.execute(text("SELECT  email, fullName from trainees where traineeID = :traineeID"),
+                              {"traineeID": traineeID}).fetchone()
+    # send credentials to the trainee
+    recipient = user[0]
+    sender = manager["email"]
+    message = """
+Dear {0},
+
+Thank you for your interest in our system. Unfortunately, we are unable to accept your signup at this time. We appreciate your understanding.
+
+Best regards,
+{1} from TMS
+        """.format(user[1], manager["fullname"])
+    subject = "Regarding Your Signup"
+    response = helper.send_email(recipient=recipient, sender=sender, message=message, subject=subject)
+    if response["status_code"] == 200:
+        flash("Email has been sent", "success")
+    else:
+        flash("Failed to send email, status code: {0}".format(response["status_code"]), "success")
     return redirect(url_for('manager.get_pending_trainees_view'))
 
 
@@ -195,6 +215,43 @@ def approve_training_request(request):
         flash('Failed to approve trainee training request', 'error')
         return redirect(url_for('manager.get_training_requests'))
     flash('Trainee training request approved successfully', 'success')
+    # get the user so we can send him the email
+    user = db.session.execute(text("SELECT  email, fullName from trainees where traineeID = :traineeID"),
+                              {"traineeID": traineeID}).fetchone()
+    # get the training registration data so we can send him his data
+    program = db.seesion.execute(text("""
+        SELECT p.`name`, p.`fees`,p.`start_date`, p.`end_date` 
+        from `training_registration` r JOIN `trainig_programs` p on p.`programID` = r.`training_program_id`
+        WHERE r.`ID` = :requestID 
+    """))
+    # send credentials to the trainee
+    recipient = user[0]
+    sender = manager["email"]
+    message = """
+Dear {0},
+
+Congratulations! We are thrilled to inform you that your training application has been approved. We believe this training will be a valuable opportunity for you to enhance your skills and knowledge in [Training Program/Subject].
+
+Here are the details you need to know:
+
+Training Program: {1}
+Start Date: {2}
+End Date: {3}
+Fees: {4}
+
+Please make sure to mark your calendar and be prepared to make the most out of this enriching experience. If you have any further questions or require additional information, feel free to reach out to our dedicated training team.
+
+Once again, congratulations on being selected for this training program. We look forward to seeing you there and witnessing your growth.
+
+Best regards,
+{5} from TMS
+            """.format(user[1], program[0], program[1], program[2], program[3], manager["fullname"])
+    subject = "Congratulations! Your Training Application has been Approved"
+    response = helper.send_email(recipient=recipient, sender=sender, message=message, subject=subject)
+    if response["status_code"] == 200:
+        flash("Email has been sent", "success")
+    else:
+        flash("Failed to send email, status code: {0}".format(response["status_code"]), "success")
     return redirect(url_for('manager.get_training_requests'))
 
 
