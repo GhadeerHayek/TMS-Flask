@@ -164,27 +164,29 @@ def get_meetings(request):
             "advisorID": advisor["advisorID"]
         }
     ).fetchall()
+
     if not registration_records:
         flash("Inconsistency btw")
         return redirect(request.referrer)
     else:
-        return jsonify(type(registration_records))
+	# all registration processes that belong to that advisor.
+        registration_ids = []
+        for record in registration_records:
+            registration_ids.append(record[0]);
+        # return jsonify(registration_ids)
         # select * from meetings using registration id
         meetings = db.session.execute(
             text("""
-                        SELECT * from `meetings` where `registration_id` = :registration_id
+                        SELECT * from `meetings` where `registration_id` IN :registration_ids
                     """),
             {
-                "registration_id": registration_record[0]
+                "registration_ids": registration_ids
             }).fetchall()
-        return jsonify (meetings)
         if not meetings:
             flash("No meetings yet")
-            return render_template('advisor/advisor-meetings.html', advisor=advisor, meetings=[],
-                                   registration_id=registration_record[0])
+            return render_template('advisor/advisor-meetings.html', advisor=advisor, meetings=[])
         else:
-            return render_template('advisor/advisor-meetings.html', advisor=advisor, meetings=meetings,
-                                   registration_id=registration_record[0])
+            return render_template('advisor/advisor-meetings.html', advisor=advisor, meetings=meetings)
 
 
 """
@@ -192,7 +194,7 @@ def get_meetings(request):
 """
 
 
-def get_add_meeting(request, registration_id):
+def get_add_meeting(request):
     # supposed to get the trainee id and the advisor id associated to the training program and sends that to this
     # form view it also MUST call the function that handles meetings conflict
     token = request.cookies['token']
@@ -200,15 +202,15 @@ def get_add_meeting(request, registration_id):
     if not advisor:
         flash("Invalid token", 'error')
         return redirect(url_for('auth.login_view'))
-    registration_record = db.session.execute(text("""
-        SELECT * from `training_registration` where `ID` = :registration_id 
-    """), {"registration_id": registration_id}).fetchone()
-    if not registration_record:
+    registration_records = db.session.execute(text("""
+        SELECT * from `training_registration` where `advisorID`= :advisorID
+    """), {"advisorID":advisor["advisorID"]}).fetchall()
+    if not registration_records:
         flash('Something went wrong')
         return redirect(request.referrer)
     else:
         return render_template('advisor/advisor-new-meeting.html', advisor=advisor,
-                               registration_record=registration_record)
+                               registration_records=registration_records)
 
 
 """
@@ -216,7 +218,7 @@ def get_add_meeting(request, registration_id):
 """
 
 
-def handle_meeting_add(request, registration_id):
+def handle_meeting_add(request):
     # get the trainee from token
     token = request.cookies['token']
     if not token:
@@ -227,16 +229,13 @@ def handle_meeting_add(request, registration_id):
         flash("Invalid whatever", 'error')
         return redirect(request.referrer)
     # get meeting data from request
+    registration_id = request.form['registrationID']
     meeting_details = request.form['details']
-    advisorID = request.form['advisor']
-    traineeID = request.form['trainee']
     start_datetime = request.form['start']
     end_datetime = request.form['end']
     params = {
         "registration_id": registration_id,
         "meeting_details": meeting_details,
-        "advisorID": advisorID,
-        "traineeID": traineeID,
         "start_datetime": start_datetime,
         "end_datetime": end_datetime
     }
@@ -254,8 +253,6 @@ def handle_meeting_add(request, registration_id):
         params = {
             "registration_id": registration_id,
             "meeting_details": meeting_details,
-            "advisorID": advisorID,
-            "traineeID": traineeID,
             "start_datetime": start_datetime,
             "end_datetime": end_datetime
         }

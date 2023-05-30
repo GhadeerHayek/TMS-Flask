@@ -47,16 +47,16 @@ def get_advisor_meetings_view():
 
 
 # Arrange-New-Meeting Form-View Route in the Meetings Form-View
-@advisor_blueprint.route('/meetings/<registration_id>/add', methods=["GET"])
+@advisor_blueprint.route('/meetings/add', methods=["GET"])
 def get_advisor_add_meeting_view():
     # the meeting has to be specific to a training
     return advisor_controller.get_add_meeting(request)
 
 
 # Add new meeting button Action Route
-@advisor_blueprint.route('/meeting/<registration_id>/add', methods=["POST"])
-def handle_advisor_meeting_add(registration_id):
-    return advisor_controller.handle_meeting_add(request, registration_id)
+@advisor_blueprint.route('/meeting/create', methods=["POST"])
+def handle_advisor_meeting_add():
+    return advisor_controller.handle_meeting_add(request)
 
 
 # Advisor Profile Modification Action Route
@@ -79,3 +79,4 @@ def handle_approve_meeting(meetingID):
 @advisor_blueprint.route('/meeting/<meetingID>/cancel', methods=['POST'])
 def handle_cancel_meeting(meetingID):
     return advisor_controller.cancel_meeting(request, meetingID)
+
