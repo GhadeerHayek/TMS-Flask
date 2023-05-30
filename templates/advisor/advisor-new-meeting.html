@@ -21,36 +21,48 @@
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Meeting Details</h5>
-                            <!-- Horizontal Form -->
-
-                            <form method="POST"  action="{{ url_for('advisor.handle_advisor_meeting_add')}}">
-
+                            <form method="POST" action="{{ url_for('advisor.handle_advisor_meeting_add') }}">
                                 <div class="row mb-3">
                                     <label for="details" class="col-sm-2 col-form-label">Meeting Details</label>
                                     <div class="col-sm-10">
                                         <input type="text" class="form-control" id="details" name="details">
                                     </div>
                                 </div>
-                                <div class="row mb-3">
-                                    <label for="advisor" class="col-sm-2 col-form-label">Advisor</label>
-                                    <div class="col-sm-10">
-                                        <input type="number" class="form-control" id="advisor" name="advisor"
-                                               value="{{ advisor.advisorID }}">
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
 
+                                <!-- If the meeting is related to the training registration, then this field should be linked to the registration process -->
+                                <!-- You may select the trainee ID, but in the fact, the backend receives the registration process id -->
+                                <div class="row mb-3">
                                     <label for="registrationID" class="col-sm-2 col-form-label">Trainee</label>
-                                    <select class="col-sm-10" class="form-control" id="registrationID" name="registrationID">
+                                    <select class="col-sm-10" class="form-control" id="registrationID"
+                                            name="registrationID">
                                         {% for record in registration_records %}
-                                        <option value="{{ record.ID }}">{{ record.traineeID }}</option>
+                                            <option value="{{ record.ID }}">{{ record.traineeID }}</option>
                                         {% endfor %}
                                     </select>
-{#                                    <div class="col-sm-10">#}
-{#                                        <input type="number" class="form-control" id="trainee" name="trainee"#}
-{#                                               value="{{ registration_record.traineeID }}">#}
-{#                                    </div>#}
                                 </div>
+
+
+{#                                <div class="row mb-3">#}
+{#                                    <label for="advisor" class="col-sm-2 col-form-label">Advisor</label>#}
+{#                                    <div class="col-sm-10">#}
+{#                                        <input type="number" class="form-control" id="advisor" name="advisor"#}
+{#                                               value="{{ advisor.advisorID }}">#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <div class="row mb-3">#}
+{##}
+{#                                    <label for="registrationID" class="col-sm-2 col-form-label">Trainee</label>#}
+{#                                    <select class="col-sm-10" class="form-control" id="registrationID"#}
+{#                                            name="registrationID">#}
+{#                                        {% for record in registration_records %}#}
+{#                                            <option value="{{ record.ID }}">{{ record.traineeID }}</option>#}
+{#                                        {% endfor %}#}
+{#                                    </select>#}
+                                    {#                                    <div class="col-sm-10">#}
+                                    {#                                        <input type="number" class="form-control" id="trainee" name="trainee"#}
+                                    {#                                               value="{{ registration_record.traineeID }}">#}
+                                    {#                                    </div>#}
+{#                                </div>#}
                                 <div class="row mb-3">
                                     <label for="start" class="col-sm-2 col-form-label">Start Datetime</label>
                                     <div class="col-sm-10">

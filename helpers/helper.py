@@ -19,6 +19,10 @@ def resolve_conflict(new_meeting):
     if not registration_record:
         return False
     # get all the trainee meetings
+    traineeID = registration_record[2]  # traineeID field order in the database
+    advisorID = registration_record[3]  # advisorID field order in the database
+    # to get all the meetings related to an advisor or a trainee, you must join the training registration with the
+    # meetings
     trainee_meetings = db.session.execute(text("""
                 SELECT `meetingID`,`start_datetime`,`end_datetime`,meetings.`status`
                 from (`meetings` JOIN `training_registration` on meetings.`registration_id` = training_registration.`ID`)
@@ -26,7 +30,7 @@ def resolve_conflict(new_meeting):
                 GROUP BY training_registration.`traineeID` 
                 HAVING training_registration.`traineeID` = :traineeID;
     """), {
-        "traineeID": registration_record[2]
+        "traineeID": traineeID
     }).fetchall()
     # get all the advisor meetings
     advisor_meetings = db.session.execute(text("""
@@ -36,7 +40,7 @@ def resolve_conflict(new_meeting):
             GROUP BY training_registration.`advisorID` 
             HAVING training_registration.`advisorID` = :advisorID;
     """), {
-        "advisorID": registration_record[3]
+        "advisorID": advisorID
     }).fetchall()
     if trainee_meetings and advisor_meetings:
         conflicts = []
@@ -45,6 +49,7 @@ def resolve_conflict(new_meeting):
                     new_meeting["start_datetime"], "%Y-%m-%dT%H:%M") < meeting[2]:
                 conflicts.append(meeting)
         if len(conflicts) == 0:
+            # length of conflicts equal to zero, then no conflicts occured and you can add
             # TODO: Handle conflicts (e.g., reschedule conflicting meetings or notify the parties) -- or no need
-            return True
-        return False
+            return False
+        return True

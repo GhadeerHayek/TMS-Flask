@@ -164,12 +164,11 @@ def get_meetings(request):
             "advisorID": advisor["advisorID"]
         }
     ).fetchall()
-
     if not registration_records:
         flash("Inconsistency btw")
         return redirect(request.referrer)
     else:
-	# all registration processes that belong to that advisor.
+        # all registration processes that belong to that advisor.
         registration_ids = []
         for record in registration_records:
             registration_ids.append(record[0]);
@@ -204,7 +203,7 @@ def get_add_meeting(request):
         return redirect(url_for('auth.login_view'))
     registration_records = db.session.execute(text("""
         SELECT * from `training_registration` where `advisorID`= :advisorID
-    """), {"advisorID":advisor["advisorID"]}).fetchall()
+    """), {"advisorID": advisor["advisorID"]}).fetchall()
     if not registration_records:
         flash('Something went wrong')
         return redirect(request.referrer)
@@ -239,8 +238,8 @@ def handle_meeting_add(request):
         "start_datetime": start_datetime,
         "end_datetime": end_datetime
     }
-    if not meeting_details or not advisorID or not traineeID or not start_datetime or not end_datetime:
-        flash("Missing date", 'error')
+    if not meeting_details or not start_datetime or not end_datetime:
+        flash("Missing data", 'error')
         return redirect(request.referrer)
     # check for conflict
     conflict = helper.resolve_conflict(new_meeting=params)
@@ -358,6 +357,12 @@ def cancel_meeting(request, meetingID):
     if not advisor:
         flash("Invalid token", 'error')
         return redirect(url_for('auth.login_view'))
+    meeting_status = db.session.execute(
+        text("select status from meetings where meetingID = :meetingID and status ='cancelled'"),
+        {"meetingID": meetingID}).fetchone()
+    if meeting_status:
+        flash("already cancelled", 'error')
+        return redirect(request.referrer)
     # update the status
     result = db.session.execute(
         text("""
@@ -382,6 +387,12 @@ def approve_meeting(request, meetingID):
     if not advisor:
         flash("Invalid token", 'error')
         return redirect(url_for('auth.login_view'))
+    meeting_status = db.session.execute(
+        text("select status from meetings where meetingID = :meetingID and status ='approved'"),
+        {"meetingID": meetingID}).fetchone()
+    if meeting_status:
+        flash("already approved", 'error')
+        return redirect(request.referrer)
     # update the status
     result = db.session.execute(
         text("""
