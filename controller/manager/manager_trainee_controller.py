@@ -278,6 +278,30 @@ def reject_training_request(request):
         flash('Failed to reject training request', 'error')
         return redirect(url_for('manager.get_training_requests'))
     flash('Trainee training request rejected successfully', 'success')
+
+    # get the user so we can send him his data
+    user = db.session.execute(text(
+        "SELECT  t.`email`, t.`fullName` from `trainees` t join `training_registration` r on t.`traineeID` = r.`traineeID` where r.`ID` = :requestID"),
+                              {"requestID": requestID}).fetchone()
+    # send credentials to the trainee
+    recipient = user[0]
+    sender = manager["email"]
+    message = """
+    Dear {0},
+
+    We regret to inform you that your training application has not been approved at this time. Thank you for your interest.
+
+
+    Best regards,
+    {1} from TMS
+            """.format(user[1], manager["fullname"])
+    subject = "Regarding Your Training Application"
+    response = helper.send_email(recipient=recipient, sender=sender, message=message, subject=subject)
+    if response["status_code"] == 200:
+        flash("Email has been sent", "success")
+    else:
+        flash("Failed to send email, status code: {0}".format(response["status_code"]), "success")
+
     return redirect(url_for('manager.get_training_requests'))
 
 
