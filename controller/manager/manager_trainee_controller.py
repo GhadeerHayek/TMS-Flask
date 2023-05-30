@@ -282,7 +282,7 @@ def reject_training_request(request):
     # get the user so we can send him his data
     user = db.session.execute(text(
         "SELECT  t.`email`, t.`fullName` from `trainees` t join `training_registration` r on t.`traineeID` = r.`traineeID` where r.`ID` = :requestID"),
-                              {"requestID": requestID}).fetchone()
+        {"requestID": requestID}).fetchone()
     # send credentials to the trainee
     recipient = user[0]
     sender = manager["email"]
@@ -371,6 +371,26 @@ def accept_trainee_modifications(request):
         flash('Failed to approve trainee modification request', 'error')
         return redirect(url_for('manager.get_trainees_accounts_view'))
     flash('Trainee modifications approved successfully', 'success')
+    # get the user so we can send him the email
+    user = db.session.execute(text("SELECT  email, fullName from trainees where traineeID = :traineeID"),
+                              {"traineeID": traineeID}).fetchone()
+    # send credentials to the trainee
+    recipient = user[0]
+    sender = manager["email"]
+    message = """
+    Dear {0},
+
+    Your account modification has been approved, you can login now. 
+    Best regards,
+    {5} from TMS
+                """.format(user[1], manager["fullname"])
+    subject = "Regarding Your Account Modification"
+    response = helper.send_email(recipient=recipient, sender=sender, message=message, subject=subject)
+    if response["status_code"] == 200:
+        flash("Email has been sent", "success")
+    else:
+        flash("Failed to send email, status code: {0}".format(response["status_code"]), "success")
+
     return redirect(url_for('manager.get_trainees_accounts_view'))
 
 
@@ -398,6 +418,7 @@ def reject_trainee_modifications(request):
         flash('Failed to approve trainee modification request', 'error')
         return redirect(url_for('manager.get_trainees_accounts_view'))
     flash('Trainee modifications rejected successfully', 'success')
+
     return redirect(url_for('manager.get_trainees_accounts_view'))
 
 
@@ -462,6 +483,28 @@ def approve_trainee_deactivation(request):
         flash('Failed to deactivate trainee', 'error')
         return redirect(url_for('manager.get_deactivate_trainees_view'))
     flash('Trainee deactivated successfully', 'success')
+    # get the user so we can send him the email
+    user = db.session.execute(text("SELECT  email, fullName from trainees where traineeID = :traineeID"),
+                              {"traineeID": traineeID}).fetchone()
+    # send credentials to the trainee
+    recipient = user[0]
+    sender = manager["email"]
+    message = """
+        Dear {0},
+        We're so sorry to see you leave. 
+        Your account data is deleted, you can't login or retrieve the data. 
+        
+        
+        Best regards,
+        {5} from TMS
+                    """.format(user[1], manager["fullname"])
+    subject = "Regarding Your Account Deactivation"
+    response = helper.send_email(recipient=recipient, sender=sender, message=message, subject=subject)
+    if response["status_code"] == 200:
+        flash("Email has been sent", "success")
+    else:
+        flash("Failed to send email, status code: {0}".format(response["status_code"]), "success")
+
     return redirect(url_for('manager.get_deactivate_trainees_view'))
 
 
