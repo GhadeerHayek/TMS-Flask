@@ -1,7 +1,13 @@
 from flask import request, render_template, jsonify, flash, redirect, url_for
 from sqlalchemy import text
 from app import db
-import helpers.manager_helper as mghelper
+import helpers.token as token_helper
+import boto3
+
+
+ses_client = boto3.client('ses', region_name='eu-north-1')
+
+
 
 """
  This is the function that prepares the data for the 'manager dashboard' view, returns the view with its data
@@ -59,7 +65,24 @@ def get_email_form(request):
 def send_email(request):
     # sender email credentials 
     token = request.cookies['token']
-    
+    if not token:
+        flash('Token not found, invalid request', 'error')
+        return redirect(url_for('auth.login_view'))
+    email_message = {
+    'Subject':{'Data', subject},
+    'Body':{'Text': {'Data':body}},
+    'Source': sender,
+    'Destination':{'ToAddresses': [recipient]}
+     }
+     response = ses_client.send_email(
+     Source=email_message['Source'],
+     Destination=email_message['Destination'],
+     Message = email_message
+ )   
+
+
+
+}
     # print(manager.email)
 
     recipient = request.form['email']

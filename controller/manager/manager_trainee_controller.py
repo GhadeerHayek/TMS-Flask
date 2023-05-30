@@ -1,7 +1,7 @@
 from flask import redirect, url_for, request, render_template, jsonify, flash
 from sqlalchemy import text
 from app import db
-import helpers.manager_helper as mghelper
+import helpers.token as token_helper
 import secrets
 
 
