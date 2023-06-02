@@ -166,15 +166,13 @@ def get_training_requests_view(request):
     advisor_cursor = db.session.execute(advisor_query)
     request_rows = result_cursor.fetchall()
     advisor_rows = advisor_cursor.fetchall()
-    # print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
-    # print(advisor_rows)
+
     advisor = []
     requests = []
     for row in request_rows:
         requests.append(row._data)
     for row in advisor_rows:
         advisor.append(row._data)
-    print(advisor)
     return render_template("manager/trainee/pending_requests.html", manager=manager, requests=requests, advisor=advisor)
 
 
@@ -345,11 +343,6 @@ def get_trainee_account_details(request):
     query = text("SELECT * from trainees where userID = :userID")
     result_cursor = db.session.execute(query, {'userID': userID})
     trainee = result_cursor.fetchone()
-    # trainee = []
-    # for row in rows:
-    #     trainee.append(row._data)
-    # print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-    # print(trainee)
     return render_template("manager/trainee/trainee-profile-details.html", trainee=trainee, manager=manager)
 
 
@@ -368,8 +361,6 @@ def accept_trainee_modifications(request):
     traineeID = request.form['traineeID']
     # update trainee table with userID
     trainee_query = text("UPDATE trainees SET status = 'active' where traineeID = :traineeID")
-    print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
-    print(traineeID[0])
     trainee_cursor = db.session.execute(trainee_query, {'traineeID': traineeID})
     # commit changes to db
     db.session.commit()
@@ -410,8 +401,7 @@ def reject_trainee_modifications(request):
     traineeID = request.form['traineeID']
     # update trainee table with userID
     trainee_query = text("UPDATE trainees SET status = 'active' where traineeID = :traineeID")
-    print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
-    print(traineeID[0])
+
     trainee_cursor = db.session.execute(trainee_query, {'traineeID': traineeID})
     # commit changes to db
     result = db.session.commit()
@@ -486,7 +476,7 @@ def approve_trainee_deactivation(request):
     flash('Trainee deactivated successfully', 'success')
     # get the user so we can send him the email
     user = db.session.execute(text("SELECT  email, fullName from trainees where traineeID = :traineeID"),
-                              {"traineeID": traineeID}).fetchone()
+controller/manager/manager_trainee_controller.py                              {"traineeID": traineeID}).fetchone()
     # send credentials to the trainee
     recipient = user[0]
     sender = manager["email"]
@@ -525,8 +515,6 @@ def reject_trainee_deactivation(request):
     traineeID = request.form['traineeID']
     # update trainee table with userID
     trainee_query = text("UPDATE trainees SET status = 'active' where traineeID = :traineeID")
-    print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
-    print(traineeID[0])
     trainee_cursor = db.session.execute(trainee_query, {'traineeID': traineeID})
     # commit changes to db
     db.session.commit()

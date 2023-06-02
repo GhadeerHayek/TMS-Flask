@@ -131,9 +131,7 @@ def handle_edit_program(request):
     cursor = db.session.execute(query, data)
     db.session.commit()
     result = cursor.rowcount
-    print("1!@#$%^&*&^%$##^&*&^%$#@#$%^&*&^%#$@#$%^&")
-    print(result)
-    if not result:   
+    if not result:
         flash('Failed to edit program', 'error')
         return redirect(url_for('manager.get_all_programs_view'))
     flash('Program edited successfully', 'success')
@@ -158,8 +156,7 @@ def handle_delete_program(request):
     cursor = db.session.execute(query, {'programID':programID})
     db.session.commit()
     result = cursor.rowcount
-    print("!@#$%^&*&^%$##^&*&^%$#@#$%^&*&^%#$@#$%^&")
-    print(result)
+
     if not result:   
         flash('Failed to Delete program', 'error')
         return redirect(url_for('manager.get_all_programs_view'))
