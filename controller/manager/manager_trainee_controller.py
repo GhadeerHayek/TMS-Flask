@@ -161,7 +161,7 @@ def get_training_requests_view(request):
         return redirect(url_for('auth.login_view'))
     # token is the manager id or the manager record
     request_query = text("SELECT * from training_registration where status = 'pending'")
-    advisor_query = text("SELECT advisorID, username from advisors")
+    advisor_query = text("SELECT advisorID, username from advisors where status='active'")
     result_cursor = db.session.execute(request_query)
     advisor_cursor = db.session.execute(advisor_query)
     request_rows = result_cursor.fetchall()
@@ -220,25 +220,25 @@ def approve_training_request(request):
     sender = manager["email"]
     message = """
     Dear {0},
-        The following trainee has been assigned to you in the '{ training program
+        The following trainee has been assigned to you
         Trainee Information:
-            Trainee ID: {2}
-            Trainee Name: {3}
-            Trainee Email: {4}
-            Training Registration ID: {5}
+            Trainee ID: {1}
+            Trainee Name: {2}
+            Trainee Email: {3}
+            Training Registration ID: {4}
 
     Best regards,
-    {6} from TMS
+    {5} from TMS
                 """.format(advisor[1], traineeID, trainee[1], trainee[0], requestID, manager["fullname"])
     subject = "New Trainee has been assigned"
     response1 = helper.send_email(recipient=recipient, sender=sender, message=message, subject=subject)
 
     # get the training registration data so we can send him his data
-    program = db.seesion.execute(text("""
+    program = db.session.execute(text("""
         SELECT p.`name`, p.`fees`,p.`start_date`, p.`end_date` 
-        from `training_registration` r JOIN `trainig_programs` p on p.`programID` = r.`training_program_id`
+        from `training_registration` r JOIN `training_programs` p on p.`programID` = r.`training_program_id`
         WHERE r.`ID` = :requestID 
-    """))
+    """), {"requestID":requestID}).fetchone()
     # send credentials to the trainee
     recipient = trainee[0]
     sender = manager["email"]

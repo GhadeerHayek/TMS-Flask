@@ -1,0 +1,111 @@
+* [33m97e8204[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m)[m Revert "add more ignored files to the list"
+* [33mbcbc8df[m add more ignored files to the list
+* [33mdeef441[m  add all emails required to the system
+* [33m47a3f5b[m  add account deactivation approval email
+* [33mffb014a[m added training application rejection email
+* [33ma045fd2[m add trainee signup rejection email, add training approval email
+* [33m200cb4e[m fixed minor bug in the approve email
+* [33m8c74226[m a beautiful welcoming email to trainees
+* [33m8075ba6[m removed more unnecessary files
+* [33m1893943[m  removed cached files
+* [33m4f40875[m for security purposes, this file is removed
+* [33md576b95[m add the last check on meetings conflict, to ensure that no meeting is approved in case of conflict. This is the end of meetings features
+* [33ma11dfac[m  fix meetings feature
+* [33m2427757[m  finally had the email feature working
+* [33m9f21311[m solved conflicts
+* [33mb1c3f1d[m  minor changes to advisor-meetings views
+* [33m565057f[m  sending emails from code
+* [33m5734686[m a commit to backup changes
+* [33m9e94923[m aws console local changes
+* [33mc6c8e13[m  local changes from aws-ec2
+* [33mad07974[m debugging trainee dashboard after registration approval
+* [33m8e5af31[m ignore this one too
+* [33maefe34e[m ignore this
+* [33m08ba29c[m ignore this file once more, i need it for the rds database
+* [33m40d217e[m ignore this file, i need it for the rds database
+* [33m204b1d6[m for deployment purposes, i've deleted main.py and made app.py as the runner file
+*   [33mc5d20e8[m  fixed files conflicts
+[32m|[m[33m\[m  
+[32m|[m * [33mafa8456[m cached files
+[32m|[m * [33ma7562ae[m[33m ([m[1;31morigin/manager_functionalities[m[33m)[m will resume later
+[32m|[m * [33md49a7d1[m added training requests feature details
+[32m|[m * [33m40c76a1[m finished manager-training course functionality
+[32m|[m * [33me0a448c[m fixed some syntax and style
+[32m|[m * [33m15d4739[m minor changes
+[32m|[m * [33m05e523b[m added email feature
+[32m|[m * [33mbc6ddcf[m finished manager-advisor features
+[32m|[m * [33mf6eeaec[m advisor-manager modfication requests done
+[32m|[m * [33m883dc44[m minor change
+[32m|[m * [33mdc54798[m all manager-trainee features are done
+[32m|[m * [33m0154f5d[m approve users modifications done
+[32m|[m * [33mca508bc[m almost finished trainee-manager features
+* [33m|[m [33mb9b19d8[m cached files again
+* [33m|[m [33mf3edb1d[m cached files
+* [33m|[m   [33m7154b27[m Resolve merge conflict in cached files
+[34m|[m[35m\[m [33m\[m  
+[34m|[m * [33m|[m [33mb6dcf9b[m[33m ([m[1;31morigin/advisor-component[m[33m)[m  almost finished advisor component
+[34m|[m * [33m|[m [33m3d6dabd[m  finally, had the advisor component routes opening
+[34m|[m [33m|[m[33m/[m  
+* [33m|[m   [33m563d6b0[m Merge pull request #2 from GhadeerHayek/trainee-component
+[33m|[m[1;31m\[m [33m\[m  
+[33m|[m [1;31m|[m[33m/[m  
+[33m|[m[33m/[m[1;31m|[m   
+[33m|[m * [33mcb6df22[m[33m ([m[1;31morigin/trainee-component[m[33m)[m Refactored and Finished Trainee Component
+[33m|[m * [33m13a0242[m fix bug in meeting conflict code, add flash messages widget to the forms
+[33m|[m * [33mc0b0833[m  almost finished meeting feature, still working on meeting conflicts
+[33m|[m * [33md10a651[m  fixed status check
+[33m|[m * [33m9c1017b[m feature: add records to the attendance form
+[33m|[m * [33md0ed311[m  feature: display my training, feature: display attendance records, feature: display one program card link from my training
+[33m|[m * [33m4eba339[m feature: add trainee profile deactivation
+[33m|[m * [33m5c571a5[m feature: account modification requests, user status is in_reveiw and users are not authorized to the system
+[33m|[m * [33m8b401d5[m finished redirection from login to trainee dashboard, all trainee info is displayed
+[33m|[m[33m/[m  
+*   [33m901fa9a[m Merge pull request #1 from GhadeerHayek/auth-branch
+[1;32m|[m[1;33m\[m  
+[1;32m|[m * [33m1d9c2ce[m render trainee dashboard from token authorization
+[1;32m|[m * [33mc13ff6f[m finished reviewing the auth code, refactored flashed messages
+[1;32m|[m * [33m0e4c21c[m minor refactor to the return types and flash messages
+[1;32m|[m * [33mf19eaf9[m feature: signup advisor, signup trainee
+[1;32m|[m * [33m35bb056[m feature: login with redirection to the appropriate dashboard
+[1;32m|[m * [33m3db4f5f[m altered users so that it has an email field
+[1;32m|[m[1;32m/[m  
+* [33m1beddc2[m add auto_increment, on delete, on update cascade, insert statements
+* [33m50b8d44[m  add default values for fields
+* [33mdd229b8[m  modified manager, added email, fullname, username fields
+*   [33m0065f53[m Merge branch 'flash-msgs'
+[1;34m|[m[1;35m\[m  
+[1;34m|[m * [33m9e4fb41[m created flash msgs
+* [1;35m|[m [33md21340d[m  modified database.sql
+[1;35m|[m[1;35m/[m  
+* [33mbbf17a2[m  generate_token, verify_token, perform_login
+* [33m5f45409[m  another edit to the database.sql, look at the comment
+* [33m3a4bd81[m some changes to the database.sql file, requires review
+* [33m6359829[m fixed ddl
+* [33m31389c7[m initialized database DDL
+* [33mbde564f[m finished advisor component
+* [33mf7648ba[m almost finished advisor component
+* [33m91b9c3b[m finalize trainee component
+* [33m04a30c2[m ignore this commit
+* [33m498c2d5[m ignore this commit
+* [33m6804726[m add form-view that shows all training programs available to a trainee according to their area
+* [33m9f0bfba[m finalizing manager component form-view, routes.
+* [33m29893c5[m add profile details sub-view in the approve account modifications for both advisor and trainee
+* [33me2ee691[m add billing views where the balance sheet records are displayed in a tabular format
+* [33m7238e38[m add training program management views in admin dashboard
+* [33m19874ef[m add all manager-advisor views, controllers,blueprint. note that they are the same as the trainees except that the logic implmentation will be different
+* [33m15d1cdd[m  add account modification view, account details subview link but the view itself is not implemented yet.
+* [33mcbaf3b4[m  add deactivate_trainees view, alongside with its blueprint, form-view, action functions
+* [33mec4d9b8[m create manager_base layout, add view get pending trainees with mock data, updated links in the manager_base layout
+* [33mf3b77e9[m add base.html and had the templates modified so that it extends base.html
+*   [33m5abd22c[m merge remote branch with local branch
+[1;36m|[m[31m\[m  
+[1;36m|[m * [33m8dc5169[m Create README.md
+* [31m|[m [33m57ce6e0[m add login and signup functionalities
+* [31m|[m [33m7748e0c[m update all dashboards so that some data could be sent from controller to view and displayed in the view
+* [31m|[m [33m4527b14[m add dashboard to each component, hopefully this is all functions we'll need to implement
+* [31m|[m [33m2d30f58[m add enough code to make the form-view links work fine
+* [31m|[m [33m1fd2340[m edit views and controllers so that links work fine
+[31m|[m[31m/[m  
+* [33m73eabed[m replaced engine usage with sqlalchemy object
+* [33m2b3f40b[m deleted config.py since i am using dotenv
+* [33m4bb0c82[m initial commit
