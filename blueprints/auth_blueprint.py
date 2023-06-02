@@ -3,6 +3,10 @@ from controller import auth_controller
 
 auth_blueprint = Blueprint("auth", __name__)
 
+# to make sure nothing goes wrong
+@auth_blueprint.route('/', methods=['GET'])
+def home():
+    return redirect(url_for('auth.login_view'))
 
 # this is the route that returns the login form view
 @auth_blueprint.route('/login', methods=['GET'])
