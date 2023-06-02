@@ -475,8 +475,7 @@ def approve_trainee_deactivation(request):
         return redirect(url_for('manager.get_deactivate_trainees_view'))
     flash('Trainee deactivated successfully', 'success')
     # get the user so we can send him the email
-    user = db.session.execute(text("SELECT  email, fullName from trainees where traineeID = :traineeID"),
-controller/manager/manager_trainee_controller.py                              {"traineeID": traineeID}).fetchone()
+    user = db.session.execute(text("SELECT  email, fullName from trainees where traineeID = :traineeID"),{"traineeID": traineeID}).fetchone()
     # send credentials to the trainee
     recipient = user[0]
     sender = manager["email"]
