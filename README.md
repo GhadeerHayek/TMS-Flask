@@ -31,14 +31,15 @@ account management, manage training programs, and billing issues.
 for users upon manager’s approval of their registration request.
 - It’s also responsible for resolving meeting schedule conflicts.
 
-_For more details, you can check **TrainingManagementSystemRequirements.pdf** attached in the repository_
+_For more details regarding the requirements, you can check **TrainingManagementSystemRequirements.pdf** attached in the repository_
 
-Have a nice look: http://tmstraininghub.click/
+_Software Documentation is attached in the repository, check **tms-report.pdf**_
+
+Have a nice look at:  http://tmstraininghub.click/
 
 **Contributors**
 
 Ghadeer Alhayek (ghadeerhayek2001@gmail.com)
 
-Ayah Alshawwwa 
-
+Ayah Elshawa
 
