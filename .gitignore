@@ -7,3 +7,7 @@ controller/__pycache__
 helpers/__pycache__
 blueprints/__pycache__
 /__pycache__
+database.sql
+rds-database.sql
+tms-report.pdf
+et --hard HEAD
